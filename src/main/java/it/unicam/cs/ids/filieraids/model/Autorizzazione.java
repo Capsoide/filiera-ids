@@ -8,18 +8,14 @@ public class Autorizzazione {
     private String motivo;
     private boolean autorizzato;
 
-    // Costruttore "stupido": imposta solo i campi
     public Autorizzazione(Utente curatore, Contenuto contenutoDaApprovare, String motivo, boolean autorizzato) {
         this.id = count++;
         this.curatore = curatore;
         this.contenutoDaApprovare = contenutoDaApprovare;
         this.motivo = motivo;
         this.autorizzato = autorizzato;
-
-        // La logica che modificava contenutoDaApprovare è stata rimossa
     }
 
-    // --- GETTER ---
     public int getId() { return id; }
     public Utente getCuratore() { return curatore; }
     public Contenuto getContenutoDaApprovare() { return contenutoDaApprovare; }

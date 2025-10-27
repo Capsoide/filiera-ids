@@ -8,7 +8,7 @@ public class CuratoreService {
 
 
 
-    //Il contenuto di default, prima che il curatore approva/rifiuta è settato in ATTESA
+    //Il contenuto di default prima che il curatore approva/rifiuta è settato in ATTESA
     //Approva un contenuto
     public Autorizzazione approvaContenuto(Utente curatore, Contenuto contenuto, String motivo){
         if(!curatore.getRuoli().contains(Ruolo.CURATORE)){

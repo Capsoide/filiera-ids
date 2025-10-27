@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Classe che rappresenta un Prodotto della filiera agricola.
- * Estende Contenuto per ereditarne prezzo, quantità, venditore, descrizione, ecc.
- */
 public class Prodotto extends Contenuto {
 
     private String nome;
@@ -33,7 +29,6 @@ public class Prodotto extends Contenuto {
                     Date dataProduzione,
                     int quantita) {
 
-        // Chiama il costruttore della superclasse
         super(Conferma.ATTESA, dataCaricamento, descrizione);
 
         this.nome = nome;

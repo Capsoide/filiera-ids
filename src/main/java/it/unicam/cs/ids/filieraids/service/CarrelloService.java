@@ -4,10 +4,8 @@ import it.unicam.cs.ids.filieraids.model.*;
 
 public class CarrelloService {
 
-    // Dipendenza iniettata (per controllare lo stock)
     private final ProdottoService prodottoService;
 
-    // Costruttore per la Dependency Injection
     public CarrelloService(ProdottoService prodottoService) {
         this.prodottoService = prodottoService;
     }
@@ -15,7 +13,6 @@ public class CarrelloService {
     //aggiunge un prodotto al carrello di un utente,
     public void aggiungiAlCarrello(Carrello carrello, Prodotto prodotto, int quantita) {
 
-        // 1. Validazione (che era in RigaCarrello)
         if (prodotto == null) {
             System.out.println("Errore: Prodotto nullo.");
             return;
@@ -25,13 +22,11 @@ public class CarrelloService {
             return;
         }
 
-        // 2. Logica di business (che era in Carrello)
         if (prodotto.getStatoConferma() != Conferma.APPROVATO) {
             System.out.println("Impossibile aggiungere: Prodotto \"" + prodotto.getNome() + "\" non approvato.");
             return;
         }
 
-        //controlli generici
         int quantitaEsistente = 0;
         for (RigaCarrello riga : carrello.getContenuti()) {
             if (riga.getProdotto().equals(prodotto)) {
@@ -106,7 +101,6 @@ public class CarrelloService {
     }
 
     //svuota completamente il carrello.
-
     public void svuotaCarrello(Carrello carrello) {
         if (carrello == null) return;
 

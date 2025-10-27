@@ -2,13 +2,9 @@ package it.unicam.cs.ids.filieraids.model;
 
 import java.util.Date;
 
-/**
- * Classe astratta base per tutti i tipi di contenuti della filiera agricola.
- * Rappresenta un elemento pubblicato da un venditore, con informazioni su prezzo, quantità e stato di conferma.
- */
 public abstract class Contenuto {
 
-    private int id;     //sarà gestito da jpa
+    private int id;
     private Conferma statoConferma;
     private Date dataCaricamento;
     private String descrizione;

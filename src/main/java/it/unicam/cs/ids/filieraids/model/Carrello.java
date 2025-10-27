@@ -2,10 +2,6 @@ package it.unicam.cs.ids.filieraids.model;
 
 import java.util.*;
 
-/**
- * Classe che rappresenta un carrello.
- * Gestisce il totale del carrello e la lista di righe (contenuti).
- */
 public class Carrello {
 
     private double prezzoTotale;
@@ -17,7 +13,6 @@ public class Carrello {
     }
     public Carrello(Carrello carrelloDaCopiare) {
         this.prezzoTotale = carrelloDaCopiare.getPrezzoTotale();
-        // Crea una NUOVA lista che contiene le righe copiate
         this.contenuti = new ArrayList<>(carrelloDaCopiare.getContenuti());
     }
 

@@ -1,6 +1,5 @@
 package it.unicam.cs.ids.filieraids.model;
 
-import org.springframework.stereotype.Service;
 
 public class Indirizzo {
 

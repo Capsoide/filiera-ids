@@ -1,44 +1,28 @@
 package it.unicam.cs.ids.filieraids.model;
 
-/**
- * Classe POJO "stupida" che rappresenta una riga del carrello.
- * Non contiene logica di business, solo dati.
- */
 public class RigaCarrello {
 
-    private static int counter = 1; // Sarà sostituito da @Id @GeneratedValue
+    private static int counter = 1;
     private int id;
-
-    private Prodotto prodotto; // Usa Prodotto direttamente
+    private Prodotto prodotto;
     private int quantita;
-
-    // "Snapshot" del prezzo unitario al momento dell'aggiunta
     private double prezzoUnitarioSnapshot;
 
     public RigaCarrello() {
         this.id = counter++;
     }
 
-    /**
-     * Costruttore "stupido". Riceve tutti i dati dal Service.
-     * Non fa calcoli o validazioni.
-     */
     public RigaCarrello(Prodotto prodotto, int quantita, double prezzoUnitarioSnapshot) {
         this.id = counter++;
         this.prodotto = prodotto;
         this.quantita = quantita;
         this.prezzoUnitarioSnapshot = prezzoUnitarioSnapshot;
 
-        // Logica di calcolo e validazione rimossa
     }
 
-    // Getter per il prezzo totale CALCOLATO AL MOMENTO
     public double getPrezzoTotaleRiga() {
         return this.prezzoUnitarioSnapshot * this.quantita;
     }
-
-    // --- GETTER E SETTER STANDARD ---
-
     public int getId() { return id; }
     public Prodotto getProdotto() { return prodotto; }
     public void setProdotto(Prodotto prodotto) { this.prodotto = prodotto; }

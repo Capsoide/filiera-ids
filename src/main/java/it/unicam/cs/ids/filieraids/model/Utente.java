@@ -5,10 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Classe base che rappresenta un Utente del sistema.
- * Gestisce email, password, nome, cognome, ruoli, indirizzi e carrello associato.
- */
 public class Utente implements Account{
 
     private String email;

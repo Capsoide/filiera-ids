@@ -23,9 +23,6 @@ public class Ordine {
     }
 
     public Ordine(Date dataOrdine, Carrello carrello, Pagamento pagamento, Indirizzo indirizzo, Utente utente) {
-
-        // Controlli e logica di relazione (utente.addOrdine) rimossi
-
         this.id = counter++;
         this.dataOrdine = (dataOrdine != null) ? dataOrdine : new Date();
         this.carrello = carrello;
@@ -38,7 +35,6 @@ public class Ordine {
         this.statoOrdine = StatoOrdine.ATTESA;
     }
 
-    // --- GETTER E SETTER ---
     public int getId() { return id; }
     public Date getDataOrdine() { return dataOrdine; }
     public void setDataOrdine(Date dataOrdine) { this.dataOrdine = dataOrdine; }

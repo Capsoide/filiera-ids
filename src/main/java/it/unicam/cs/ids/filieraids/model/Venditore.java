@@ -3,8 +3,6 @@ package it.unicam.cs.ids.filieraids.model;
 import java.util.*;
 
 public class Venditore implements Account {
-
-    // --- Campi Account ---
     private String email;
     private String password;
     private Set<Ruolo> ruoli = new HashSet<>();
@@ -69,7 +67,6 @@ public class Venditore implements Account {
     @Override public void addIndirizzo(Indirizzo indirizzo) { if (indirizzo != null) indirizzi.add(indirizzo); }
     @Override public void removeIndirizzo(Indirizzo indirizzo) { indirizzi.remove(indirizzo); }
 
-    // --- Metodo toString (ora funzionante) ---
     @Override
     public String toString() {
         // Usa il metodo getNomeCompleto() appena aggiunto

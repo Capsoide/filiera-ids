@@ -32,17 +32,14 @@ public class OrdineService {
                         riga.getProdotto().getQuantita());
             }
         }
-        // --- FINE MODIFICA ---
 
-
-        // Questo blocco ora è sicuro, perché abbiamo già validato
         for (RigaCarrello riga : carrello.getContenuti()){
             prodottoService.scalaQuantita(riga.getProdotto(), riga.getQuantita());
         }
 
         Ordine ordine = new Ordine(
                 null, //data inserita in modo automatico
-                carrello, // Assicurati che Ordine stia copiando il carrello nel costruttore!
+                carrello,
                 pagamento,
                 indirizzo,
                 utente
@@ -50,8 +47,6 @@ public class OrdineService {
 
         utente.addOrdine(ordine);
         ordini.add(ordine);
-
-        // Svuota il carrello solo dopo che l'ordine è stato creato con successo
         utente.getCarrello().svuota();
 
         System.out.println("Ordine creato : " + ordine.getId());
@@ -75,13 +70,12 @@ public class OrdineService {
             return true;
         }
 
-        // Ripristina lo stock (assicurati che Ordine abbia una COPIA del carrello)
         for(RigaCarrello riga : ordine.getCarrello().getContenuti()){
             prodottoService.ripristinaQuantita(riga.getProdotto(), riga.getQuantita());
         }
 
         ordine.setStatoOrdine(StatoOrdine.ANNULLATO);
-        ordine.setEvaso(false); // Se non era già evaso
+        ordine.setEvaso(false);
 
         ordine.getUtente().removeOrdine(ordine);
         boolean removed = ordini.remove(ordine);

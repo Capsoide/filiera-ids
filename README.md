@@ -1,5 +1,5 @@
 ## Scenari di Test in PostMan
-> ⚠️**Nota:**  
+> ⚠️**Nota:** ⚠️ 
 Gli scenari di test descritti di seguito si basano sui dati di setup (popolamento iniziale) definiti nel file `FilieraAgricolaApplication.java`.
 Se questi dati iniziali sono stati modificati (ad esempio, lo **stock di un prodotto** o i prezzi), i riferimenti numerici specifici in questa guida (es. "Stock Olio = 8" o "totale 16.0") potrebbero non essere più corretti. I risultati attesi potrebbero essere differenti.
  

@@ -23,7 +23,6 @@ public class FilieraAgricolaApplication {
         SpringApplication.run(FilieraAgricolaApplication.class, args);
     }
 
-    // COMMENTA QUESTO BEAN PER DISATTIVARE IL TEST
     @Bean
     @Transactional
     CommandLineRunner testInMemoria(

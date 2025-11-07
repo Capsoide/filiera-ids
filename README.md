@@ -1,5 +1,5 @@
 ## Scenari di Test in PostMan
-⚠️ 
+> **Nota:** ⚠️ 
 Gli scenari di test descritti di seguito si basano sui dati di setup (popolamento iniziale) definiti nel file `FilieraAgricolaApplication.java`.
 Se questi dati iniziali sono stati modificati (ad esempio, lo **stock di un prodotto** o i prezzi), i riferimenti numerici specifici in questa guida (es. "Stock Olio = 8" o "totale 16.0") potrebbero non essere più corretti. I risultati attesi potrebbero essere differenti.
  
@@ -48,8 +48,6 @@ Questi test verificano il fallimento del checkout e la gestione della concorrenz
 * **Risultato Atteso:** `409 Conflict`. Il server blocca correttamente la creazione di un ordine vuoto (gestione `IllegalStateException`).
 
 #### 2.2: Test di Concorrenza (Gestione Stock)
-
-> **Nota:** Questo test è cruciale per validare la logica di `OrdineService` e prevenire condizioni di stock negativo.
 
 * **Attore 1 (Nicola):** Basic Auth -> `nicola.capancioni@...` / `pass123`
 * **Attore 2 (Martina):** Basic Auth -> `martina.frolla@...` / `pass123`

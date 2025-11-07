@@ -1,6 +1,6 @@
 # Scenari di Test in PostMan
 
-### Test sul `CarrelloController`
+## Test sul `CarrelloController`
 
 Questi test verificano la logica di `diminuisci` e `svuota` del carrello.
 

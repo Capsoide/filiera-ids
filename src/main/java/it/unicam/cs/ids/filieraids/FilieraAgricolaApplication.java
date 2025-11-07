@@ -92,6 +92,10 @@ public class FilieraAgricolaApplication {
             venditoreRepository.saveAll(List.of(v1, v2));
 
             System.out.println("Attori creati e salvati nel DB.");
+            System.out.println(" - Acquirente 1: Nicola Capancioni (ID: " + u1.getId() + ")");
+            System.out.println(" - Acquirente 2: Martina Frolla (ID: " + u2.getId() + ")");
+            System.out.println(" - Venditore: Paolo Verdi (ID: " + v1.getId() + ")");
+            System.out.println(" - Curatore: Giulia Bianchi (ID: " + curatore.getId() + ")");
 
             // === CREAZIONE PRODOTTI ===
             System.out.println("\n--- SETUP: CREAZIONE PRODOTTI ---");
@@ -169,7 +173,7 @@ public class FilieraAgricolaApplication {
             ordineService.aggiornaStatoOrdine(o2_martina, StatoOrdine.SPEDITO);
             // o3_luca rimane in ATTESA
 
-            // --- CORREZIONE BUG INCONGRUENZA (riga 149-152) ---
+            // --- CORREZIONE BUG INCONGRUENZA ---
             // Ricarichiamo l'ordine 1 dal DB per vederne lo stato aggiornato
             Ordine o1_nicola_aggiornato = ordineService.getOrdineById(o1_nicola.getId());
             System.out.println("Stato finale Ordine 1: " + o1_nicola_aggiornato.getStatoOrdine()); // Ora stamperà CONSEGNATO
@@ -197,23 +201,26 @@ public class FilieraAgricolaApplication {
             System.out.println("Stock Olio (dopo annullamento o3): " + p3_post_annullamento.getQuantita());
 
 
-            // === 10. REPORT FINALE ===
+            // === REPORT FINALE ===
             System.out.println("\n--- REPORT FINALE ---");
 
-            // (Il bug LazyInitializationException è stato risolto
-            //  modificando Ordine.toString() per usare utente.getId())
+            // --- CORREZIONE BUG LazyInitializationException ---
+            // Usiamo il service (che è @Transactional) per caricare le liste
 
             System.out.println("\n--- Ordini totali di Nicola (u1) ---");
-            ordineService.getOrdiniByUtente(u1).forEach(System.out::println);
+            List<Ordine> ordiniNicola = ordineService.getOrdiniByUtente(u1);
+            ordiniNicola.forEach(System.out::println);
 
             System.out.println("\n--- Ordini totali di Martina (u2) ---");
-            ordineService.getOrdiniByUtente(u2).forEach(System.out::println);
+            List<Ordine> ordiniMartina = ordineService.getOrdiniByUtente(u2);
+            ordiniMartina.forEach(System.out::println);
 
             System.out.println("\n--- Ordini totali di Luca (u3) ---");
-            ordineService.getOrdiniByUtente(u3).forEach(System.out::println);
+            List<Ordine> ordiniLuca = ordineService.getOrdiniByUtente(u3);
+            ordiniLuca.forEach(System.out::println); // Lista vuota
 
             System.out.println("\n--- Ordini totali in gestione (Gestore) ---");
-            ordineService.getTuttiGliOrdini().forEach(System.out::println);
+            ordineService.getTuttiGliOrdini().forEach(System.out::println); // Mostra Ordine 1 e 2
 
             System.out.println("\n=== TEST STRESS COMPLETATO ===\n");
         };

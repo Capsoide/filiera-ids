@@ -1,6 +1,7 @@
 package it.unicam.cs.ids.filieraids.service;
 
 import it.unicam.cs.ids.filieraids.model.*;
+import it.unicam.cs.ids.filieraids.repository.CarrelloRepository;
 import it.unicam.cs.ids.filieraids.repository.OrdineRepository;
 import it.unicam.cs.ids.filieraids.repository.ProdottoRepository;
 import it.unicam.cs.ids.filieraids.repository.UtenteRepository;
@@ -16,15 +17,18 @@ public class OrdineService {
     private final ProdottoRepository prodottoRepository;
     private final ProdottoService prodottoService;
     private final UtenteRepository utenteRepository;
+    private final CarrelloService carrelloService;
 
     public OrdineService(OrdineRepository ordineRepository,
                          ProdottoRepository prodottoRepository,
                          ProdottoService prodottoService,
-                         UtenteRepository utenteRepository) {
+                         UtenteRepository utenteRepository,
+                         CarrelloService carrelloService) {
         this.ordineRepository = ordineRepository;
         this.prodottoRepository = prodottoRepository;
         this.prodottoService = prodottoService;
         this.utenteRepository = utenteRepository;
+        this.carrelloService = carrelloService;
     }
 
     @Transactional
@@ -40,6 +44,7 @@ public class OrdineService {
         for (RigaCarrello riga : carrello.getContenuti()) {
             Prodotto prodottoDB = prodottoRepository.findById(riga.getProdotto().getId())
                     .orElseThrow(() -> new IllegalStateException("Prodotto non trovato: " + riga.getProdotto().getNome()));
+
             if (prodottoDB.getQuantita() < riga.getQuantita()) {
                 throw new IllegalStateException("Stock non sufficiente per: " +
                         prodottoDB.getNome() + ". Richiesti: " +
@@ -54,8 +59,7 @@ public class OrdineService {
         Ordine ordine = new Ordine(null, carrello, pagamento, indirizzo, utente);
         utente.addOrdine(ordine);
         Ordine ordineSalvato = ordineRepository.save(ordine);
-        utente.getCarrello().svuota();
-        utenteRepository.save(utente);
+        carrelloService.svuotaCarrello(utente.getCarrello());
 
         System.out.println("Ordine creato : " + ordineSalvato.getId());
         return ordineSalvato;

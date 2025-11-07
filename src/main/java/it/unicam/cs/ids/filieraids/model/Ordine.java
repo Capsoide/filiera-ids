@@ -1,33 +1,54 @@
 package it.unicam.cs.ids.filieraids.model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
+import java.util.*;
 
-import java.util.Date;
-
+@Entity
+@Table(name = "ordini")
 public class Ordine {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private static int counter = 1;
-    private int id;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataOrdine;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "carrello_id", referencedColumnName = "id")
     private Carrello carrello;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "utente_id", nullable = false)
+    @JsonBackReference
     private Utente utente;
+
+    @Embedded
     private Pagamento pagamento;
-    private Indirizzo indirizzoFatturazione;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "via", column = @Column(name = "indirizzo_via")),
+            @AttributeOverride(name = "numCivico", column = @Column(name = "indirizzo_numCivico")),
+            @AttributeOverride(name = "comune", column = @Column(name = "indirizzo_comune")),
+            @AttributeOverride(name = "CAP", column = @Column(name = "indirizzo_CAP")),
+            @AttributeOverride(name = "regione", column = @Column(name = "indirizzo_regione"))
+    })
+    private Indirizzo indirizzoDiFatturazione;
+
     private double totale;
     private boolean evaso;
+
+    @Enumerated(EnumType.STRING)
     private StatoOrdine statoOrdine;
 
     public Ordine() {
-        this.id = counter++;
-        this.dataOrdine = new Date();
-        this.evaso = false;
-        this.statoOrdine = StatoOrdine.ATTESA;
     }
 
-    public Ordine(Date dataOrdine, Carrello carrello, Pagamento pagamento, Indirizzo indirizzo, Utente utente) {
-        this.id = counter++;
+    public Ordine(Date dataOrdine, Carrello carrello, Pagamento pagamento, Indirizzo indirizzo, Utente utente){
         this.dataOrdine = (dataOrdine != null) ? dataOrdine : new Date();
-        this.carrello = carrello;
+        this.carrello = new Carrello(carrello);
         this.pagamento = pagamento;
-        this.indirizzoFatturazione = indirizzo;
+        this.indirizzoDiFatturazione = indirizzo;
         this.utente = utente;
         this.carrello = new Carrello(carrello);
         this.evaso = false;
@@ -35,7 +56,7 @@ public class Ordine {
         this.statoOrdine = StatoOrdine.ATTESA;
     }
 
-    public int getId() { return id; }
+    public Long getId() { return id; }
     public Date getDataOrdine() { return dataOrdine; }
     public void setDataOrdine(Date dataOrdine) { this.dataOrdine = dataOrdine; }
     public Carrello getCarrello() { return carrello; }
@@ -44,8 +65,8 @@ public class Ordine {
     public void setUtente(Utente utente) { this.utente = utente; }
     public Pagamento getPagamento() { return pagamento; }
     public void setPagamento(Pagamento pagamento) { this.pagamento = pagamento; }
-    public Indirizzo getIndirizzoDiFatturazione() { return indirizzoFatturazione; }
-    public void setIndirizzoDiFatturazione(Indirizzo indirizzoDiFatturazione) { this.indirizzoFatturazione = indirizzoDiFatturazione; }
+    public Indirizzo getIndirizzoDiFatturazione() { return indirizzoDiFatturazione; }
+    public void setIndirizzoDiFatturazione(Indirizzo indirizzoDiFatturazione) { this.indirizzoDiFatturazione = indirizzoDiFatturazione; }
     public double getTotale() { return totale; }
     public void setTotale(double totale) { this.totale = totale; }
     public boolean isEvaso() { return evaso; }
@@ -58,7 +79,7 @@ public class Ordine {
         return "Ordine {" +
                 "id=" + id +
                 ", dataOrdine=" + dataOrdine +
-                ", utente=" + (utente != null ? utente.getEmail() : "N/D") +
+                ", utente_id=" + (utente != null ? utente.getId() : "N/D") + // <-- Stampa solo l'ID
                 ", totale=" + totale +
                 ", statoOrdine=" + statoOrdine +
                 '}';

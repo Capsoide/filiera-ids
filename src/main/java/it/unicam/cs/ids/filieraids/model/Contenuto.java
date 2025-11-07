@@ -1,12 +1,22 @@
 package it.unicam.cs.ids.filieraids.model;
+import jakarta.persistence.*;
+import java.util.*;
 
-import java.util.Date;
+@Entity
+@Table(name = "contenuti")
+@Inheritance(strategy = InheritanceType.JOINED)
 
 public abstract class Contenuto {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private int id;
+    @Enumerated(EnumType.STRING)
     private Conferma statoConferma;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataCaricamento;
+
     private String descrizione;
 
     public Contenuto() {
@@ -20,8 +30,8 @@ public abstract class Contenuto {
         this.descrizione = descrizione;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Long getId() { return id; }
+
     public Conferma getStatoConferma() { return statoConferma; }
     public void setStatoConferma(Conferma statoConferma) { this.statoConferma = statoConferma; }
     public Date getDataCaricamento() { return dataCaricamento; }

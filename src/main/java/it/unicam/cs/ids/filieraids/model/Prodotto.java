@@ -1,17 +1,28 @@
 package it.unicam.cs.ids.filieraids.model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.*;
+import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+@Entity
+@Table(name = "prodotti")
 public class Prodotto extends Contenuto {
-
     private String nome;
     private String metodoDiColtivazione;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "prodotto_certificazioni", joinColumns = @JoinColumn(name = "prodotto_id"))
+    @Column(name = "certificazione")
     private List<String> certificazioni;
+
+    @Temporal(TemporalType.DATE)
     private Date dataProduzione;
+
     private double prezzo;
     private int quantita;
+
+    @ManyToOne(fetch = FetchType.LAZY) //relazione con venditore :molti prodotti appartengono a un venditore
+    @JoinColumn(name = "venditore_id", nullable = false)
+    @JsonBackReference
     private Venditore venditore;
 
     public Prodotto() {
@@ -24,13 +35,12 @@ public class Prodotto extends Contenuto {
                     String nome,
                     String metodoDiColtivazione,
                     double prezzo,
-                    Venditore produttore,
+                    Venditore produttore, //NOTA per mat e marty, quando fate il costruttore, come in sto caso siate precisi, il prodotto è di un venditore non di utente
                     List<String> certificazioni,
                     Date dataProduzione,
                     int quantita) {
 
         super(Conferma.ATTESA, dataCaricamento, descrizione);
-
         this.nome = nome;
         this.metodoDiColtivazione = metodoDiColtivazione;
         this.certificazioni = (certificazioni != null) ? certificazioni : new ArrayList<>();

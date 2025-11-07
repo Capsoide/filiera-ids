@@ -1,26 +1,48 @@
 package it.unicam.cs.ids.filieraids.model;
+import jakarta.persistence.*;
+import java.util.*;
 
+@Entity
+@Table(name = "utorizzazioni")
 public class Autorizzazione {
-    private static int count = 1;
-    private int id;
-    private Utente curatore;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "curatore_id")
+    private Attore curatore;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contenuto_id")
     private Contenuto contenutoDaApprovare;
+
     private String motivo;
     private boolean autorizzato;
 
-    public Autorizzazione(Utente curatore, Contenuto contenutoDaApprovare, String motivo, boolean autorizzato) {
-        this.id = count++;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dataAutorizzazione;
+
+    public Autorizzazione() {}
+
+    public Autorizzazione(Attore curatore, Contenuto contenutoDaApprovare, String motivo, boolean autorizzato) {
+        this.dataAutorizzazione = new Date();
         this.curatore = curatore;
         this.contenutoDaApprovare = contenutoDaApprovare;
         this.motivo = motivo;
         this.autorizzato = autorizzato;
     }
 
-    public int getId() { return id; }
-    public Utente getCuratore() { return curatore; }
+    public Long getId() { return id; }
+    public Attore getCuratore() { return curatore; }
+    public void setCuratore(Attore curatore) { this.curatore = curatore; }
     public Contenuto getContenutoDaApprovare() { return contenutoDaApprovare; }
-    public String getMotivo() { return motivo; }
+    public void setContenutoDaApprovare(Contenuto contenuto) { this.contenutoDaApprovare = contenuto; }
+    public void setMotivo(String motivo) { this.motivo = motivo; }
     public boolean isAutorizzato() { return autorizzato; }
+    public void setAutorizzato(boolean autorizzato) { this.autorizzato = autorizzato; }
+    public Date getDataAutorizzazione() { return dataAutorizzazione; }
+    public void setDataAutorizzazione(Date dataAutorizzazione) { this.dataAutorizzazione = dataAutorizzazione; }
 
     @Override
     public String toString() {

@@ -1,14 +1,22 @@
 package it.unicam.cs.ids.filieraids.service;
+
 import it.unicam.cs.ids.filieraids.model.*;
+import it.unicam.cs.ids.filieraids.repository.ProdottoRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
+@Service
 public class ProdottoService {
 
-    private final List<Prodotto> prodotti = new ArrayList<>();
-    private static int idCounter = 1;       //simula l'autoincremento del id nel db
+    private final ProdottoRepository prodottoRepository;
 
+    public ProdottoService(ProdottoRepository prodottoRepository) {
+        this.prodottoRepository = prodottoRepository;
+    }
+
+    @Transactional
     public Prodotto creaProdotto(
             Date datacaricamento, String descrizione, String nome,
             String metodoDiColtivazione, double prezzo, Venditore produttore,
@@ -18,49 +26,54 @@ public class ProdottoService {
                 metodoDiColtivazione, prezzo, produttore, certificazioni,
                 dataProduzione, quantita);
 
-        p.setId(idCounter++);  //simulazione assegna id
-
         produttore.addProdotto(p);
 
-        this.prodotti.add(p);
+        Prodotto prodottoSalvato = prodottoRepository.save(p);
 
-        System.out.println("Prodotto creato: " + p.getNome());
-        return p;
+        System.out.println("Prodotto creato: " + prodottoSalvato.getNome() + " (ID: " + prodottoSalvato.getId() + ")");
+        return prodottoSalvato;
     }
-    //mostra solo i prodotti approvati e visibili
+    //metodo pubblico per gli acquirenti
     public List<Prodotto> getProdottiVisibili(){
-        return prodotti.stream()
-                .filter(p -> p.getStatoConferma() == Conferma.APPROVATO)
-                .collect(Collectors.toList());
+        return prodottoRepository.findByStatoConferma(Conferma.APPROVATO);
     }
 
-    //restituisce i prdotti di un venditore specifico
-    public List<Prodotto> getProdottidelVenditore(Venditore venditore) {
-        return prodotti.stream()
-                .filter(p -> p.getVenditore() != null && p.getVenditore().equals(venditore))
-                .collect(Collectors.toList());
+    //metodo privato per i curatori
+    public List<Prodotto> getProdottiPerStato(Conferma stato){
+        return prodottoRepository.findByStatoConferma(stato);
     }
 
-    //verifica la disponibiltà
+    public List<Prodotto> getProdottiDelVenditore(Venditore venditore) {
+        return prodottoRepository.findByVenditore(venditore);
+    }
+
+    public Prodotto getProdottoById(Long id) {
+        return prodottoRepository.findById(id).orElse(null);
+    }
+
     public boolean verificaDisponibilita(Prodotto prodotto, int quantita){
-        return prodotto != null && prodotto.getQuantita() >= quantita;
+        Prodotto p = prodottoRepository.findById(prodotto.getId()).orElse(null);
+        if (p == null) return false;
+        return p.getQuantita() >= quantita;
     }
 
-    //scala quantità, è usato da OrdineService
+    @Transactional
     public void scalaQuantita(Prodotto prodotto, int quantita){
-        if (prodotto != null){
-            prodotto.setQuantita(prodotto.getQuantita() - quantita);
-            System.out.println("Scalato stock: " + prodotto.getNome() + " -> Rimasti: " + prodotto.getQuantita());
+        Prodotto p = prodottoRepository.findById(prodotto.getId()).orElse(null);
+        if (p != null){
+            p.setQuantita(p.getQuantita() - quantita);
+            prodottoRepository.save(p);
+            System.out.println("Scalato stock: " + p.getNome() + " -> Rimasti: " + p.getQuantita());
         }
     }
 
-    //ripristina lo stock, è usato da OrdineService per annullamento
+    @Transactional
     public void ripristinaQuantita(Prodotto prodotto, int quantita) {
-        if (prodotto != null) {
-            prodotto.setQuantita(prodotto.getQuantita() + quantita);
-            System.out.println("Ripristinato stock: " + prodotto.getNome() + " -> Rimasti: " + prodotto.getQuantita());
+        Prodotto p = prodottoRepository.findById(prodotto.getId()).orElse(null);
+        if (p != null) {
+            p.setQuantita(p.getQuantita() + quantita);
+            prodottoRepository.save(p);
+            System.out.println("Ripristinato stock: " + p.getNome() + " -> Rimasti: " + p.getQuantita());
         }
     }
 }
-
-

@@ -1,6 +1,7 @@
 package it.unicam.cs.ids.filieraids.model;
+import jakarta.persistence.Embeddable;
 
-
+@Embeddable
 public class Indirizzo {
 
     private String via;
@@ -8,6 +9,8 @@ public class Indirizzo {
     private String comune;
     private String CAP;
     private String regione;
+
+    public Indirizzo(){}
 
     public Indirizzo(String via, String numCivico, String comune, String CAP, String regione) {
         this.via = via;

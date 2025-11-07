@@ -1,35 +1,47 @@
 package it.unicam.cs.ids.filieraids.model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "righe_carrello")
 public class RigaCarrello {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private static int counter = 1;
-    private int id;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "prodotto_id")
     private Prodotto prodotto;
+
     private int quantita;
     private double prezzoUnitarioSnapshot;
 
-    public RigaCarrello() {
-        this.id = counter++;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "carrello_id")
+    @JsonBackReference
+    private Carrello carrello;
+
+    public RigaCarrello() {}
 
     public RigaCarrello(Prodotto prodotto, int quantita, double prezzoUnitarioSnapshot) {
-        this.id = counter++;
         this.prodotto = prodotto;
         this.quantita = quantita;
         this.prezzoUnitarioSnapshot = prezzoUnitarioSnapshot;
-
     }
 
     public double getPrezzoTotaleRiga() {
         return this.prezzoUnitarioSnapshot * this.quantita;
     }
-    public int getId() { return id; }
+
+    public Long getId() { return id; }
     public Prodotto getProdotto() { return prodotto; }
     public void setProdotto(Prodotto prodotto) { this.prodotto = prodotto; }
     public int getQuantita() { return quantita; }
     public void setQuantita(int quantita) { this.quantita = quantita; }
     public double getPrezzoUnitarioSnapshot() { return prezzoUnitarioSnapshot; }
     public void setPrezzoUnitarioSnapshot(double prezzoUnitarioSnapshot) { this.prezzoUnitarioSnapshot = prezzoUnitarioSnapshot; }
+    public Carrello getCarrello() { return carrello; }
+    public void setCarrello(Carrello carrello) { this.carrello = carrello; }
 
     @Override
     public boolean equals(Object o) {

@@ -1,10 +1,12 @@
 package it.unicam.cs.ids.filieraids.model;
+import jakarta.persistence.Embeddable;
 
+@Embeddable
 public class Pagamento {
 
-    private String circuito;      // es. Visa, Mastercard
-    private String numeroCarta;   // simulato
-    private String intestatario;  // nome sulla carta
+    private String circuito;      //visa, mastercard,...
+    private String numeroCarta;   //simulato
+    private String intestatario;  //nome sulla carta
 
     public Pagamento() {}
 

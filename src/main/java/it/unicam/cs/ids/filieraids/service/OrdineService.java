@@ -1,141 +1,128 @@
 package it.unicam.cs.ids.filieraids.service;
 
 import it.unicam.cs.ids.filieraids.model.*;
+import it.unicam.cs.ids.filieraids.repository.OrdineRepository;
+import it.unicam.cs.ids.filieraids.repository.ProdottoRepository;
+import it.unicam.cs.ids.filieraids.repository.UtenteRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
-import java.util.stream.Collectors;
 
+@Service
 public class OrdineService {
-    private final List<Ordine> ordini = new ArrayList<>();
 
+    private final OrdineRepository ordineRepository;
+    private final ProdottoRepository prodottoRepository;
     private final ProdottoService prodottoService;
+    private final UtenteRepository utenteRepository;
 
-    public OrdineService(ProdottoService prodottoService) {
+    public OrdineService(OrdineRepository ordineRepository,
+                         ProdottoRepository prodottoRepository,
+                         ProdottoService prodottoService,
+                         UtenteRepository utenteRepository) {
+        this.ordineRepository = ordineRepository;
+        this.prodottoRepository = prodottoRepository;
         this.prodottoService = prodottoService;
+        this.utenteRepository = utenteRepository;
     }
 
+    @Transactional
     public Ordine creaOrdine(Utente utente, Carrello carrello, Pagamento pagamento, Indirizzo indirizzo){
 
         if(!utente.getRuoli().contains(Ruolo.ACQUIRENTE)){
             throw new IllegalArgumentException("L'utente non ha il ruolo di ACQUIRENTE e non può acquistare");
         }
-
         if (carrello.getContenuti().isEmpty()) {
             throw new IllegalStateException("Impossibile creare un ordine con un carrello vuoto.");
         }
 
         for (RigaCarrello riga : carrello.getContenuti()) {
-            if (!prodottoService.verificaDisponibilita(riga.getProdotto(), riga.getQuantita())) {
-                //se un prodotto non è disponibile, l'intero ordine fallisce --> DA CAMBIARE NON VA BENE COSI MA L'HO MESSO PER TESTARE
+            Prodotto prodottoDB = prodottoRepository.findById(riga.getProdotto().getId())
+                    .orElseThrow(() -> new IllegalStateException("Prodotto non trovato: " + riga.getProdotto().getNome()));
+            if (prodottoDB.getQuantita() < riga.getQuantita()) {
                 throw new IllegalStateException("Stock non sufficiente per: " +
-                        riga.getProdotto().getNome() + ". Richiesti: " +
+                        prodottoDB.getNome() + ". Richiesti: " +
                         riga.getQuantita() + ", Disponibili: " +
-                        riga.getProdotto().getQuantita());
+                        prodottoDB.getQuantita());
             }
         }
-
         for (RigaCarrello riga : carrello.getContenuti()){
             prodottoService.scalaQuantita(riga.getProdotto(), riga.getQuantita());
         }
 
-        Ordine ordine = new Ordine(
-                null, //data inserita in modo automatico
-                carrello,
-                pagamento,
-                indirizzo,
-                utente
-        );
-
+        Ordine ordine = new Ordine(null, carrello, pagamento, indirizzo, utente);
         utente.addOrdine(ordine);
-        ordini.add(ordine);
+        Ordine ordineSalvato = ordineRepository.save(ordine);
         utente.getCarrello().svuota();
+        utenteRepository.save(utente);
 
-        System.out.println("Ordine creato : " + ordine.getId());
-        return ordine;
+        System.out.println("Ordine creato : " + ordineSalvato.getId());
+        return ordineSalvato;
     }
 
-
-    //annulla un ordine e ripristina lo stock
+    @Transactional
     public boolean annullaOrdine(Ordine ordine){
         if(ordine == null) return false;
-
-        //impossibile annullare un ordine già spedito o consegnato
-        if (ordine.getStatoOrdine() == StatoOrdine.SPEDITO || ordine.getStatoOrdine() == StatoOrdine.CONSEGNATO) {
-            System.out.println("ERRORE: Impossibile annullare un ordine già spedito o consegnato. ID: " + ordine.getId());
+        Ordine ordineDB = ordineRepository.findById(ordine.getId()).orElse(null);
+        if (ordineDB == null) {
+            System.out.println("Ordine non trovato per l'annullamento.");
             return false;
         }
 
-        //se è già annullato non fa nulla
-        if (ordine.getStatoOrdine() == StatoOrdine.ANNULLATO) {
-            System.out.println("Ordine " + ordine.getId() + " è già annullato.");
+        if (ordineDB.getStatoOrdine() == StatoOrdine.SPEDITO || ordineDB.getStatoOrdine() == StatoOrdine.CONSEGNATO) {
+            System.out.println("ERRORE: Impossibile annullare un ordine già spedito o consegnato. ID: " + ordineDB.getId());
+            return false;
+        }
+        if (ordineDB.getStatoOrdine() == StatoOrdine.ANNULLATO) {
+            System.out.println("Ordine " + ordineDB.getId() + " è già annullato.");
             return true;
         }
 
-        for(RigaCarrello riga : ordine.getCarrello().getContenuti()){
+        for(RigaCarrello riga : ordineDB.getCarrello().getContenuti()){
             prodottoService.ripristinaQuantita(riga.getProdotto(), riga.getQuantita());
         }
 
-        ordine.setStatoOrdine(StatoOrdine.ANNULLATO);
-        ordine.setEvaso(false);
+        ordineDB.setStatoOrdine(StatoOrdine.ANNULLATO);
+        ordineDB.setEvaso(false);
+        Utente utenteDellOrdine = ordineDB.getUtente();
+        utenteDellOrdine.removeOrdine(ordineDB);
+        utenteRepository.save(utenteDellOrdine);
 
-        ordine.getUtente().removeOrdine(ordine);
-        boolean removed = ordini.remove(ordine);
+        ordineRepository.delete(ordineDB); //ora posso eliminare l'ordine
 
-        if(removed){
-            System.out.println("Ordine annullato e rimosso correttamente con ID: " + ordine.getId());
-        }
-        return removed;
+        System.out.println("Ordine annullato e rimosso correttamente con ID: " + ordineDB.getId());
+        return true;
     }
-
-    //restituisce la lista di ordini per un utente specifico.
     public List<Ordine> getOrdiniByUtente(Utente utente){
-        return utente.getOrdini();
+        return ordineRepository.findByUtente(utente);
     }
-
-    //trova ordine tramite id
-    public Ordine getOrdineById(int id){
-        for(Ordine ordine : ordini){
-            if(ordine.getId() == id){
-                return ordine;
-            }
-        }
-        return null; //non trovato
+    public Ordine getOrdineById(Long id){
+        return ordineRepository.findById(id).orElse(null);
     }
-
-    //restituisce tutti gli ordini effettuati nel sistema
     public List<Ordine> getTuttiGliOrdini() {
-        //gli faccio restiuire una copia per evitare modifiche esterne alla lista del service
-        return new ArrayList<>(ordini);
+        return ordineRepository.findAll();
     }
-
-
-    //restituisce tutti gli ordini con uno stato specifico
     public List<Ordine> getOrdiniByStato(StatoOrdine stato) {
-        return ordini.stream()
-                .filter(ordine -> ordine.getStatoOrdine() == stato)
-                .collect(Collectors.toList());
+        return ordineRepository.findByStatoOrdine(stato);
     }
-
-    //aggiorna lo stato di un ordine
+    @Transactional
     public void aggiornaStatoOrdine(Ordine ordine, StatoOrdine nuovoStato) {
-        if (ordine == null || nuovoStato == null) return;
-
+        Ordine ordineDB = ordineRepository.findById(ordine.getId()).orElse(null);
+        if (ordineDB == null || nuovoStato == null) return;
         if (nuovoStato == StatoOrdine.ANNULLATO) {
             System.out.println("ERRORE: Usare il metodo annullaOrdine() per annullare.");
             return;
         }
-
-        //non si può modificare uno stato CONSEGNATO o ANNULLATO
-        if (ordine.getStatoOrdine() == StatoOrdine.CONSEGNATO || ordine.getStatoOrdine() == StatoOrdine.ANNULLATO) {
-            System.out.println("INFO: L'ordine " + ordine.getId() + " è già concluso e non può cambiare stato.");
+        if (ordineDB.getStatoOrdine() == StatoOrdine.CONSEGNATO || ordineDB.getStatoOrdine() == StatoOrdine.ANNULLATO) {
+            System.out.println("INFO: L'ordine " + ordineDB.getId() + " è già concluso e non può cambiare stato.");
             return;
         }
-
-        ordine.setStatoOrdine(nuovoStato);
-        System.out.println("Stato ordine ID " + ordine.getId() + " aggiornato a: " + nuovoStato);
-
-        //se ordine è CONSEGNATO lo conrassegno come evaso
+        ordineDB.setStatoOrdine(nuovoStato);
         if (nuovoStato == StatoOrdine.CONSEGNATO) {
-            ordine.setEvaso(true);
+            ordineDB.setEvaso(true);
         }
+        ordineRepository.save(ordineDB);
+        System.out.println("Stato ordine ID " + ordineDB.getId() + " aggiornato a: " + nuovoStato);
     }
 }

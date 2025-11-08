@@ -9,7 +9,7 @@ public class Carrello {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // <-- Eccolo qui!
+    private Long id;
 
     private double prezzoTotale;
 

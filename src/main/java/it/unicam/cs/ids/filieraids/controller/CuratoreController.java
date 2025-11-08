@@ -3,7 +3,6 @@ package it.unicam.cs.ids.filieraids.controller;
 import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.repository.*;
 import it.unicam.cs.ids.filieraids.service.*;
-import it.unicam.cs.ids.filieraids.service.ProdottoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;

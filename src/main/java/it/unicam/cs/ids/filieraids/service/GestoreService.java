@@ -28,9 +28,9 @@ public class GestoreService {
     }
 
     @Transactional
-    public void rifiutaRichiesta(Long richiestaId) {
-        RichiestaRuolo richiesta = richiestaRuoloRepository.findById(richiestaId)
-                .orElseThrow(() -> new RuntimeException("Richiesta non trovata con ID: " + richiestaId));
+    public void rifiutaRichiesta(Long id) {
+        RichiestaRuolo richiesta = richiestaRuoloRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Richiesta non trovata con ID: " + id));
 
         if(richiesta.getStato() != Conferma.ATTESA) {
             throw new IllegalStateException("Richiesta con Id " + richiesta.getId() + " già processata");
@@ -41,9 +41,9 @@ public class GestoreService {
     }
 
     @Transactional
-    public void approvaRichiesta(Long richiestaId) {
-        RichiestaRuolo richiesta = richiestaRuoloRepository.findById(richiestaId)
-                .orElseThrow(() -> new RuntimeException("Richiesta non trovata con ID: " + richiestaId));
+    public void approvaRichiesta(Long id) {
+        RichiestaRuolo richiesta = richiestaRuoloRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Richiesta non trovata con ID: " + id));
 
         if(richiesta.getStato() != Conferma.ATTESA) {
             throw new IllegalStateException("Richiesta con Id " + richiesta.getId() + " già processata");

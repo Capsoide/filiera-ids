@@ -28,7 +28,7 @@ public class RichiestaRuolo {
 
     public RichiestaRuolo() {}
 
-    public RichiestaRuolo(Attore attore, Set<Ruolo> ruoli, String motivazione, Conferma stato) {
+    public RichiestaRuolo(Attore attore, Set<Ruolo> ruoli, Conferma stato) {
         this.attoreRichiedente = attore;
         this.ruoliRichiesti = ruoli;
         this.stato = Conferma.ATTESA;

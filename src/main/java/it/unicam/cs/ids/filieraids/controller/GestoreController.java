@@ -10,7 +10,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/gestore")
-@PreAuthorize("hasRole(GESTORE)")
+@PreAuthorize("hasRole('GESTORE')")
 public class GestoreController {
 
     private final GestoreService gestoreService;
@@ -27,16 +27,16 @@ public class GestoreController {
 
     //Approva richiesta
     @PostMapping("/richieste-ruolo/{id}/approva")
-    public ResponseEntity<String> approvaRichiesta(@PathVariable Long richiestaId){
-        gestoreService.approvaRichiesta(richiestaId);
-        return ResponseEntity.ok("Richiesta con " + richiestaId + " approvata con successo");
+    public ResponseEntity<String> approvaRichiesta(@PathVariable Long id){
+        gestoreService.approvaRichiesta(id);
+        return ResponseEntity.ok("Richiesta con " + id + " approvata con successo");
     }
 
     //Rifuta richiesta
-    @PostMapping("richieste-ruolo/{id}/rifuta")
-    public ResponseEntity<String> rifutaRichiesta(@PathVariable Long richiestaId){
-        gestoreService.rifiutaRichiesta(richiestaId);
-        return ResponseEntity.ok("Richiesta con " + richiestaId + " rifutata");
+    @PostMapping("/richieste-ruolo/{id}/rifiuta")
+    public ResponseEntity<String> rifutaRichiesta(@PathVariable Long id){
+        gestoreService.rifiutaRichiesta(id);
+        return ResponseEntity.ok("Richiesta con " + id + " rifutata");
     }
 
 

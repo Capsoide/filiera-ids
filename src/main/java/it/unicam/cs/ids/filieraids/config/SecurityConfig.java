@@ -47,6 +47,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
 
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/prodotti/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/curatore/**").hasRole("CURATORE")

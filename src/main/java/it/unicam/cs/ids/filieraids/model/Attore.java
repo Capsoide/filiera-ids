@@ -98,3 +98,4 @@ public abstract class Attore implements Account {
         return "Attore [" + getNomeCompleto() + ", email=" + getEmail() + ", ruoli=" + getRuoli() + "]";
     }
 }
+

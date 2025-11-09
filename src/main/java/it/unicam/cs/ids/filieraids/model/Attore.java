@@ -24,12 +24,15 @@ public abstract class Attore implements Account {
 
     @ElementCollection(fetch = FetchType.LAZY)
     private List<Indirizzo> indirizzi = new ArrayList<>();
+    
+    private boolean enabled; //flag utente disabilitato
 
     protected Attore (String email, String password, String nome, String cognome){
         this.email = email;
         this.password = password;
         this.nome = nome;
         this.cognome = cognome;
+        this.enabled = false;
     }
 
     //costruttore vuoto per JPA
@@ -71,6 +74,14 @@ public abstract class Attore implements Account {
 
     @Override
     public List<Indirizzo> getIndirizzi() { return indirizzi; }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     @Override
     public void addIndirizzo(Indirizzo indirizzo) {

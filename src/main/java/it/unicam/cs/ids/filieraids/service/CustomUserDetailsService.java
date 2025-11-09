@@ -42,6 +42,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new User(
                 attore.getEmail(),
                 attore.getPassword(),
+                attore.isEnabled(),
+                true,
+                true,
+                true,
                 authorities
         );
     }

@@ -26,14 +26,11 @@ public class RichiestaRuolo {
     @Column(name = "ruolo")
     private Set<Ruolo> ruoliRichiesti = new HashSet<>();
 
-    private String motivazione;
-
     public RichiestaRuolo() {}
 
     public RichiestaRuolo(Attore attore, Set<Ruolo> ruoli, String motivazione, Conferma stato) {
         this.attoreRichiedente = attore;
         this.ruoliRichiesti = ruoli;
-        this.motivazione = motivazione;
         this.stato = Conferma.ATTESA;
     }
 
@@ -65,11 +62,4 @@ public class RichiestaRuolo {
         this.ruoliRichiesti = ruoliRichiesti;
     }
 
-    public String getMotivazione() {
-        return motivazione;
-    }
-
-    public void setMotivazione(String motivazione) {
-        this.motivazione = motivazione;
-    }
 }

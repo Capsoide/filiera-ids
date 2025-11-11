@@ -20,13 +20,6 @@ public class FilieraAgricolaApplication {
         SpringApplication.run(FilieraAgricolaApplication.class, args);
     }
 
-    /**
-     * Questo Bean ora serve solo a POPOLARE IL DATABASE
-     * con dati di test (utenti, prodotti) per poterli
-     * usare con Postman.
-     * La vecchia logica di test (ordini, carrello) è stata rimossa
-     * perché ora va testata tramite le API REST.
-     */
     @Bean
     @Transactional
     CommandLineRunner testSetupDatabase(
@@ -35,7 +28,6 @@ public class FilieraAgricolaApplication {
             UtenteRepository utenteRepository,
             VenditoreRepository venditoreRepository,
             PasswordEncoder passwordEncoder
-            // Nota: OrdineService e CarrelloService non servono più qui
     ) {
         return args -> {
 
@@ -45,61 +37,46 @@ public class FilieraAgricolaApplication {
             // === 1. CREAZIONE ATTORI ===
             System.out.println("\n--- SETUP: CREAZIONE ATTORI ---");
 
-            // Crittografa le password
+            // ... (Creazione Acquirenti u1, u2, u3) ...
             String passNicola = passwordEncoder.encode("pass123");
-            String passMartina = passwordEncoder.encode("pass123");
-            String passLuca = passwordEncoder.encode("pass123");
-            String passPaolo = passwordEncoder.encode("passV1");
-            String passMaria = passwordEncoder.encode("passV2");
-            String passGiulia = passwordEncoder.encode("passCuratore");
-
-            // Acquirente 1 (Abilitato subito)
             Utente u1 = new Utente("nicola.capancioni@studenti.unicam.com", passNicola, "Nicola", "Capancioni");
             u1.addIndirizzo(new Indirizzo("Via Morale da Fermo", "7", "Fermo", "63900", "Marche"));
             u1.setEnabled(true);
             u1.setRuoli(Set.of(Ruolo.ACQUIRENTE));
 
-            // Acquirente 2 (Abilitato subito)
-            Utente u2 = new Utente("martina.frolla@studenti.unicam.com", passMartina, "Martina", "Frolla");
+            Utente u2 = new Utente("martina.frolla@studenti.unicam.com", passwordEncoder.encode("pass123"), "Martina", "Frolla");
             u2.addIndirizzo(new Indirizzo("Corso Garibaldi", "10", "Civitanova", "62012", "Marche"));
             u2.setEnabled(true);
             u2.setRuoli(Set.of(Ruolo.ACQUIRENTE));
 
-            // Acquirente 3 (Abilitato subito)
-            Utente u3 = new Utente("luca.rossi@email.com", passLuca, "Luca", "Rossi");
+            Utente u3 = new Utente("luca.rossi@email.com", passwordEncoder.encode("pass123"), "Luca", "Rossi");
             u3.addIndirizzo(new Indirizzo("Via Roma", "1", "Ancona", "60100", "Marche"));
             u3.setEnabled(true);
             u3.setRuoli(Set.of(Ruolo.ACQUIRENTE));
 
-            // Venditore 1 (Abilitato subito per test)
+
+            // ... (Creazione Venditori v1, v2) ...
             Venditore v1 = new Venditore(
-                    "paolo.verdi@email.com", passPaolo, "Paolo", "Verdi",
-                    "111222333", "Azienda Agricola Verdi",
-                    Set.of(Ruolo.PRODUTTORE)
+                    "paolo.verdi@email.com", passwordEncoder.encode("passV1"), "Paolo", "Verdi",
+                    "111222333", "Azienda Agricola Verdi", Set.of(Ruolo.PRODUTTORE)
             );
             v1.setEnabled(true);
 
-            // Venditore 2 (Abilitato subito per test)
             Venditore v2 = new Venditore(
-                    "maria.bianchi@email.com", passMaria, "Maria", "Bianchi",
-                    "444555666", "Oleificio Bianchi",
-                    Set.of(Ruolo.TRASFORMATORE, Ruolo.DISTRIBUTORE)
+                    "maria.bianchi@email.com", passwordEncoder.encode("passV2"), "Maria", "Bianchi",
+                    "444555666", "Oleificio Bianchi", Set.of(Ruolo.TRASFORMATORE, Ruolo.DISTRIBUTORE)
             );
             v2.setEnabled(true);
 
-            // Curatore (Abilitato subito per test)
-            Utente curatore = new Utente("curatore@email.com", passGiulia, "Giulia", "Neri");
+            // ... (Creazione Curatore) ...
+            Utente curatore = new Utente("curatore@email.com", passwordEncoder.encode("passCuratore"), "Giulia", "Neri");
             curatore.setRuoli(Set.of(Ruolo.CURATORE));
             curatore.setEnabled(true);
 
-            // --- INIZIO AGGIUNTA GESTORE ---
-            // Gestore (Abilitato subito per testare l'approvazione)
-            String passGestore = passwordEncoder.encode("gestore123");
-            Utente gestore = new Utente("gestore@filiera.com", passGestore, "Admin", "Gestore");
-            gestore.setRuoli(Set.of(Ruolo.GESTORE)); // Assegna il ruolo
-            gestore.setEnabled(true); // Abilitalo subito
-            // --- FINE AGGIUNTA GESTORE ---
-
+            // ... (Creazione Gestore) ...
+            Utente gestore = new Utente("gestore@filiera.com", passwordEncoder.encode("gestore123"), "Admin", "Gestore");
+            gestore.setRuoli(Set.of(Ruolo.GESTORE));
+            gestore.setEnabled(true);
 
             // Salvataggio nel DB
             utenteRepository.saveAll(List.of(u1, u2, u3, curatore, gestore));
@@ -109,17 +86,21 @@ public class FilieraAgricolaApplication {
 
             // === 2. CREAZIONE PRODOTTI ===
             System.out.println("\n--- SETUP: CREAZIONE PRODOTTI ---");
-            Prodotto p1_miele = prodottoService.creaProdotto(new Date(), "Miele Bio", "Miele Bio", "Naturale", 7.50, v1, List.of("BIO"), new Date(), 20); // Stock 20
-            Prodotto p2_farina = prodottoService.creaProdotto(new Date(), "Farina 00", "Farina 00", "Tradizionale", 3.20, v1, List.of("KM0"), new Date(), 50); // Stock 50
-            Prodotto p3_olio = prodottoService.creaProdotto(new Date(), "Olio EVO", "Olio EVO", "Biologico", 12.00, v2, List.of("BIO"), new Date(), 30); // Stock 30
+            Prodotto p1_miele = prodottoService.creaProdotto(new Date(), "Miele Bio", "Miele Bio", "Naturale", 7.50, v1, List.of("BIO"), new Date(), 20);
+            Prodotto p2_farina = prodottoService.creaProdotto(new Date(), "Farina 00", "Farina 00", "Tradizionale", 3.20, v1, List.of("KM0"), new Date(), 50);
+            Prodotto p3_olio = prodottoService.creaProdotto(new Date(), "Olio EVO", "Olio EVO", "Biologico", 12.00, v2, List.of("BIO"), new Date(), 30);
             Prodotto p4_vino = prodottoService.creaProdotto(new Date(), "Vino Rosso", "Vino Rosso", "DOC", 9.00, v1, List.of("DOC"), new Date(), 40); // In Attesa
 
             // === 3. APPROVAZIONE CONTENUTI ===
             System.out.println("\n--- SETUP: APPROVAZIONE CONTENUTI ---");
-            curatoreService.approvaContenuto(curatore, p1_miele, "OK");
-            curatoreService.approvaContenuto(curatore, p2_farina, "OK");
-            curatoreService.approvaContenuto(curatore, p3_olio, "OK");
-            // p4_vino rimane in ATTESA per testare l'approvazione del curatore via API
+
+            // --- INIZIO CORREZIONE ---
+            // Ora passiamo ID e email, non gli oggetti
+            curatoreService.approvaContenuto(p1_miele.getId(), curatore.getEmail(), "OK");
+            curatoreService.approvaContenuto(p2_farina.getId(), curatore.getEmail(), "OK");
+            curatoreService.approvaContenuto(p3_olio.getId(), curatore.getEmail(), "OK");
+            // p4_vino rimane in ATTESA per i test API
+            // --- FINE CORREZIONE ---
 
             System.out.println("\n--- Catalogo Prodotti Visibili ---");
             prodottoService.getProdottiVisibili().forEach(p -> System.out.println(" - " + p.getNome() + " (Stock: " + p.getQuantita() + ")"));
@@ -130,6 +111,7 @@ public class FilieraAgricolaApplication {
             System.out.println("\n=== DATABASE DI TEST PRONTO ===\n");
             System.out.println("Avviare i test API con Postman...");
             System.out.println("Gestore: gestore@filiera.com / gestore123");
+            System.out.println("Curatore: curatore@email.com / passCuratore");
         };
     }
 }

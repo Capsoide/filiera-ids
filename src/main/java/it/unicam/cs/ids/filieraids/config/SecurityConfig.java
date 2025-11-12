@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/carrello/**").hasRole("ACQUIRENTE")
                         .requestMatchers(HttpMethod.POST, "/api/ordini").hasRole("ACQUIRENTE")
                         .requestMatchers(HttpMethod.GET, "/api/ordini").hasRole("ACQUIRENTE")
-                        .requestMatchers(HttpMethod.POST, "/api/prodotti").hasAnyRole("PRODUTTORE", "DISTRIBUTORE")
+                        .requestMatchers(HttpMethod.POST, "/api/prodotti").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
                         .requestMatchers("/api/gestore/**").hasRole("GESTORE")
                         .anyRequest().authenticated()
                 )

@@ -2,8 +2,10 @@ package it.unicam.cs.ids.filieraids.service;
 
 import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.repository.ProdottoRepository;
+import it.unicam.cs.ids.filieraids.repository.VenditoreRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.*;
 
@@ -11,9 +13,49 @@ import java.util.*;
 public class ProdottoService {
 
     private final ProdottoRepository prodottoRepository;
+    private final VenditoreRepository venditoreRepository;
 
-    public ProdottoService(ProdottoRepository prodottoRepository) {
+    public ProdottoService(ProdottoRepository prodottoRepository,
+                            VenditoreRepository venditoreRepository) {
         this.prodottoRepository = prodottoRepository;
+        this.venditoreRepository = venditoreRepository;
+    }
+
+    private Venditore getVenditoreByEmail(String email) {
+        return venditoreRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Venditore non trovato: " + email));
+    }
+
+    /**
+     * crea un nuovo prodotto per il venditore loggato
+     * accetta i dati base del prodotto e l'email del venditore
+     */
+    @Transactional
+    public Prodotto creaProdottoPerVenditore(Prodotto prodottoInput, String venditoreEmail) {
+
+        Venditore venditore = getVenditoreByEmail(venditoreEmail);
+
+        return creaProdotto(
+                new Date(),
+                prodottoInput.getDescrizione(),
+                prodottoInput.getNome(),
+                prodottoInput.getMetodoDiColtivazione(),
+                prodottoInput.getPrezzo(),
+                venditore,
+                prodottoInput.getCertificazioni(),
+                new Date(),
+                prodottoInput.getQuantita()
+        );
+    }
+
+    /**
+     * recupera tutti i prodotti (inclusi quelli in attesa)
+     * per uno specifico venditore, identificato dalla sua email.
+     */
+    @Transactional(readOnly = true) //in sola lettura
+    public List<Prodotto> getProdottiPerVenditoreEmail(String venditoreEmail) {
+        Venditore venditore = getVenditoreByEmail(venditoreEmail);
+        return prodottoRepository.findByVenditore(venditore);
     }
 
     @Transactional

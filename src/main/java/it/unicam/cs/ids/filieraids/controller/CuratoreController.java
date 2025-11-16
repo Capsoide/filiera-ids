@@ -22,7 +22,7 @@ public class CuratoreController {
     }
 
     @GetMapping("/da-approvare")
-    public List<Prodotto> getContenutiInAttesa() {
+    public List<Contenuto> getContenutiInAttesa() {
         return curatoreService.getContenutiInAttesa();
     }
 

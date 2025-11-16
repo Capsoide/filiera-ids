@@ -14,20 +14,17 @@ public class CuratoreService {
     private final AutorizzazioneRepository autorizzazioneRepository;
     private final ContenutoRepository contenutoRepository;
     private final AttoreRepository attoreRepository;
-    private final ProdottoRepository prodottoRepository;
 
     public CuratoreService(AutorizzazioneRepository autorizzazioneRepository,
                            ContenutoRepository contenutoRepository,
-                           AttoreRepository attoreRepository,
-                           ProdottoRepository prodottoRepository) {
+                           AttoreRepository attoreRepository) {
         this.autorizzazioneRepository = autorizzazioneRepository;
         this.contenutoRepository = contenutoRepository;
         this.attoreRepository = attoreRepository;
-        this.prodottoRepository = prodottoRepository;
     }
 
-    public List<Prodotto> getContenutiInAttesa() {
-        return prodottoRepository.findByStatoConferma(Conferma.ATTESA);
+    public List<Contenuto> getContenutiInAttesa() {
+        return contenutoRepository.findByStatoConferma(Conferma.ATTESA);
     }
 
     private Attore getCuratoreByEmail(String email) {

@@ -1,4 +1,5 @@
 package it.unicam.cs.ids.filieraids.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.*;
@@ -9,9 +10,14 @@ import java.util.*;
 public class Venditore extends Attore {
     private String PIVA;
     private String descrizione;
+
     @OneToMany(mappedBy = "venditore", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Prodotto> prodotti = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "venditoriInvitati", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<Evento> eventiInvitato = new HashSet<>();
 
     public Venditore(String email, String password, String nome, String cognome, String PIVA, String descrizione, Set<Ruolo> ruoli) {
         super(email, password, nome, cognome);
@@ -28,4 +34,12 @@ public class Venditore extends Attore {
     public String getDescrizione() { return descrizione; }
     public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
     @Override public String toString() { return "Venditore [" + getNomeCompleto() + ", P.IVA=" + PIVA + ", ruoli=" + getRuoli() + "]"; }
+
+    public Set<Evento> getEventiInvitato() { // <-- AGGIUNGI
+        return eventiInvitato;
+    }
+
+    public void setEventiInvitato(Set<Evento> eventiInvitato) { // <-- AGGIUNGI
+        this.eventiInvitato = eventiInvitato;
+    }
 }

@@ -47,16 +47,37 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/prodotti/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/curatore/**").hasRole("CURATORE")
-                        .requestMatchers("/api/carrello/**").hasRole("ACQUIRENTE")
-                        .requestMatchers(HttpMethod.POST, "/api/ordini").hasRole("ACQUIRENTE")
-                        .requestMatchers(HttpMethod.GET, "/api/ordini").hasRole("ACQUIRENTE")
-                        .requestMatchers(HttpMethod.POST, "/api/prodotti").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
-                        .requestMatchers("/api/gestore/**").hasRole("GESTORE")
-                        .anyRequest().authenticated()
+                                //endpoint pubblici
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/prodotti/visibili/**").permitAll()
+
+                                //eventi pubblici
+                                .requestMatchers(HttpMethod.GET, "/api/eventi/visibili/**").permitAll()
+
+                                .requestMatchers("/h2-console/**").permitAll()
+
+                                //endpoint protetti
+                                .requestMatchers("/api/curatore/**").hasRole("CURATORE")
+                                .requestMatchers("/api/gestore/**").hasRole("GESTORE")
+
+                                //acquirente
+                                .requestMatchers("/api/carrello/**").hasRole("ACQUIRENTE")
+                                .requestMatchers("/api/ordini/**").hasRole("ACQUIRENTE") // Semplificato
+                                .requestMatchers("/api/prenotazioni/**").hasRole("ACQUIRENTE") // NUOVA REGOLA
+
+                                //venditori
+                                .requestMatchers(HttpMethod.POST, "/api/prodotti").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
+                                .requestMatchers(HttpMethod.GET, "/api/prodotti/miei").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE") // Aggiunto per coerenza
+
+                                //animatore
+                                .requestMatchers(HttpMethod.POST, "/api/eventi").hasRole("ANIMATORE")
+                                .requestMatchers(HttpMethod.DELETE, "/api/eventi/**").hasRole("ANIMATORE")
+                                .requestMatchers(HttpMethod.GET, "/api/eventi/miei").hasRole("ANIMATORE")
+                                .requestMatchers(HttpMethod.GET, "/api/eventi/{id}/prenotazioni").hasRole("ANIMATORE")
+                                .requestMatchers(HttpMethod.POST, "/api/eventi/{eventoId}/invita/{venditoreId}").hasRole("ANIMATORE")
+                                .requestMatchers(HttpMethod.GET, "/api/eventi/{eventoId}/invitati").hasRole("ANIMATORE")
+
+                                .anyRequest().authenticated()
                 )
 
                 .httpBasic(withDefaults())

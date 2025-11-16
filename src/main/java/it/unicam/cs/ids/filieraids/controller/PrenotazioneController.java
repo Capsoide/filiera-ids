@@ -2,14 +2,17 @@ package it.unicam.cs.ids.filieraids.controller;
 
 import it.unicam.cs.ids.filieraids.model.Prenotazione;
 import it.unicam.cs.ids.filieraids.service.PrenotazioneService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
-@RequestMapping("/prenotazioni")
+@RequestMapping("/api/prenotazioni")
+@PreAuthorize("hasRole('ACQUIRENTE')")
 public class PrenotazioneController {
 
     private final PrenotazioneService prenotazioneService;
@@ -18,23 +21,35 @@ public class PrenotazioneController {
         this.prenotazioneService = prenotazioneService;
     }
 
-    @GetMapping
-    public List<Prenotazione> getAllPrenotazioni() {
-        return prenotazioneService.getAllPrenotazioni();
+    @PostMapping("/eventi/{eventoId}")
+    public ResponseEntity<Prenotazione> creaPrenotazione(
+            @PathVariable Long eventoId,
+            @RequestParam int numeroPosti,
+            Authentication authentication) {
+
+        String utenteEmail = authentication.getName();
+        Prenotazione prenotazione = prenotazioneService.creaPrenotazione(eventoId, numeroPosti, utenteEmail);
+        return ResponseEntity.status(HttpStatus.CREATED).body(prenotazione);
     }
 
-    @GetMapping("/{id}")
-    public Optional<Prenotazione> getPrenotazioneById(@PathVariable Long id) {
-        return prenotazioneService.getPrenotazioneById(id);
+    /**
+     * Endpoint per l'Acquirente per vedere le sue prenotazioni.
+     */
+    @GetMapping("/miei")
+    public List<Prenotazione> getMiePrenotazioni(Authentication authentication) {
+        String utenteEmail = authentication.getName();
+        return prenotazioneService.getMiePrenotazioni(utenteEmail);
     }
 
-    @PostMapping
-    public Prenotazione creaPrenotazione(@RequestBody Prenotazione prenotazione) {
-        return prenotazioneService.savePrenotazione(prenotazione);
-    }
 
-    @DeleteMapping("/{id}")
-    public void eliminaPrenotazione(@PathVariable Long id) {
-        prenotazioneService.deletePrenotazione(id);
+    //elimina prenotazione
+    @DeleteMapping("/{prenotazioneId}")
+    public ResponseEntity<String> annullaPrenotazione(
+            @PathVariable Long prenotazioneId,
+            Authentication authentication) {
+
+        String utenteEmail = authentication.getName();
+        prenotazioneService.annullaPrenotazione(prenotazioneId, utenteEmail);
+        return ResponseEntity.ok("Prenotazione " + prenotazioneId + " annullata con successo.");
     }
 }

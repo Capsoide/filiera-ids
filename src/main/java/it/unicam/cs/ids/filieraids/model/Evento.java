@@ -1,11 +1,8 @@
 package it.unicam.cs.ids.filieraids.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Embedded;
-import java.util.Date;
+import jakarta.persistence.*;
+
+import java.util.*;
 
 @Entity
 @Table(name = "eventi")
@@ -15,7 +12,7 @@ public class Evento extends Contenuto {
 
     @ManyToOne
     @JoinColumn(name = "animatore_id")
-    private Attore animatore;  //L'animatore che ha creato l'evento
+    private Attore animatore;
 
     private Date dataEvento;
 
@@ -23,6 +20,14 @@ public class Evento extends Contenuto {
     private Indirizzo indirizzo;
 
     private int postiDisponibili;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "evento_inviti",
+            joinColumns = @JoinColumn(name = "evento_id"),
+            inverseJoinColumns = @JoinColumn(name = "venditore_id")
+    )
+    private Set<Venditore> venditoriInvitati = new HashSet<>();
 
     public Evento() {
         super();
@@ -75,5 +80,23 @@ public class Evento extends Contenuto {
 
     public void setPostiDisponibili(int postiDisponibili) {
         this.postiDisponibili = postiDisponibili;
+    }
+
+    public Set<Venditore> getVenditoriInvitati() {
+        return venditoriInvitati;
+    }
+
+    public void setVenditoriInvitati(Set<Venditore> venditoriInvitati) {
+        this.venditoriInvitati = venditoriInvitati;
+    }
+
+    public void addInvitato(Venditore venditore) {
+        this.venditoriInvitati.add(venditore);
+        venditore.getEventiInvitato().add(this);
+    }
+
+    public void removeInvitato(Venditore venditore) {
+        this.venditoriInvitati.remove(venditore);
+        venditore.getEventiInvitato().remove(this);
     }
 }

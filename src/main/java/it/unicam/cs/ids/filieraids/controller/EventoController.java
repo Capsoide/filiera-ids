@@ -1,15 +1,18 @@
 package it.unicam.cs.ids.filieraids.controller;
 
 import it.unicam.cs.ids.filieraids.model.Evento;
+import it.unicam.cs.ids.filieraids.model.Prenotazione;
+import it.unicam.cs.ids.filieraids.model.Venditore;
 import it.unicam.cs.ids.filieraids.service.EventoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
-@RequestMapping("/eventi")
+@RequestMapping("/api/eventi")
 public class EventoController {
 
     private final EventoService eventoService;
@@ -18,23 +21,69 @@ public class EventoController {
         this.eventoService = eventoService;
     }
 
-    @GetMapping
-    public List<Evento> getAllEventi() {
-        return eventoService.getAllEventi();
+    //endpoint pubblici accessibili da chiunque anche per i non loggati
+
+    @GetMapping("/visibili")
+    public List<Evento> getEventiVisibili() {
+        return eventoService.getEventiVisibili();
     }
 
-    @GetMapping("/{id}")
-    public Optional<Evento> getEventoById(@PathVariable Long id) {
-        return eventoService.getEventoById(id);
+    @GetMapping("/visibili/{id}")
+    public ResponseEntity<Evento> getEventoVisibileById(@PathVariable Long id) {
+        Evento evento = eventoService.getEventoVisibileById(id);
+        return ResponseEntity.ok(evento);
     }
 
+    //endpoint protetti per animatore
     @PostMapping
-    public Evento creaEvento(@RequestBody Evento evento) {
-        return eventoService.saveEvento(evento);
+    @PreAuthorize("hasRole('ANIMATORE')")
+    public Evento creaEvento(@RequestBody Evento evento, Authentication authentication) {
+        String animatoreEmail = authentication.getName();
+        return eventoService.creaEvento(evento, animatoreEmail);
     }
 
     @DeleteMapping("/{id}")
-    public void eliminaEvento(@PathVariable Long id) {
-        eventoService.deleteEvento(id);
+    @PreAuthorize("hasRole('ANIMATORE')")
+    public ResponseEntity<String> eliminaEvento(@PathVariable Long id, Authentication authentication) {
+        String animatoreEmail = authentication.getName();
+        eventoService.eliminaEvento(id, animatoreEmail);
+        return ResponseEntity.ok("Evento " + id + " eliminato correttamente.");
+    }
+
+    @GetMapping("/miei")
+    @PreAuthorize("hasRole('ANIMATORE')")
+    public List<Evento> getMieiEventi(Authentication authentication) {
+        String animatoreEmail = authentication.getName();
+        return eventoService.getMieiEventi(animatoreEmail);
+    }
+
+    //mostra acquirenti prenotati a un evento specifico
+
+    @GetMapping("/{id}/prenotazioni")
+    @PreAuthorize("hasRole('ANIMATORE')")
+    public List<Prenotazione> getPrenotazioniPerEvento(@PathVariable Long id, Authentication authentication) {
+        String animatoreEmail = authentication.getName();
+        return eventoService.getPrenotazioniPerEvento(id, animatoreEmail);
+    }
+
+    //invita Venditore
+
+    @PostMapping("/{eventoId}/invita/{venditoreId}")
+    @PreAuthorize("hasRole('ANIMATORE')")
+    public ResponseEntity<String> invitaVenditore(@PathVariable Long eventoId,
+                                                  @PathVariable Long venditoreId,
+                                                  Authentication authentication) {
+        String animatoreEmail = authentication.getName();
+        eventoService.invitaVenditore(eventoId, venditoreId, animatoreEmail);
+        return ResponseEntity.ok("Venditore " + venditoreId + " invitato all'evento " + eventoId);
+    }
+
+    //mostra Venditori invitati (per Animatore)
+
+    @GetMapping("/{eventoId}/invitati") // <-- AGGIUNGI METODO
+    @PreAuthorize("hasRole('ANIMATORE')")
+    public Set<Venditore> getInvitatiPerEvento(@PathVariable Long eventoId, Authentication authentication) {
+        String animatoreEmail = authentication.getName();
+        return eventoService.getInvitatiPerEvento(eventoId, animatoreEmail);
     }
 }

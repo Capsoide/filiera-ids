@@ -78,8 +78,15 @@ public class FilieraAgricolaApplication {
             gestore.setRuoli(Set.of(Ruolo.GESTORE));
             gestore.setEnabled(true);
 
+            // === CREAZIONE ANIMATORE ===
+            Utente animatore = new Utente("animatore@filiera.com", passwordEncoder.encode("animatore123"),
+                    "Andrea", "Animatore");
+            animatore.setRuoli(Set.of(Ruolo.ANIMATORE));
+            animatore.setEnabled(true);
+
+
             // Salvataggio nel DB
-            utenteRepository.saveAll(List.of(u1, u2, u3, curatore, gestore));
+            utenteRepository.saveAll(List.of(u1, u2, u3, curatore, gestore, animatore));
             venditoreRepository.saveAll(List.of(v1, v2));
 
             System.out.println("Attori di test creati e salvati nel DB.");
@@ -112,6 +119,7 @@ public class FilieraAgricolaApplication {
             System.out.println("Avviare i test API con Postman...");
             System.out.println("Gestore: gestore@filiera.com / gestore123");
             System.out.println("Curatore: curatore@email.com / passCuratore");
+            System.out.println("Animatore: animatore@filiera.com / animatore123");
         };
     }
 }

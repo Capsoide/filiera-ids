@@ -22,7 +22,6 @@ public class EventoController {
     }
 
     //endpoint pubblici accessibili da chiunque anche per i non loggati
-
     @GetMapping("/visibili")
     public List<Evento> getEventiVisibili() {
         return eventoService.getEventiVisibili();
@@ -58,7 +57,6 @@ public class EventoController {
     }
 
     //mostra acquirenti prenotati a un evento specifico
-
     @GetMapping("/{id}/prenotazioni")
     @PreAuthorize("hasRole('ANIMATORE')")
     public List<Prenotazione> getPrenotazioniPerEvento(@PathVariable Long id, Authentication authentication) {
@@ -80,7 +78,7 @@ public class EventoController {
 
     //mostra Venditori invitati (per Animatore)
 
-    @GetMapping("/{eventoId}/invitati") // <-- AGGIUNGI METODO
+    @GetMapping("/{eventoId}/invitati")
     @PreAuthorize("hasRole('ANIMATORE')")
     public Set<Venditore> getInvitatiPerEvento(@PathVariable Long eventoId, Authentication authentication) {
         String animatoreEmail = authentication.getName();

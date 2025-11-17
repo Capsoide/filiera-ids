@@ -1,4 +1,4 @@
-package it.unicam.cs.ids.filieraids.model.DTO;
+package it.unicam.cs.ids.filieraids.DTO.Request;
 
 import it.unicam.cs.ids.filieraids.model.Attore;
 import it.unicam.cs.ids.filieraids.model.Indirizzo;

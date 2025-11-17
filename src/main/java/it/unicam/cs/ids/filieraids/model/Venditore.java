@@ -1,4 +1,5 @@
 package it.unicam.cs.ids.filieraids.model;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -15,9 +16,9 @@ public class Venditore extends Attore {
     @JsonManagedReference
     private List<Prodotto> prodotti = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "venditoriInvitati", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "venditore", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private Set<Evento> eventiInvitato = new HashSet<>();
+    private List<Invito> invitiRicevuti = new ArrayList<>();
 
     public Venditore(String email, String password, String nome, String cognome, String PIVA, String descrizione, Set<Ruolo> ruoli) {
         super(email, password, nome, cognome);
@@ -26,6 +27,7 @@ public class Venditore extends Attore {
         setRuoli(ruoli);
     }
     public Venditore() { super(); }
+
     public List <Prodotto> getProdotti() { return prodotti; }
     public void addProdotto(Prodotto prodotto) { if(prodotto != null && !prodotti.contains(prodotto)) { prodotti.add(prodotto); prodotto.setVenditore(this); } }
     public void removeProdotto(Prodotto prodotto) { prodotti.remove(prodotto); prodotto.setVenditore(null); }
@@ -33,13 +35,9 @@ public class Venditore extends Attore {
     public void setPIVA(String PIVA) { this.PIVA = PIVA; }
     public String getDescrizione() { return descrizione; }
     public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
+
+    public List<Invito> getInvitiRicevuti() { return invitiRicevuti; }
+    public void setInvitiRicevuti(List<Invito> invitiRicevuti) { this.invitiRicevuti = invitiRicevuti; }
+
     @Override public String toString() { return "Venditore [" + getNomeCompleto() + ", P.IVA=" + PIVA + ", ruoli=" + getRuoli() + "]"; }
-
-    public Set<Evento> getEventiInvitato() { // <-- AGGIUNGI
-        return eventiInvitato;
-    }
-
-    public void setEventiInvitato(Set<Evento> eventiInvitato) { // <-- AGGIUNGI
-        this.eventiInvitato = eventiInvitato;
-    }
 }

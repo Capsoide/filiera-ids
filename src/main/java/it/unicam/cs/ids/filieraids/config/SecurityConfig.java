@@ -50,10 +50,7 @@ public class SecurityConfig {
                                 //endpoint pubblici
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/prodotti/visibili/**").permitAll()
-
-                                //eventi pubblici
                                 .requestMatchers(HttpMethod.GET, "/api/eventi/visibili/**").permitAll()
-
                                 .requestMatchers("/h2-console/**").permitAll()
 
                                 //endpoint protetti
@@ -68,6 +65,7 @@ public class SecurityConfig {
                                 //venditori
                                 .requestMatchers(HttpMethod.POST, "/api/prodotti").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
                                 .requestMatchers(HttpMethod.GET, "/api/prodotti/miei").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE") // Aggiunto per coerenza
+                                .requestMatchers(HttpMethod.GET, "/api/venditori/**").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
 
                                 //animatore
                                 .requestMatchers(HttpMethod.POST, "/api/eventi").hasRole("ANIMATORE")

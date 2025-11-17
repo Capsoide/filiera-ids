@@ -3,13 +3,15 @@ package it.unicam.cs.ids.filieraids.controller;
 import it.unicam.cs.ids.filieraids.model.Evento;
 import it.unicam.cs.ids.filieraids.model.Prenotazione;
 import it.unicam.cs.ids.filieraids.model.Venditore;
+import it.unicam.cs.ids.filieraids.model.Invito; // Importa Invito
 import it.unicam.cs.ids.filieraids.service.EventoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/eventi")
@@ -21,7 +23,6 @@ public class EventoController {
         this.eventoService = eventoService;
     }
 
-    //endpoint pubblici accessibili da chiunque anche per i non loggati
     @GetMapping("/visibili")
     public List<Evento> getEventiVisibili() {
         return eventoService.getEventiVisibili();
@@ -33,7 +34,6 @@ public class EventoController {
         return ResponseEntity.ok(evento);
     }
 
-    //endpoint protetti per animatore
     @PostMapping
     @PreAuthorize("hasRole('ANIMATORE')")
     public Evento creaEvento(@RequestBody Evento evento, Authentication authentication) {
@@ -56,15 +56,12 @@ public class EventoController {
         return eventoService.getMieiEventi(animatoreEmail);
     }
 
-    //mostra acquirenti prenotati a un evento specifico
     @GetMapping("/{id}/prenotazioni")
     @PreAuthorize("hasRole('ANIMATORE')")
     public List<Prenotazione> getPrenotazioniPerEvento(@PathVariable Long id, Authentication authentication) {
         String animatoreEmail = authentication.getName();
         return eventoService.getPrenotazioniPerEvento(id, animatoreEmail);
     }
-
-    //invita Venditore
 
     @PostMapping("/{eventoId}/invita/{venditoreId}")
     @PreAuthorize("hasRole('ANIMATORE')")
@@ -76,11 +73,9 @@ public class EventoController {
         return ResponseEntity.ok("Venditore " + venditoreId + " invitato all'evento " + eventoId);
     }
 
-    //mostra Venditori invitati (per Animatore)
-
     @GetMapping("/{eventoId}/invitati")
     @PreAuthorize("hasRole('ANIMATORE')")
-    public Set<Venditore> getInvitatiPerEvento(@PathVariable Long eventoId, Authentication authentication) {
+    public List<Invito> getInvitatiPerEvento(@PathVariable Long eventoId, Authentication authentication) {
         String animatoreEmail = authentication.getName();
         return eventoService.getInvitatiPerEvento(eventoId, animatoreEmail);
     }

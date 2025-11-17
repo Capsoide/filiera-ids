@@ -5,11 +5,12 @@ import it.unicam.cs.ids.filieraids.repository.AttoreRepository;
 import it.unicam.cs.ids.filieraids.repository.EventoRepository;
 import it.unicam.cs.ids.filieraids.repository.PrenotazioneRepository;
 import it.unicam.cs.ids.filieraids.repository.VenditoreRepository;
+import it.unicam.cs.ids.filieraids.repository.InvitoRepository; // Import aggiunto
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
 
 @Service
 public class EventoService {
@@ -18,15 +19,18 @@ public class EventoService {
     private final AttoreRepository attoreRepository;
     private final PrenotazioneRepository prenotazioneRepository;
     private final VenditoreRepository venditoreRepository;
+    private final InvitoRepository invitoRepository; // Campo aggiunto
 
     public EventoService(EventoRepository eventoRepository,
                          AttoreRepository attoreRepository,
                          PrenotazioneRepository prenotazioneRepository,
-                         VenditoreRepository venditoreRepository) {
+                         VenditoreRepository venditoreRepository,
+                         InvitoRepository invitoRepository) { // Costruttore aggiornato
         this.eventoRepository = eventoRepository;
         this.attoreRepository = attoreRepository;
         this.prenotazioneRepository = prenotazioneRepository;
         this.venditoreRepository = venditoreRepository;
+        this.invitoRepository = invitoRepository;
     }
 
     private Attore getAttoreByEmail(String email) {
@@ -39,7 +43,6 @@ public class EventoService {
         Evento evento = eventoRepository.findById(eventoId)
                 .orElseThrow(() -> new RuntimeException("Evento non trovato con ID: " + eventoId));
 
-        //controllo che l'animatore loggato sia il proprietario dell'evento
         if (!evento.getAnimatore().equals(animatore)) {
             throw new SecurityException("Accesso negato: puoi gestire solo i tuoi eventi.");
         }
@@ -48,8 +51,6 @@ public class EventoService {
 
     @Transactional
     public Evento creaEvento(Evento eventoInput, String animatoreEmail) {
-
-        //cerca e verifica il ruolo dell'attore
         Attore animatore = getAttoreByEmail(animatoreEmail);
         if (!animatore.getRuoli().contains(Ruolo.ANIMATORE)) {
             throw new SecurityException("L'utente non ha il ruolo di ANIMATORE");
@@ -68,27 +69,23 @@ public class EventoService {
 
     @Transactional
     public void eliminaEvento(Long eventoId, String animatoreEmail) {
-        Attore animatore = getAttoreByEmail(animatoreEmail);
         Evento evento = getEventoIfOwner(eventoId, animatoreEmail);
 
-        //elimina automaticamente tutte le prenotazioni associate a questo evento
         prenotazioneRepository.deleteByEvento(evento);
 
-        //evento eliminato
-        eventoRepository.delete(evento);
+        // Elimina anche gli inviti associati
+        List<Invito> inviti = invitoRepository.findByEvento(evento);
+        invitoRepository.deleteAll(inviti);
 
-        System.out.println("Evento " + eventoId + " e relative prenotazioni eliminati da " + animatoreEmail);
+        eventoRepository.delete(evento);
+        System.out.println("Evento " + eventoId + " eliminato da " + animatoreEmail);
     }
 
-
-
-    //restituisco gli eventi approvati
     @Transactional(readOnly = true)
     public List<Evento> getEventiVisibili() {
         return eventoRepository.findByStatoConferma(Conferma.APPROVATO);
     }
 
-    //restituisce un evento specifico per id solo se è approvato
     @Transactional(readOnly = true)
     public Evento getEventoVisibileById(Long id) {
         Evento evento = eventoRepository.findById(id)
@@ -100,7 +97,6 @@ public class EventoService {
         return evento;
     }
 
-    //restituisce tutti gli eventi dell'animatore loggato
     @Transactional(readOnly = true)
     public List<Evento> getMieiEventi(String animatoreEmail) {
         Attore animatore = getAttoreByEmail(animatoreEmail);
@@ -110,15 +106,12 @@ public class EventoService {
         return eventoRepository.findByAnimatore(animatore);
     }
 
-    //mostra all'animatore chi si è prenotato al suo evento
     @Transactional(readOnly = true)
     public List<Prenotazione> getPrenotazioniPerEvento(Long eventoId, String animatoreEmail) {
-        // Verifica che l'animatore sia il proprietario dell'evento
         Evento evento = getEventoIfOwner(eventoId, animatoreEmail);
         return prenotazioneRepository.findByEvento(evento);
     }
 
-    //invita venditore ad un evento
     @Transactional
     public void invitaVenditore(Long eventoId, Long venditoreId, String animatoreEmail) {
         Evento evento = getEventoIfOwner(eventoId, animatoreEmail);
@@ -126,19 +119,21 @@ public class EventoService {
         Venditore venditore = venditoreRepository.findById(venditoreId)
                 .orElseThrow(() -> new RuntimeException("Venditore non trovato con ID: " + venditoreId));
 
-        //controllo se l'evento è stato eliminato
         if (evento.getStatoConferma() == Conferma.RIFIUTATO) {
             throw new IllegalStateException("Impossibile invitare a un evento rifiutato.");
         }
 
-        evento.addInvitato(venditore);
-        eventoRepository.save(evento);
+        if (invitoRepository.findByEventoAndVenditore(evento, venditore).isPresent()) {
+            throw new IllegalStateException("Il venditore è già stato invitato a questo evento.");
+        }
+
+        Invito invito = new Invito(evento, venditore);
+        invitoRepository.save(invito);
     }
 
-    //vedi Venditori invitati
     @Transactional(readOnly = true)
-    public Set<Venditore> getInvitatiPerEvento(Long eventoId, String animatoreEmail) {
+    public List<Invito> getInvitatiPerEvento(Long eventoId, String animatoreEmail) {
         Evento evento = getEventoIfOwner(eventoId, animatoreEmail);
-        return evento.getVenditoriInvitati();
+        return invitoRepository.findByEvento(evento);
     }
 }

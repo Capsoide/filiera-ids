@@ -59,12 +59,12 @@ public class SecurityConfig {
 
                                 //acquirente
                                 .requestMatchers("/api/carrello/**").hasRole("ACQUIRENTE")
-                                .requestMatchers("/api/ordini/**").hasRole("ACQUIRENTE") // Semplificato
-                                .requestMatchers("/api/prenotazioni/**").hasRole("ACQUIRENTE") // NUOVA REGOLA
+                                .requestMatchers("/api/ordini/**").hasRole("ACQUIRENTE")
+                                .requestMatchers("/api/prenotazioni/**").hasRole("ACQUIRENTE")
 
                                 //venditori
                                 .requestMatchers(HttpMethod.POST, "/api/prodotti").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
-                                .requestMatchers(HttpMethod.GET, "/api/prodotti/miei").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE") // Aggiunto per coerenza
+                                .requestMatchers(HttpMethod.GET, "/api/prodotti/miei").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
                                 .requestMatchers(HttpMethod.GET, "/api/venditori/**").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
 
                                 //animatore

@@ -31,7 +31,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    //creo authmanager
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder =
@@ -47,35 +46,39 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
 
-                                //endpoint pubblici
-                                .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/prodotti/visibili/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/eventi/visibili/**").permitAll()
-                                .requestMatchers("/h2-console/**").permitAll()
+                        //ENDPOINT PUBBLICI
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/prodotti/visibili/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/eventi/visibili/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
 
-                                //endpoint protetti
-                                .requestMatchers("/api/curatore/**").hasRole("CURATORE")
-                                .requestMatchers("/api/gestore/**").hasRole("GESTORE")
+                        //ENDPOINT PROTETTI (Curatore/Gestore)
+                        .requestMatchers("/api/curatore/**").hasRole("CURATORE")
+                        .requestMatchers("/api/gestore/**").hasRole("GESTORE")
 
-                                //acquirente
-                                .requestMatchers("/api/carrello/**").hasRole("ACQUIRENTE")
-                                .requestMatchers("/api/ordini/**").hasRole("ACQUIRENTE")
-                                .requestMatchers("/api/prenotazioni/**").hasRole("ACQUIRENTE")
+                        //VENDITORI
+                        .requestMatchers("/api/ordini/venditore").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
 
-                                //venditori
-                                .requestMatchers(HttpMethod.POST, "/api/prodotti").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
-                                .requestMatchers(HttpMethod.GET, "/api/prodotti/miei").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
-                                .requestMatchers(HttpMethod.GET, "/api/venditori/**").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
+                        .requestMatchers(HttpMethod.POST, "/api/prodotti").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
+                        .requestMatchers(HttpMethod.GET, "/api/prodotti/miei").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
+                        .requestMatchers(HttpMethod.GET, "/api/venditori/**").hasAnyRole("PRODUTTORE", "DISTRIBUTORE", "TRASFORMATORE")
 
-                                //animatore
-                                .requestMatchers(HttpMethod.POST, "/api/eventi").hasRole("ANIMATORE")
-                                .requestMatchers(HttpMethod.DELETE, "/api/eventi/**").hasRole("ANIMATORE")
-                                .requestMatchers(HttpMethod.GET, "/api/eventi/miei").hasRole("ANIMATORE")
-                                .requestMatchers(HttpMethod.GET, "/api/eventi/{id}/prenotazioni").hasRole("ANIMATORE")
-                                .requestMatchers(HttpMethod.POST, "/api/eventi/{eventoId}/invita/{venditoreId}").hasRole("ANIMATORE")
-                                .requestMatchers(HttpMethod.GET, "/api/eventi/{eventoId}/invitati").hasRole("ANIMATORE")
 
-                                .anyRequest().authenticated()
+                        //ACQUIRENTE
+                        .requestMatchers("/api/carrello/**").hasRole("ACQUIRENTE")
+                        .requestMatchers("/api/prenotazioni/**").hasRole("ACQUIRENTE")
+                        .requestMatchers("/api/ordini/**").hasRole("ACQUIRENTE")
+
+
+                        //ANIMATORE
+                        .requestMatchers(HttpMethod.POST, "/api/eventi").hasRole("ANIMATORE")
+                        .requestMatchers(HttpMethod.DELETE, "/api/eventi/**").hasRole("ANIMATORE")
+                        .requestMatchers(HttpMethod.GET, "/api/eventi/miei").hasRole("ANIMATORE")
+                        .requestMatchers(HttpMethod.GET, "/api/eventi/{id}/prenotazioni").hasRole("ANIMATORE")
+                        .requestMatchers(HttpMethod.POST, "/api/eventi/{eventoId}/invita/{venditoreId}").hasRole("ANIMATORE")
+                        .requestMatchers(HttpMethod.GET, "/api/eventi/{eventoId}/invitati").hasRole("ANIMATORE")
+
+                        .anyRequest().authenticated()
                 )
 
                 .httpBasic(withDefaults())

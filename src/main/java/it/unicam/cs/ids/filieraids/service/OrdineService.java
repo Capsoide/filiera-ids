@@ -5,6 +5,7 @@ import it.unicam.cs.ids.filieraids.repository.CarrelloRepository;
 import it.unicam.cs.ids.filieraids.repository.OrdineRepository;
 import it.unicam.cs.ids.filieraids.repository.ProdottoRepository;
 import it.unicam.cs.ids.filieraids.repository.UtenteRepository;
+import it.unicam.cs.ids.filieraids.repository.VenditoreRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,17 +20,21 @@ public class OrdineService {
     private final ProdottoService prodottoService;
     private final UtenteRepository utenteRepository;
     private final CarrelloService carrelloService;
+    private final VenditoreRepository venditoreRepository;
+
 
     public OrdineService(OrdineRepository ordineRepository,
                          ProdottoRepository prodottoRepository,
                          ProdottoService prodottoService,
                          UtenteRepository utenteRepository,
-                         CarrelloService carrelloService) {
+                         CarrelloService carrelloService,
+                         VenditoreRepository venditoreRepository) {
         this.ordineRepository = ordineRepository;
         this.prodottoRepository = prodottoRepository;
         this.prodottoService = prodottoService;
         this.utenteRepository = utenteRepository;
         this.carrelloService = carrelloService;
+        this.venditoreRepository = venditoreRepository;
     }
 
     private Utente getUtenteByEmail(String email) {
@@ -163,5 +168,15 @@ public class OrdineService {
             }
             ordineRepository.save(ordineDB);
             System.out.println("Stato ordine ID " + ordineDB.getId() + " aggiornato a: " + nuovoStato);
+        }
+
+        @Transactional(readOnly = true)
+        public List<Ordine> getOrdiniPerVenditore(String venditoreEmail) {
+            //cerca il venditore dall'email
+            Venditore venditore = venditoreRepository.findByEmail(venditoreEmail)
+                    .orElseThrow(() -> new UsernameNotFoundException("Venditore non trovato: " + venditoreEmail));
+
+            //chiama la query del repository
+            return ordineRepository.findByProdottoVenditore(venditore);
         }
     }

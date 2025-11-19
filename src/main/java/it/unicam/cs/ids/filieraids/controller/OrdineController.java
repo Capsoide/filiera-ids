@@ -3,6 +3,7 @@ package it.unicam.cs.ids.filieraids.controller;
 import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.service.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import java.util.*;
@@ -34,5 +35,12 @@ public class OrdineController {
     @GetMapping("/tutti")
     public List<Ordine> getTuttiGliOrdini() {
         return ordineService.getTuttiGliOrdini();
+    }
+
+    @GetMapping("/venditore")
+    @PreAuthorize("hasAnyRole('PRODUTTORE', 'DISTRIBUTORE', 'TRASFORMATORE')")
+    public List<Ordine> getOrdiniVenditore(Authentication authentication) {
+        String venditoreEmail = authentication.getName();
+        return ordineService.getOrdiniPerVenditore(venditoreEmail);
     }
 }

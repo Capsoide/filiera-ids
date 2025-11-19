@@ -5,7 +5,8 @@ import it.unicam.cs.ids.filieraids.repository.AttoreRepository;
 import it.unicam.cs.ids.filieraids.repository.EventoRepository;
 import it.unicam.cs.ids.filieraids.repository.PrenotazioneRepository;
 import it.unicam.cs.ids.filieraids.repository.VenditoreRepository;
-import it.unicam.cs.ids.filieraids.repository.InvitoRepository; // Import aggiunto
+import it.unicam.cs.ids.filieraids.repository.InvitoRepository;
+import it.unicam.cs.ids.filieraids.repository.AutorizzazioneRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,18 +20,21 @@ public class EventoService {
     private final AttoreRepository attoreRepository;
     private final PrenotazioneRepository prenotazioneRepository;
     private final VenditoreRepository venditoreRepository;
-    private final InvitoRepository invitoRepository; // Campo aggiunto
+    private final InvitoRepository invitoRepository;
+    private final AutorizzazioneRepository autorizzazioneRepository;
 
     public EventoService(EventoRepository eventoRepository,
                          AttoreRepository attoreRepository,
                          PrenotazioneRepository prenotazioneRepository,
                          VenditoreRepository venditoreRepository,
-                         InvitoRepository invitoRepository) { // Costruttore aggiornato
+                         InvitoRepository invitoRepository,
+                         AutorizzazioneRepository autorizzazioneRepository) {
         this.eventoRepository = eventoRepository;
         this.attoreRepository = attoreRepository;
         this.prenotazioneRepository = prenotazioneRepository;
         this.venditoreRepository = venditoreRepository;
         this.invitoRepository = invitoRepository;
+        this.autorizzazioneRepository = autorizzazioneRepository;
     }
 
     private Attore getAttoreByEmail(String email) {
@@ -73,9 +77,12 @@ public class EventoService {
 
         prenotazioneRepository.deleteByEvento(evento);
 
-        // Elimina anche gli inviti associati
+        //elimina gli inviti associati
         List<Invito> inviti = invitoRepository.findByEvento(evento);
         invitoRepository.deleteAll(inviti);
+
+        //elimina autorizzazioni
+        autorizzazioneRepository.deleteByContenutoDaApprovare(evento);
 
         eventoRepository.delete(evento);
         System.out.println("Evento " + eventoId + " eliminato da " + animatoreEmail);

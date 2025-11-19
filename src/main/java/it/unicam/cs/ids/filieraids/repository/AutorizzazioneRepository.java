@@ -6,5 +6,7 @@ import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.service.*;
 
 @Repository
-public interface AutorizzazioneRepository extends JpaRepository<Autorizzazione, Long> { }
+public interface AutorizzazioneRepository extends JpaRepository<Autorizzazione, Long> {
+    void deleteByContenutoDaApprovare(Contenuto contenuto);
+}
 

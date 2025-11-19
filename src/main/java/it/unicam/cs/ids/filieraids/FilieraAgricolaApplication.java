@@ -34,10 +34,8 @@ public class FilieraAgricolaApplication {
             System.out.println("\n--- SETUP: CREAZIONE SERVICE ---");
             System.out.println("Service e Repository iniettati da Spring.");
 
-            // === 1. CREAZIONE ATTORI ===
             System.out.println("\n--- SETUP: CREAZIONE ATTORI ---");
 
-            // ... (Creazione Acquirenti u1, u2, u3) ...
             String passNicola = passwordEncoder.encode("pass123");
             Utente u1 = new Utente("nicola.capancioni@studenti.unicam.com", passNicola, "Nicola", "Capancioni");
             u1.addIndirizzo(new Indirizzo("Via Morale da Fermo", "7", "Fermo", "63900", "Marche"));
@@ -54,8 +52,6 @@ public class FilieraAgricolaApplication {
             u3.setEnabled(true);
             u3.setRuoli(Set.of(Ruolo.ACQUIRENTE));
 
-
-            // ... (Creazione Venditori v1, v2) ...
             Venditore v1 = new Venditore(
                     "paolo.verdi@email.com", passwordEncoder.encode("passV1"), "Paolo", "Verdi",
                     "111222333", "Azienda Agricola Verdi", Set.of(Ruolo.PRODUTTORE)
@@ -68,46 +64,35 @@ public class FilieraAgricolaApplication {
             );
             v2.setEnabled(true);
 
-            // ... (Creazione Curatore) ...
             Utente curatore = new Utente("curatore@email.com", passwordEncoder.encode("passCuratore"), "Giulia", "Neri");
             curatore.setRuoli(Set.of(Ruolo.CURATORE));
             curatore.setEnabled(true);
 
-            // ... (Creazione Gestore) ...
             Utente gestore = new Utente("gestore@filiera.com", passwordEncoder.encode("gestore123"), "Admin", "Gestore");
             gestore.setRuoli(Set.of(Ruolo.GESTORE));
             gestore.setEnabled(true);
 
-            // === CREAZIONE ANIMATORE ===
             Utente animatore = new Utente("animatore@filiera.com", passwordEncoder.encode("animatore123"),
                     "Andrea", "Animatore");
             animatore.setRuoli(Set.of(Ruolo.ANIMATORE));
             animatore.setEnabled(true);
 
-
-            // Salvataggio nel DB
             utenteRepository.saveAll(List.of(u1, u2, u3, curatore, gestore, animatore));
             venditoreRepository.saveAll(List.of(v1, v2));
 
             System.out.println("Attori di test creati e salvati nel DB.");
 
-            // === 2. CREAZIONE PRODOTTI ===
             System.out.println("\n--- SETUP: CREAZIONE PRODOTTI ---");
             Prodotto p1_miele = prodottoService.creaProdotto(new Date(), "Miele Bio", "Miele Bio", "Naturale", 7.50, v1, List.of("BIO"), new Date(), 20);
             Prodotto p2_farina = prodottoService.creaProdotto(new Date(), "Farina 00", "Farina 00", "Tradizionale", 3.20, v1, List.of("KM0"), new Date(), 50);
             Prodotto p3_olio = prodottoService.creaProdotto(new Date(), "Olio EVO", "Olio EVO", "Biologico", 12.00, v2, List.of("BIO"), new Date(), 30);
-            Prodotto p4_vino = prodottoService.creaProdotto(new Date(), "Vino Rosso", "Vino Rosso", "DOC", 9.00, v1, List.of("DOC"), new Date(), 40); // In Attesa
+            Prodotto p4_vino = prodottoService.creaProdotto(new Date(), "Vino Rosso", "Vino Rosso", "DOC", 9.00, v1, List.of("DOC"), new Date(), 40);
 
-            // === 3. APPROVAZIONE CONTENUTI ===
             System.out.println("\n--- SETUP: APPROVAZIONE CONTENUTI ---");
 
-            // --- INIZIO CORREZIONE ---
-            // Ora passiamo ID e email, non gli oggetti
             curatoreService.approvaContenuto(p1_miele.getId(), curatore.getEmail(), "OK");
             curatoreService.approvaContenuto(p2_farina.getId(), curatore.getEmail(), "OK");
             curatoreService.approvaContenuto(p3_olio.getId(), curatore.getEmail(), "OK");
-            // p4_vino rimane in ATTESA per i test API
-            // --- FINE CORREZIONE ---
 
             System.out.println("\n--- Catalogo Prodotti Visibili ---");
             prodottoService.getProdottiVisibili().forEach(p -> System.out.println(" - " + p.getNome() + " (Stock: " + p.getQuantita() + ")"));

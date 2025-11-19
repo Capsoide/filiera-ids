@@ -34,7 +34,7 @@ public class ProdottoController {
     }
 
 
-     //Endpoint protetto per un Venditore per vedere tutti i suoi prodotti,
+     //endpoint protetto per un Venditore per vedere tutti i suoi prodotti,
      //inclusi quelli in stato ATTESA.
     @GetMapping("/miei")
     @PreAuthorize("hasAnyRole('PRODUTTORE', 'DISTRIBUTORE', 'TRASFORMATORE')")
@@ -50,6 +50,26 @@ public class ProdottoController {
         String venditoreEmail = authentication.getName();
 
         return prodottoService.creaProdottoPerVenditore(prodotto, venditoreEmail);
+    }
+
+    //endpoint protetto per modificare prodotto
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('PRODUTTORE', 'DISTRIBUTORE', 'TRASFORMATORE')")
+    public ResponseEntity<Prodotto> modificaProdotto(@PathVariable Long id,
+                                                     @RequestBody Prodotto prodotto,
+                                                     Authentication authentication) {
+        String venditoreEmail = authentication.getName();
+        Prodotto aggiornato = prodottoService.modificaProdotto(id, prodotto, venditoreEmail);
+        return ResponseEntity.ok(aggiornato);
+    }
+
+    //endpoint protetto per eliminare prodotto
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('PRODUTTORE', 'DISTRIBUTORE', 'TRASFORMATORE')")
+    public ResponseEntity<String> eliminaProdotto(@PathVariable Long id, Authentication authentication) {
+        String venditoreEmail = authentication.getName();
+        prodottoService.eliminaProdotto(id, venditoreEmail);
+        return ResponseEntity.ok("Prodotto eliminato con successo.");
     }
 
 }

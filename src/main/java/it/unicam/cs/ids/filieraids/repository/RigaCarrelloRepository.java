@@ -9,4 +9,7 @@ import java.util.*;
 @Repository
 public interface RigaCarrelloRepository extends JpaRepository<RigaCarrello, Long> {
     Optional<RigaCarrello> findByCarrelloAndProdotto(Carrello carrello, Prodotto prodotto);
+
+    //trova tutte le righe che contengono un certo prodotto
+    List<RigaCarrello> findByProdotto(Prodotto prodotto);
 }

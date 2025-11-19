@@ -49,6 +49,10 @@ public class ProdottoService {
     @Transactional
     public Prodotto modificaProdotto(Long id, Prodotto datiAggiornati, String venditoreEmail) {
         Prodotto prodotto = getProdottoIfOwner(id, venditoreEmail);
+        //la quantita non aggiornata non puo essere negativa
+        if (datiAggiornati.getQuantita() < 0) {
+            throw new IllegalArgumentException("Errore: La quantità non può essere negativa.");
+        }
 
         //aggiorno i dati nome, descrizione, quantita e metodo di coltivazione (campi base)
         prodotto.setNome(datiAggiornati.getNome());

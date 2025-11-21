@@ -4,10 +4,7 @@ import it.unicam.cs.ids.filieraids.dto.request.RegistrazioneUtenteDTO;
 import it.unicam.cs.ids.filieraids.dto.request.RegistrazioneVenditoreDTO;
 import it.unicam.cs.ids.filieraids.dto.request.ProdottoRichiestaDTO;
 import it.unicam.cs.ids.filieraids.dto.request.EventoRichiestaDTO;
-import it.unicam.cs.ids.filieraids.dto.response.AttoreRispostaDTO;
-import it.unicam.cs.ids.filieraids.dto.response.InvitoRispostaDTO;
-import it.unicam.cs.ids.filieraids.dto.response.ProdottoRispostaDTO;
-import it.unicam.cs.ids.filieraids.dto.response.EventoRispostaDTO;
+import it.unicam.cs.ids.filieraids.dto.response.*;
 import it.unicam.cs.ids.filieraids.model.*;
 import org.springframework.stereotype.Component;
 
@@ -120,4 +117,18 @@ public class DTOMapper {
                 i.getDataInvito()
         );
     }
+
+    public PrenotazioneRispostaDTO toPrenotazioneDTO(Prenotazione p) {
+        return new PrenotazioneRispostaDTO(
+                p.getId(),
+                p.getEvento().getId(),
+                p.getEvento().getNome(),
+                p.getEvento().getDataEvento(),
+                p.getUtente().getId(),
+                p.getUtente().getNomeCompleto(),
+                p.getNumeroPostiPrenotati(),
+                p.getDataPrenotazione()
+        );
+    }
+
 }

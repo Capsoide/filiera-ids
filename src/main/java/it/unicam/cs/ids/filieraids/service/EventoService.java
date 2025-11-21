@@ -1,12 +1,7 @@
 package it.unicam.cs.ids.filieraids.service;
 
 import it.unicam.cs.ids.filieraids.model.*;
-import it.unicam.cs.ids.filieraids.repository.AttoreRepository;
-import it.unicam.cs.ids.filieraids.repository.EventoRepository;
-import it.unicam.cs.ids.filieraids.repository.PrenotazioneRepository;
-import it.unicam.cs.ids.filieraids.repository.VenditoreRepository;
-import it.unicam.cs.ids.filieraids.repository.InvitoRepository;
-import it.unicam.cs.ids.filieraids.repository.AutorizzazioneRepository;
+import it.unicam.cs.ids.filieraids.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +17,7 @@ public class EventoService {
     private final VenditoreRepository venditoreRepository;
     private final InvitoRepository invitoRepository;
     private final AutorizzazioneRepository autorizzazioneRepository;
+
 
     public EventoService(EventoRepository eventoRepository,
                          AttoreRepository attoreRepository,
@@ -143,4 +139,5 @@ public class EventoService {
         Evento evento = getEventoIfOwner(eventoId, animatoreEmail);
         return invitoRepository.findByEvento(evento);
     }
+
 }

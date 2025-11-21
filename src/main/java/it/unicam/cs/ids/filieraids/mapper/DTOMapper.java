@@ -8,6 +8,7 @@ import it.unicam.cs.ids.filieraids.dto.response.*;
 import it.unicam.cs.ids.filieraids.model.*;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component //fa in modo che la classe possa essere iniettata nei controller
@@ -118,6 +119,7 @@ public class DTOMapper {
         );
     }
 
+    //mapper per prenotazione
     public PrenotazioneRispostaDTO toPrenotazioneDTO(Prenotazione p) {
         return new PrenotazioneRispostaDTO(
                 p.getId(),
@@ -128,6 +130,32 @@ public class DTOMapper {
                 p.getUtente().getNomeCompleto(),
                 p.getNumeroPostiPrenotati(),
                 p.getDataPrenotazione()
+        );
+    }
+
+
+    //mapper per carrello
+    public RigaCarrelloRispostaDTO toRigaCarrelloRispostaDTO(RigaCarrello r) {
+        return new RigaCarrelloRispostaDTO(
+                r.getId(),
+                r.getProdotto().getId(),
+                r.getProdotto().getNome(),
+                r.getQuantita(),
+                r.getPrezzoUnitarioSnapshot(),
+                r.getPrezzoTotaleRiga()
+        );
+    }
+
+    public CarrelloRispostaDTO toCarrelloDTO(Carrello c) {
+        List<RigaCarrelloRispostaDTO> righe = c.getContenuti()
+                .stream()
+                .map(this::toRigaCarrelloRispostaDTO)
+                .toList();
+
+        return new CarrelloRispostaDTO(
+                c.getId(),
+                c.getPrezzoTotale(),
+                righe
         );
     }
 

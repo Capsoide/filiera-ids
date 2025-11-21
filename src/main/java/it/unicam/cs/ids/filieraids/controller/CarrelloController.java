@@ -1,5 +1,7 @@
 package it.unicam.cs.ids.filieraids.controller;
 
+import it.unicam.cs.ids.filieraids.dto.response.CarrelloRispostaDTO;
+import it.unicam.cs.ids.filieraids.mapper.DTOMapper;
 import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.service.*;
 import org.springframework.http.ResponseEntity;
@@ -13,41 +15,47 @@ import java.util.*;
 public class CarrelloController {
 
     private final CarrelloService carrelloService;
+    private final DTOMapper mapper;
 
-    public CarrelloController(CarrelloService carrelloService) {
+    public CarrelloController(CarrelloService carrelloService, DTOMapper mapper) {
         this.carrelloService = carrelloService;
+        this.mapper = mapper;
     }
 
     //endpoint protetto: ottiene il carrello dell'utente loggato
     @GetMapping
-    public Carrello getCarrello(Authentication authentication) {
-        String userEmail = authentication.getName();
-        return carrelloService.getCarrelloByEmail(userEmail);
+    public ResponseEntity<CarrelloRispostaDTO> getCarrello(Authentication authentication) {
+        String email = authentication.getName();
+        Carrello c = carrelloService.getCarrelloByEmail(email);
+        return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 
     //endpoint protetto: aggiunge prodotto al carrello dell''utente loggato
     @PostMapping("/aggiungi")
-    public Carrello aggiungiAlCarrello(Authentication authentication,
-                                       @RequestParam Long prodottoId,
-                                       @RequestParam int quantita) {
-        String userEmail = authentication.getName();
-        return carrelloService.aggiungiAlCarrelloByEmail(userEmail, prodottoId, quantita);
+    public ResponseEntity<CarrelloRispostaDTO> aggiungi(Authentication authentication,
+                                                        @RequestParam Long prodottoId,
+                                                        @RequestParam int quantita) {
+        String email = authentication.getName();
+        Carrello c = carrelloService.aggiungiAlCarrelloByEmail(email, prodottoId, quantita);
+        return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 
 
     //endpoint protetto: diminuisce la quantità di un prodotto
     @PostMapping("/diminuisci")
-    public Carrello diminuisciDalCarrello(Authentication  authentication,
-                                          @RequestParam Long prodottoId,
-                                          @RequestParam int quantita) {
-        String userEmail = authentication.getName();
-        return carrelloService.diminuisciDalCarrelloByEmail(userEmail, prodottoId, quantita);
+    public ResponseEntity<CarrelloRispostaDTO> diminuisci(Authentication authentication,
+                                                          @RequestParam Long prodottoId,
+                                                          @RequestParam int quantita) {
+        String email = authentication.getName();
+        Carrello c = carrelloService.diminuisciDalCarrelloByEmail(email, prodottoId, quantita);
+        return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 
     //endpoint protetto: svuota carrello del loggato
     @DeleteMapping("/svuota")
-    public Carrello svuotaCarrello(Authentication authentication) {
-        String userEmail = authentication.getName();
-        return carrelloService.svuotaCarrelloByEmail(userEmail);
+    public ResponseEntity<CarrelloRispostaDTO> svuota(Authentication authentication) {
+        String email = authentication.getName();
+        Carrello c = carrelloService.svuotaCarrelloByEmail(email);
+        return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 }

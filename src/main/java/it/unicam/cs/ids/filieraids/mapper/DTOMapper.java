@@ -5,14 +5,10 @@ import it.unicam.cs.ids.filieraids.dto.request.RegistrazioneVenditoreDTO;
 import it.unicam.cs.ids.filieraids.dto.request.ProdottoRichiestaDTO;
 import it.unicam.cs.ids.filieraids.dto.request.EventoRichiestaDTO;
 import it.unicam.cs.ids.filieraids.dto.response.AttoreRispostaDTO;
+import it.unicam.cs.ids.filieraids.dto.response.InvitoRispostaDTO;
 import it.unicam.cs.ids.filieraids.dto.response.ProdottoRispostaDTO;
 import it.unicam.cs.ids.filieraids.dto.response.EventoRispostaDTO;
-import it.unicam.cs.ids.filieraids.model.Attore;
-import it.unicam.cs.ids.filieraids.model.Ruolo;
-import it.unicam.cs.ids.filieraids.model.Prodotto;
-import it.unicam.cs.ids.filieraids.model.Evento;
-import it.unicam.cs.ids.filieraids.model.Utente;
-import it.unicam.cs.ids.filieraids.model.Venditore;
+import it.unicam.cs.ids.filieraids.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -109,6 +105,17 @@ public class DTOMapper {
                 e.getStatoConferma().name(),
                 e.getAnimatore().getId(),
                 e.getAnimatore().getNomeCompleto()
+        );
+    }
+
+    public InvitoRispostaDTO toInvitoDTO(Invito invito) {
+        return new InvitoRispostaDTO(
+                invito.getId(),
+                invito.getEvento().getId(),
+                invito.getEvento().getNome(),
+                invito.getVenditore().getId(),
+                invito.getVenditore().getNomeCompleto(),
+                invito.getStato().name()
         );
     }
 }

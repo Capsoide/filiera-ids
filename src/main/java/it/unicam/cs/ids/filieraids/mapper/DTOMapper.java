@@ -3,11 +3,14 @@ package it.unicam.cs.ids.filieraids.mapper;
 import it.unicam.cs.ids.filieraids.dto.request.RegistrazioneUtenteDTO;
 import it.unicam.cs.ids.filieraids.dto.request.RegistrazioneVenditoreDTO;
 import it.unicam.cs.ids.filieraids.dto.request.ProdottoRichiestaDTO;
+import it.unicam.cs.ids.filieraids.dto.request.EventoRichiestaDTO;
 import it.unicam.cs.ids.filieraids.dto.response.AttoreRispostaDTO;
 import it.unicam.cs.ids.filieraids.dto.response.ProdottoRispostaDTO;
+import it.unicam.cs.ids.filieraids.dto.response.EventoRispostaDTO;
 import it.unicam.cs.ids.filieraids.model.Attore;
 import it.unicam.cs.ids.filieraids.model.Ruolo;
 import it.unicam.cs.ids.filieraids.model.Prodotto;
+import it.unicam.cs.ids.filieraids.model.Evento;
 import it.unicam.cs.ids.filieraids.model.Utente;
 import it.unicam.cs.ids.filieraids.model.Venditore;
 import org.springframework.stereotype.Component;
@@ -80,6 +83,32 @@ public class DTOMapper {
                 p.getStatoConferma().name(),
                 p.getVenditore().getId(),
                 p.getVenditore().getNomeCompleto()
+        );
+    }
+
+    // Dentro DTOMapper
+
+    public Evento fromEventoDTO(EventoRichiestaDTO dto) {
+        Evento e = new Evento();
+        e.setNome(dto.nome());
+        e.setDescrizione(dto.descrizione());
+        e.setDataEvento(dto.dataEvento());
+        e.setIndirizzo(dto.indirizzo());
+        e.setPostiDisponibili(dto.postiDisponibili());
+        return e;
+    }
+
+    public EventoRispostaDTO toEventoDTO(Evento e) {
+        return new EventoRispostaDTO(
+                e.getId(),
+                e.getNome(),
+                e.getDescrizione(),
+                e.getDataEvento(),
+                e.getIndirizzo(),
+                e.getPostiDisponibili(),
+                e.getStatoConferma().name(),
+                e.getAnimatore().getId(),
+                e.getAnimatore().getNomeCompleto()
         );
     }
 }

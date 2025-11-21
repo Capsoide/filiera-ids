@@ -1,4 +1,4 @@
-package it.unicam.cs.ids.filieraids.DTO.Request;
+package it.unicam.cs.ids.filieraids.dto;
 
 import it.unicam.cs.ids.filieraids.model.Indirizzo;
 import it.unicam.cs.ids.filieraids.model.Pagamento;

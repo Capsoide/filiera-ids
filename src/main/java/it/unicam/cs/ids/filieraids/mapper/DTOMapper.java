@@ -66,6 +66,7 @@ public class DTOMapper {
         return p;
     }
 
+    //da entità a response DTO
     public ProdottoRispostaDTO toProdottoDTO(Prodotto p) {
         return new ProdottoRispostaDTO(
                 p.getId(),

@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-@Component //component fa in modo che la classe possa essere iniettata nei controller
+@Component //fa in modo che la classe possa essere iniettata nei controller
 public class DTOMapper {
 
-    //daa dto a entità (eequest)
+    //daa dto a entità (request)
     public Utente fromRegistrazioneUtenteDTO(RegistrazioneUtenteDTO dto) {
         Utente utente = new Utente(dto.email(), dto.password(), dto.nome(), dto.cognome());
         if (dto.indirizzo() != null) {

@@ -1,66 +1,101 @@
 package it.unicam.cs.ids.filieraids.controller;
 
+import it.unicam.cs.ids.filieraids.dto.request.EventoRichiestaDTO;
+import it.unicam.cs.ids.filieraids.dto.response.EventoRispostaDTO;
 import it.unicam.cs.ids.filieraids.model.Evento;
+import it.unicam.cs.ids.filieraids.model.Invito;
 import it.unicam.cs.ids.filieraids.model.Prenotazione;
-import it.unicam.cs.ids.filieraids.model.Venditore;
-import it.unicam.cs.ids.filieraids.model.Invito; // Importa Invito
 import it.unicam.cs.ids.filieraids.service.EventoService;
+import it.unicam.cs.ids.filieraids.mapper.DTOMapper;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.*;
 
 @RestController
 @RequestMapping("/api/eventi")
 public class EventoController {
 
     private final EventoService eventoService;
+    private final DTOMapper mapper;
 
-    public EventoController(EventoService eventoService) {
+    public EventoController(EventoService eventoService, DTOMapper mapper) {
         this.eventoService = eventoService;
+        this.mapper = mapper;
     }
 
+    //endpoint pubblici
+
+    //ottiene tutti gli eventi approvati e visibili
     @GetMapping("/visibili")
-    public List<Evento> getEventiVisibili() {
-        return eventoService.getEventiVisibili();
+    public ResponseEntity<List<EventoRispostaDTO>> getEventiVisibili() {
+        List<Evento> eventi = eventoService.getEventiVisibili();
+        // Converti lista Entità -> lista DTO usando uno stream
+        List<EventoRispostaDTO> dtoResponse = eventi.stream()
+                .map(mapper::toEventoDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoResponse);
     }
 
-    @GetMapping("/visibili/{id}")
-    public ResponseEntity<Evento> getEventoVisibileById(@PathVariable Long id) {
-        Evento evento = eventoService.getEventoVisibileById(id);
-        return ResponseEntity.ok(evento);
+    //ottiene un singolo evento per ID
+    @GetMapping("/{id}")
+    public ResponseEntity<EventoRispostaDTO> getEventoById(@PathVariable Long id){
+        Evento e = eventoService.getEventoVisibileById(id); // Nota: getEventoById include già il controllo visibilità/esistenza
+        if(e == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(mapper.toEventoDTO(e));
     }
 
+    //endpoint protetti Animatore
+
+    //crea un nuovo evento
     @PostMapping
     @PreAuthorize("hasRole('ANIMATORE')")
-    public Evento creaEvento(@RequestBody Evento evento, Authentication authentication) {
+    public ResponseEntity<EventoRispostaDTO> creaEvento(@Valid @RequestBody EventoRichiestaDTO dto, Authentication authentication){
+        //Da Map DTO a Entità
+        Evento eventoDaCreare = mapper.fromEventoDTO(dto);
         String animatoreEmail = authentication.getName();
-        return eventoService.creaEvento(evento, animatoreEmail);
+
+        //chiamo il servizio
+        Evento eventoCreato = eventoService.creaEvento(eventoDaCreare, animatoreEmail);
+
+        //da Map Entity a Response DTO
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toEventoDTO(eventoCreato));
     }
 
+    //ottiene gli eventi dell'animatore loggato
+    @GetMapping("/miei")
+    @PreAuthorize("hasRole('ANIMATORE')")
+    public ResponseEntity<List<EventoRispostaDTO>> getMieiEventi(Authentication authentication) {
+        String animatoreEmail = authentication.getName();
+        List<Evento> mieiEventi = eventoService.getMieiEventi(animatoreEmail);
+        //converte lista Entità a lista DTO
+        List<EventoRispostaDTO> dtoResponse = mieiEventi.stream()
+                .map(mapper::toEventoDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoResponse);
+    }
+
+    //elimina un evento
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ANIMATORE')")
     public ResponseEntity<String> eliminaEvento(@PathVariable Long id, Authentication authentication) {
         String animatoreEmail = authentication.getName();
         eventoService.eliminaEvento(id, animatoreEmail);
-        return ResponseEntity.ok("Evento " + id + " eliminato correttamente.");
-    }
-
-    @GetMapping("/miei")
-    @PreAuthorize("hasRole('ANIMATORE')")
-    public List<Evento> getMieiEventi(Authentication authentication) {
-        String animatoreEmail = authentication.getName();
-        return eventoService.getMieiEventi(animatoreEmail);
+        return ResponseEntity.ok("Evento eliminato con successo.");
     }
 
     @GetMapping("/{id}/prenotazioni")
     @PreAuthorize("hasRole('ANIMATORE')")
-    public List<Prenotazione> getPrenotazioniPerEvento(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<List<Prenotazione>> getPrenotazioniPerEvento(@PathVariable Long id, Authentication authentication) {
         String animatoreEmail = authentication.getName();
-        return eventoService.getPrenotazioniPerEvento(id, animatoreEmail);
+        return ResponseEntity.ok(eventoService.getPrenotazioniPerEvento(id, animatoreEmail));
     }
 
     @PostMapping("/{eventoId}/invita/{venditoreId}")
@@ -75,8 +110,8 @@ public class EventoController {
 
     @GetMapping("/{eventoId}/invitati")
     @PreAuthorize("hasRole('ANIMATORE')")
-    public List<Invito> getInvitatiPerEvento(@PathVariable Long eventoId, Authentication authentication) {
+    public ResponseEntity<List<Invito>> getInvitatiPerEvento(@PathVariable Long eventoId, Authentication authentication) {
         String animatoreEmail = authentication.getName();
-        return eventoService.getInvitatiPerEvento(eventoId, animatoreEmail);
+        return ResponseEntity.ok(eventoService.getInvitatiPerEvento(eventoId, animatoreEmail));
     }
 }

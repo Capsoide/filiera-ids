@@ -1,10 +1,13 @@
 package it.unicam.cs.ids.filieraids.dto.response;
+import java.util.*;
 
 public record InvitoRispostaDTO(
         Long id,
         Long eventoId,
-        String eventoNome,
+        String nomeEvento,
+        Date dataEvento,
         Long venditoreId,
-        String venditoreNomeCompleto,
-        String statoInvito
+        String nomeVenditore,
+        String stato,
+        Date dataInvito
 ) {}

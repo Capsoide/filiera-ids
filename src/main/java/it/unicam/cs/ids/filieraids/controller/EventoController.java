@@ -2,6 +2,7 @@ package it.unicam.cs.ids.filieraids.controller;
 
 import it.unicam.cs.ids.filieraids.dto.request.EventoRichiestaDTO;
 import it.unicam.cs.ids.filieraids.dto.response.EventoRispostaDTO;
+import it.unicam.cs.ids.filieraids.dto.response.InvitoRispostaDTO;
 import it.unicam.cs.ids.filieraids.model.Evento;
 import it.unicam.cs.ids.filieraids.model.Invito;
 import it.unicam.cs.ids.filieraids.model.Prenotazione;
@@ -110,8 +111,15 @@ public class EventoController {
 
     @GetMapping("/{eventoId}/invitati")
     @PreAuthorize("hasRole('ANIMATORE')")
-    public ResponseEntity<List<Invito>> getInvitatiPerEvento(@PathVariable Long eventoId, Authentication authentication) {
+    public ResponseEntity<List<InvitoRispostaDTO>> getInvitatiPerEvento(@PathVariable Long eventoId, Authentication authentication) {
         String animatoreEmail = authentication.getName();
-        return ResponseEntity.ok(eventoService.getInvitatiPerEvento(eventoId, animatoreEmail));
+        List<Invito> inviti = eventoService.getInvitatiPerEvento(eventoId, animatoreEmail);
+
+        //da entità a dto
+        List<InvitoRispostaDTO> dtoResponse = inviti.stream()
+                .map(mapper::toInvitoDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtoResponse);
     }
 }

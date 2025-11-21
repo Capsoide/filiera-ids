@@ -108,14 +108,16 @@ public class DTOMapper {
         );
     }
 
-    public InvitoRispostaDTO toInvitoDTO(Invito invito) {
+    public InvitoRispostaDTO toInvitoDTO(Invito i) {
         return new InvitoRispostaDTO(
-                invito.getId(),
-                invito.getEvento().getId(),
-                invito.getEvento().getNome(),
-                invito.getVenditore().getId(),
-                invito.getVenditore().getNomeCompleto(),
-                invito.getStato().name()
+                i.getId(),
+                i.getEvento().getId(),
+                i.getEvento().getNome(),
+                i.getEvento().getDataEvento(),
+                i.getVenditore().getId(),
+                i.getVenditore().getNomeCompleto(),
+                i.getStato().name(),
+                i.getDataInvito()
         );
     }
 }

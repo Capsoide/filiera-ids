@@ -159,4 +159,29 @@ public class DTOMapper {
         );
     }
 
+    private RigaOrdineRispostaDTO toRigaOrdineDTO(RigaCarrello riga) {
+        return new RigaOrdineRispostaDTO(
+                riga.getProdotto().getId(),
+                riga.getProdotto().getNome(),
+                riga.getPrezzoUnitarioSnapshot(),
+                riga.getQuantita(),
+                riga.getPrezzoTotaleRiga()
+        );
+    }
+
+    public OrdineRispostaDTO toOrdineDTO(Ordine ordine) {
+        List<RigaOrdineRispostaDTO> elementiDTO = ordine.getCarrello().getContenuti().stream()
+                .map(this::toRigaOrdineDTO)
+                .collect(Collectors.toList());
+
+        return new OrdineRispostaDTO(
+                ordine.getId(),
+                ordine.getDataOrdine(),
+                ordine.getStatoOrdine().name(),
+                ordine.getTotale(),
+                ordine.getIndirizzoDiFatturazione(),
+                elementiDTO
+        );
+    }
+
 }

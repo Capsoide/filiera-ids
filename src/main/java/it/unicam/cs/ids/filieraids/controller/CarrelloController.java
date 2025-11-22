@@ -5,6 +5,7 @@ import it.unicam.cs.ids.filieraids.mapper.DTOMapper;
 import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.service.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
@@ -12,6 +13,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/carrello")
+@PreAuthorize("hasRole('ACQUIRENTE')")
 public class CarrelloController {
 
     private final CarrelloService carrelloService;

@@ -32,9 +32,11 @@ public class EventoController {
         this.mapper = mapper;
     }
 
-    //endpoint pubblici
-
-    //ottiene tutti gli eventi approvati e visibili
+    /**
+     * Endpoint pubblico che permette di ottenere tutti gli eventi approvati e visibili.
+     *
+     * @return      la lista degli eventi approvati e visibili, in formato DTO
+     */
     @GetMapping("/visibili")
     public ResponseEntity<List<EventoRispostaDTO>> getEventiVisibili() {
         List<Evento> eventi = eventoService.getEventiVisibili();
@@ -45,7 +47,12 @@ public class EventoController {
         return ResponseEntity.ok(dtoResponse);
     }
 
-    //ottiene un singolo evento per ID
+    /**
+     * Endpoint pubblico che permette di ottenere un singolo evento tramite il suo id.
+     *
+     * @param id    l'id dell'evento da ottenere
+     * @return      l'evento corrispondente all'id, in formato DTO
+     */
     @GetMapping("/{id}")
     public ResponseEntity<EventoRispostaDTO> getEventoById(@PathVariable Long id){
         Evento e = eventoService.getEventoVisibileById(id); // Nota: getEventoById include già il controllo visibilità/esistenza
@@ -55,9 +62,13 @@ public class EventoController {
         return ResponseEntity.ok(mapper.toEventoDTO(e));
     }
 
-    //endpoint protetti Animatore
-
-    //crea un nuovo evento
+    /**
+     * Endpoint protetto che permette all'animatore loggato di creare un nuovo evento.
+     *
+     * @param dto               i dati necessari per la creazione dell'evento (inviati nel body della richiesta)
+     * @param authentication    rappresenta l'animatore attualmente loggato
+     * @return                  l'evento creato, in formato DTO
+     */
     @PostMapping
     @PreAuthorize("hasRole('ANIMATORE')")
     public ResponseEntity<EventoRispostaDTO> creaEvento(@Valid @RequestBody EventoRichiestaDTO dto, Authentication authentication){
@@ -72,7 +83,12 @@ public class EventoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toEventoDTO(eventoCreato));
     }
 
-    //ottiene gli eventi dell'animatore loggato
+    /**
+     * Endpoint protetto che permette all'animatore loggato di ottenere la lista dei propri eventi.
+     *
+     * @param authentication    rappresenta l'animatore attualmente loggato
+     * @return                  la lista degli eventi dell'animatore loggato, in formato DTO
+     */
     @GetMapping("/miei")
     @PreAuthorize("hasRole('ANIMATORE')")
     public ResponseEntity<List<EventoRispostaDTO>> getMieiEventi(Authentication authentication) {
@@ -85,7 +101,13 @@ public class EventoController {
         return ResponseEntity.ok(dtoResponse);
     }
 
-    //elimina un evento
+    /**
+     * Endpoint protetto che permette all'animatore loggato di eliminare un evento da lui creato.
+     *
+     * @param id                l'id dell'evento da eliminare
+     * @param authentication    rappresenta l'animatore attualmente loggato
+     * @return                  messaggio di conferma dell'avvenuta eliminazione
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ANIMATORE')")
     public ResponseEntity<String> eliminaEvento(@PathVariable Long id, Authentication authentication) {
@@ -94,6 +116,14 @@ public class EventoController {
         return ResponseEntity.ok("Evento eliminato con successo.");
     }
 
+    /**
+     * Endpoint protetto che permette all'animatore loggato di ottenere tutte le prenotazioni
+     * relative ad uno dei suoi eventi.
+     *
+     * @param id                l'id dell'evento da cui ottenere le prenotazioni
+     * @param authentication    rappresenta lanimatore attualmente loggatto
+     * @return                  la lista delle prenotazioni dell'evento specificato
+     */
     @GetMapping("/{id}/prenotazioni")
     @PreAuthorize("hasRole('ANIMATORE')")
     public ResponseEntity<List<Prenotazione>> getPrenotazioniPerEvento(@PathVariable Long id, Authentication authentication) {
@@ -134,6 +164,14 @@ public class EventoController {
                 .body(mapper.toPrenotazioneDTO(p));
     }*/
 
+    /**
+     * Endpoint protetto che permette all'animatore loggato di invitare un venditore ad uno dei propri eventi.
+     *
+     * @param eventoId          l'id dell'evento a cui invitare il venditore
+     * @param venditoreId       l'id del venditore da invitare
+     * @param authentication    rappresenta l'animatore attualmente loggato
+     * @return                  messaggio di conferma dell'avvenuto invito
+     */
     @PostMapping("/{eventoId}/invita/{venditoreId}")
     @PreAuthorize("hasRole('ANIMATORE')")
     public ResponseEntity<String> invitaVenditore(@PathVariable Long eventoId,
@@ -144,6 +182,14 @@ public class EventoController {
         return ResponseEntity.ok("Venditore " + venditoreId + " invitato all'evento " + eventoId);
     }
 
+    /**
+     * Endpoint protetto che permette all'animatore loggato di ottenere la lista dei venditori
+     * invitati ad uno dei propri eventi.
+     *
+     * @param eventoId          l'id dell'evento di cui ottenere gli invitati
+     * @param authentication    rappresenta l'animatore attualmente loggato
+     * @return                  la lista degli inviti relativi all'evento specificato, in formato dto
+     */
     @GetMapping("/{eventoId}/invitati")
     @PreAuthorize("hasRole('ANIMATORE')")
     public ResponseEntity<List<InvitoRispostaDTO>> getInvitatiPerEvento(@PathVariable Long eventoId, Authentication authentication) {

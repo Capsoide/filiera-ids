@@ -25,7 +25,11 @@ public class ProdottoController {
         this.mapper = mapper;
     }
 
-    //endpoint pubblico: ottiene tutti i prodotti approvati e visibili (quindi tutto il catalogo)
+    /**
+     * Endpoint pubblico che permette di ottenere tutti i prodotti approvati e visibili.
+     *
+     * @return  la lista dei prodotti approvati e visibili.
+     */
     @GetMapping("/visibili")
     public ResponseEntity<List<ProdottoRispostaDTO>> getProdottiVisibili() {
         List<Prodotto> prodotti = prodottoService.getProdottiVisibili();
@@ -37,7 +41,12 @@ public class ProdottoController {
         return ResponseEntity.ok(dtoResponse);
     }
 
-    //endpoint pubblico: ottiene tutti i prodotti approvati e visibili
+    /**
+     * Endpoint pubblico che permette di ottenere un prodotto approvato tramite l'id.
+     *
+     * @param id    l'id del prodotto da ottenere
+     * @return      il prodotto corrispondente all'id
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ProdottoRispostaDTO> getProdottoById(@PathVariable Long id){
         Prodotto p = prodottoService.getProdottoById(id);
@@ -47,9 +56,13 @@ public class ProdottoController {
         return ResponseEntity.ok(mapper.toProdottoDTO(p));  //ritorna le entità convertite in DTO
     }
 
-
-     //endpoint protetto per un Venditore per vedere tutti i suoi prodotti,
-     //inclusi quelli in stato ATTESA.
+    /**
+     * Endpoint protetto che permette al venditore loggato di ottenere tutti i propri prodotti,
+     * sia approvati sia in attesa.
+     *
+     * @param authentication    rappresenta il venditore loggato
+     * @return                  la lista dei prodotti del venditore loggato
+     */
      @GetMapping("/miei")
      @PreAuthorize("hasAnyRole('PRODUTTORE', 'DISTRIBUTORE', 'TRASFORMATORE')")
      public ResponseEntity<List<ProdottoRispostaDTO>> getMieiProdotti(Authentication authentication) {
@@ -62,7 +75,13 @@ public class ProdottoController {
          return ResponseEntity.ok(dtoResponse);
      }
 
-    //endpoint protetto per venditore: crea un nuovo prodotto per l'utente loggato
+    /**
+     * Endpoint protetto che permette al venditore loggato di creare un nuovo prodotto.
+     *
+     * @param dto               i dati per il prodotto da creare, in formato dto
+     * @param authentication    rappresenta il venditore loggato
+     * @return                  il prodotto creato
+     */
     @PostMapping
     @PreAuthorize("hasAnyRole('PRODUTTORE', 'DISTRIBUTORE', 'TRASFORMATORE')")
     public ResponseEntity<ProdottoRispostaDTO> creaProdotto(@Valid @RequestBody ProdottoRichiestaDTO dto, Authentication authentication){
@@ -75,7 +94,14 @@ public class ProdottoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toProdottoDTO(prodottoCreato));
     }
 
-    //endpoint protetto per modificare prodotto
+    /**
+     * Endpoint protetto che permette al venditore loggato di modificare un prodotto pubblicato.
+     *
+     * @param id                l'id del prodotto da modificare
+     * @param dto               i dati da modificare
+     * @param authentication    rappresenta il venditore loggato
+     * @return                  il prodotto modificato
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('PRODUTTORE', 'DISTRIBUTORE', 'TRASFORMATORE')")
     public ResponseEntity<ProdottoRispostaDTO> modificaProdotto(@PathVariable Long id,
@@ -92,7 +118,13 @@ public class ProdottoController {
         return ResponseEntity.ok(mapper.toProdottoDTO(prodottoAggiornato));
     }
 
-    //endpoint protetto per eliminare prodotto
+    /**
+     * Endpoint protetto che permette al venditore loggato di eliminare un prodotto pubblicato.
+     *
+     * @param id                l'id del prodotto da modificare
+     * @param authentication    rappresenta il venditore loggato
+     * @return                  messaggio di conferma dell'eliminazione
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('PRODUTTORE', 'DISTRIBUTORE', 'TRASFORMATORE')")
     public ResponseEntity<String> eliminaProdotto(@PathVariable Long id,

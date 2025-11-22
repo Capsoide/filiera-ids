@@ -30,7 +30,7 @@ public class VenditoreController {
      * Endpoint protetto che permette al venditore loggato di ottenere gli inviti ricevuti.
      *
      * @param authentication    rappresenta il venditore loggato
-     * @return                  la lista degli inviti ricevuti
+     * @return                  la lista degli inviti ricevuti, in formato DTO
      */
     @GetMapping("/inviti")
     public ResponseEntity<List<InvitoRispostaDTO>> getMieiInviti(Authentication authentication) {

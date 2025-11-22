@@ -1,4 +1,4 @@
-package it.unicam.cs.ids.filieraids.service;        //porcodddiomerda
+package it.unicam.cs.ids.filieraids.service;
 
 import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.repository.AttoreRepository;

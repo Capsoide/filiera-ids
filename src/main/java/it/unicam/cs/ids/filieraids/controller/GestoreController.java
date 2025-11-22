@@ -19,25 +19,37 @@ public class GestoreController {
         this.gestoreService = gestoreService;
     }
 
-    //Visualizza tutte le richieste in ATTESA
+    /**
+     * Endpoint protetto che permette al gestore di visualizzare tutte le richieste del ruolo in attesa.
+     *
+     * @return  la lista delle richieste in attesa
+     */
     @GetMapping("/richieste-ruolo")
     public List<RichiestaRuolo> getRichieste() {
         return gestoreService.getRichiesteInAttesa();
     }
 
-    //Approva richiesta
+    /**
+     * Endpoint protetto che permette al gestore di approvare una richiesta in attesa.
+     *
+     * @param id    l'id della richiesta da approvare
+     * @return      messaggio di conferma dell'approvazione della richiesta
+     */
     @PostMapping("/richieste-ruolo/{id}/approva")
     public ResponseEntity<String> approvaRichiesta(@PathVariable Long id){
         gestoreService.approvaRichiesta(id);
         return ResponseEntity.ok("Richiesta con " + id + " approvata con successo");
     }
 
-    //Rifuta richiesta
+    /**
+     * Endpoint protetto che permette al gestore loggato di rifiutare una richiesta in attesa.
+     *
+     * @param id    l'id della richiesta da rifiutare
+     * @return      messaggio di conferma di rifuto della richiesta
+     */
     @PostMapping("/richieste-ruolo/{id}/rifiuta")
     public ResponseEntity<String> rifutaRichiesta(@PathVariable Long id){
         gestoreService.rifiutaRichiesta(id);
         return ResponseEntity.ok("Richiesta con " + id + " rifutata");
     }
-
-
 }

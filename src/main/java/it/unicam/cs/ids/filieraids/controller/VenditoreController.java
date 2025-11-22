@@ -26,6 +26,12 @@ public class VenditoreController {
         this.mapper = mapper;
     }
 
+    /**
+     * Endpoint protetto che permette al venditore loggato di ottenere gli inviti ricevuti.
+     *
+     * @param authentication    rappresenta il venditore loggato
+     * @return                  la lista degli inviti ricevuti
+     */
     @GetMapping("/inviti")
     public ResponseEntity<List<InvitoRispostaDTO>> getMieiInviti(Authentication authentication) {
         List<Invito> inviti = venditoreService.getMieiInviti(authentication.getName());
@@ -37,6 +43,14 @@ public class VenditoreController {
         return ResponseEntity.ok(dtoResponse);
     }
 
+    /**
+     * Endpoint protetto che permette al venditore loggato di rispondere ad un invito ricevuto.
+     *
+     * @param invitoId          l'id dell'invito a cui rispondere
+     * @param dto               azione di accettazione o rifuto
+     * @param authentication    rappresenta il venditore loggato
+     * @return                  messaggio di conferma dell'accettazione/rifiuto
+     */
     @PutMapping("/inviti/{invitoId}/rispondi")
     public ResponseEntity<String> rispondiAInvito(
             @PathVariable Long invitoId,

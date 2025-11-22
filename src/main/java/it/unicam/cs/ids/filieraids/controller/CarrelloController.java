@@ -24,7 +24,12 @@ public class CarrelloController {
         this.mapper = mapper;
     }
 
-    //endpoint protetto: ottiene il carrello dell'utente loggato
+    /**
+     * Endpoint protetto che permette di ottenere il carrello per l'utente loggato.
+     *
+     * @param authentication    rappresenta l'utente attualmente loggato
+     * @return                  carrello dell'utente loggato, in formato DTO
+     */
     @GetMapping
     public ResponseEntity<CarrelloRispostaDTO> getCarrello(Authentication authentication) {
         String email = authentication.getName();
@@ -32,7 +37,14 @@ public class CarrelloController {
         return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 
-    //endpoint protetto: aggiunge prodotto al carrello dell''utente loggato
+    /**
+     * Endpoint protetto che permette all'utente loggato di aggiungere un prodotto al carrello.
+     *
+     * @param authentication    rappresenta l'utente attualmente loggato
+     * @param prodottoId        id del prodotto da aggiugere al carrello
+     * @param quantita          quantità del prodotto da aggiungere
+     * @return                  carrello aggiornato dell'utente loggato, in formato DTO
+     */
     @PostMapping("/aggiungi")
     public ResponseEntity<CarrelloRispostaDTO> aggiungi(Authentication authentication,
                                                         @RequestParam Long prodottoId,
@@ -42,8 +54,15 @@ public class CarrelloController {
         return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 
-
-    //endpoint protetto: diminuisce la quantità di un prodotto
+    /**
+     * Endpoint protetto che permette all'utente loggatto di diminuire la quantità
+     * di un prodotto nel proprio carrello.
+     *
+     * @param authentication    rappresneta lì'utente attualmente loggato
+     * @param prodottoId        id del prodotto di cui diminuire la quantità
+     * @param quantita          quantità da sottrarre dal prodotto
+     * @return                  carrello aggiornato dell'utente loggato, in formato DTO
+     */
     @PostMapping("/diminuisci")
     public ResponseEntity<CarrelloRispostaDTO> diminuisci(Authentication authentication,
                                                           @RequestParam Long prodottoId,
@@ -53,7 +72,12 @@ public class CarrelloController {
         return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 
-    //endpoint protetto: svuota carrello del loggato
+    /**
+     * Endpoint protetto che permette all'utente loggato di svuotare il carrello.
+     *
+     * @param authentication    rappresenta l'utente attualmente loggato
+     * @return                  carrello svuotato dell'utente loggato, in formato DTO
+     */
     @DeleteMapping("/svuota")
     public ResponseEntity<CarrelloRispostaDTO> svuota(Authentication authentication) {
         String email = authentication.getName();

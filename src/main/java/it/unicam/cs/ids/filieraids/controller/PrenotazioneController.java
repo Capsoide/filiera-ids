@@ -21,6 +21,15 @@ public class PrenotazioneController {
         this.prenotazioneService = prenotazioneService;
     }
 
+    /**
+     * Endpoint protetto che permette all'acquirente loggato di effettuare una prenotazione
+     * per un determinato evento.
+     *
+     * @param eventoId          l'id dell'evento per cui si vuole effettuare la prenotazione
+     * @param numeroPosti       numero di posti richiesti pnella prenotazione
+     * @param authentication    rappresenta l'acquirente loggato
+     * @return                  la prenotazione effettuata
+     */
     @PostMapping("/eventi/{eventoId}")
     public ResponseEntity<Prenotazione> creaPrenotazione(
             @PathVariable Long eventoId,
@@ -33,7 +42,10 @@ public class PrenotazioneController {
     }
 
     /**
-     * Endpoint per l'Acquirente per vedere le sue prenotazioni.
+     * Endpoint protetto che permette all'acquirente loggato di ottenere le sue prenotazioni.
+     *
+     * @param authentication    rappresenta l'acquirente loggato
+     * @return                  la lista delle prenotazioni
      */
     @GetMapping("/miei")
     public List<Prenotazione> getMiePrenotazioni(Authentication authentication) {
@@ -42,7 +54,13 @@ public class PrenotazioneController {
     }
 
 
-    //elimina prenotazione
+    /**
+     * Endpoint protetto che permette all'acquirente loggato di annullare una determinata prenotazione.
+     *
+     * @param prenotazioneId    l'ide della prenotazione da annullare
+     * @param authentication    rappresenta l'acquirente loggato
+     * @return                  messaggio di conferma dell'annullamento della prenotazione
+     */
     @DeleteMapping("/{prenotazioneId}")
     public ResponseEntity<String> annullaPrenotazione(
             @PathVariable Long prenotazioneId,

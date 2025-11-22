@@ -21,12 +21,23 @@ public class CuratoreController {
         this.curatoreService = curatoreService;
     }
 
+    /**
+     * Endpoint protetto che permette al curatore di ottenere tutti i contenuti in stato di attesa.
+     *
+     * @return  la lista dei contenuti in stato di attesa
+     */
     @GetMapping("/da-approvare")
     public List<Contenuto> getContenutiInAttesa() {
         return curatoreService.getContenutiInAttesa();
     }
 
-    //endpoint protetto per curatore: approvazione contenuto
+    /**
+     * Endpoint protetto che permette al curatore loggato di approvare un contenuto.
+     *
+     * @param contenutoId       l'id del contenuto da approvare
+     * @param authentication    rappresenta il curatore loggato
+     * @return                  messaggio di conferma dell'approvazione del contenuto
+     */
     @PostMapping("/approva/{contenutoId}")
     public ResponseEntity<String> approvaContenuto(@PathVariable Long contenutoId, Authentication authentication) {
 
@@ -36,7 +47,14 @@ public class CuratoreController {
         return ResponseEntity.ok("Contenuto " + contenutoId + " approvato.");
     }
 
-    //endpoint protetto per curatore: rifiuta contenuto
+    /**
+     * Endpoint protetto che permette al curatore loggato di rifiutare un contenuto in stato di attesa.
+     *
+     * @param contenutoId       l'id del contenuto da rifiutare
+     * @param authentication    rappresenta il curatore loggato
+     * @param motivo            motivo del rifiuto del contenuto
+     * @return                  messaggio di conferma del rifuto del contenuto
+     */
     @PostMapping("/rifiuta/{contenutoId}")
     public ResponseEntity<String> rifiutaContenuto(@PathVariable Long contenutoId,
                                                    Authentication authentication,

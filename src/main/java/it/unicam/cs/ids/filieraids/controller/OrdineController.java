@@ -26,7 +26,12 @@ public class OrdineController {
         this.mapper = mapper;
     }
 
-    //endpoint protetto: crea ordine per utente loggato
+    /**
+     * Endpoint protetto che permette all'aquirente loggato di creare un nuovo ordine.
+     *
+     * @param authentication    rappresenta l'acquirente attualmente loggato
+     * @return                  l'ordine creato, in formato DTO
+     */
     @PostMapping
     @PreAuthorize("hasRole('ACQUIRENTE')")
     public ResponseEntity<OrdineRispostaDTO> creaOrdine(Authentication authentication) {
@@ -36,7 +41,12 @@ public class OrdineController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toOrdineDTO(nuovoOrdine));
     }
 
-    //endpoint protetto: ottiene lo sotrico degli ordini dell'utente loggato
+    /**
+     * Endpoint protetto che permette all'acquirente loggato di ottenere lo storico dei propri ordini.
+     *
+     * @param authentication    rappresenta l'acquirente attualmente loggato
+     * @return                  la lista degli ordini dell'acquirente loggato, in formato DTO
+     */
     @GetMapping
     @PreAuthorize("hasRole('ACQUIRENTE')")
     public ResponseEntity<List<OrdineRispostaDTO>> getMieiOrdini(Authentication authentication) {
@@ -47,7 +57,12 @@ public class OrdineController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtoResponse);
     }
-    //endpoint protetto (per gestore): ottiene tutti gli ordini nel sistema
+
+    /**
+     * Endpoint protetto che permette al gestore loggato di ottenere tutti gli ordini nel sistema.
+     *
+     * @return      la lista degli ordini nel sistema, in formato DTO
+     */
     @GetMapping("/tutti")
     @PreAuthorize("hasRole('GESTORE')")
     public ResponseEntity<List<OrdineRispostaDTO>> getTuttiGliOrdini() {
@@ -58,6 +73,12 @@ public class OrdineController {
         return ResponseEntity.ok(dtoResponse);
     }
 
+    /**
+     * Endpoint protetto che permette al venditore loggato di ottenere tutti gli ordini ricevuti.
+     *
+     * @param authentication    rappresenta il venditore attualmente loggato
+     * @return                  la lista degli ordini dal venditore, in formato DTO
+     */
     @GetMapping("/venditore")
     @PreAuthorize("hasAnyRole('PRODUTTORE', 'DISTRIBUTORE', 'TRASFORMATORE')")
     public ResponseEntity<List<OrdineRispostaDTO>> getOrdiniVenditore(Authentication authentication) {

@@ -1,9 +1,11 @@
 package it.unicam.cs.ids.filieraids.controller;
 
+import it.unicam.cs.ids.filieraids.dto.request.CarrelloRichiestaDTO;
 import it.unicam.cs.ids.filieraids.dto.response.CarrelloRispostaDTO;
 import it.unicam.cs.ids.filieraids.mapper.DTOMapper;
 import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.service.*;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -41,16 +43,14 @@ public class CarrelloController {
      * Endpoint protetto che permette all'utente loggato di aggiungere un prodotto al carrello.
      *
      * @param authentication    rappresenta l'utente attualmente loggato
-     * @param prodottoId        id del prodotto da aggiugere al carrello
-     * @param quantita          quantità del prodotto da aggiungere
+     * @param dto               dati del prodotto da aggiungere al carrello, in formato DTO
      * @return                  carrello aggiornato dell'utente loggato, in formato DTO
      */
     @PostMapping("/aggiungi")
     public ResponseEntity<CarrelloRispostaDTO> aggiungi(Authentication authentication,
-                                                        @RequestParam Long prodottoId,
-                                                        @RequestParam int quantita) {
+                                                        @Valid @RequestBody CarrelloRichiestaDTO dto) {
         String email = authentication.getName();
-        Carrello c = carrelloService.aggiungiAlCarrelloByEmail(email, prodottoId, quantita);
+        Carrello c = carrelloService.aggiungiAlCarrelloByEmail(email, dto.prodottId(), dto.quantita());
         return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 
@@ -59,16 +59,14 @@ public class CarrelloController {
      * di un prodotto nel proprio carrello.
      *
      * @param authentication    rappresneta lì'utente attualmente loggato
-     * @param prodottoId        id del prodotto di cui diminuire la quantità
-     * @param quantita          quantità da sottrarre dal prodotto
+     * @param dto               pdati del prodotto da modificare nel carrello, in formato DTO
      * @return                  carrello aggiornato dell'utente loggato, in formato DTO
      */
     @PostMapping("/diminuisci")
     public ResponseEntity<CarrelloRispostaDTO> diminuisci(Authentication authentication,
-                                                          @RequestParam Long prodottoId,
-                                                          @RequestParam int quantita) {
+                                                          @Valid @RequestBody CarrelloRichiestaDTO dto) {
         String email = authentication.getName();
-        Carrello c = carrelloService.diminuisciDalCarrelloByEmail(email, prodottoId, quantita);
+        Carrello c = carrelloService.diminuisciDalCarrelloByEmail(email, dto.prodottId(), dto.quantita());
         return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 

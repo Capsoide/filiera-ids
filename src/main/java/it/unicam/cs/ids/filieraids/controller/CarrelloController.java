@@ -50,7 +50,7 @@ public class CarrelloController {
     public ResponseEntity<CarrelloRispostaDTO> aggiungi(Authentication authentication,
                                                         @Valid @RequestBody CarrelloRichiestaDTO dto) {
         String email = authentication.getName();
-        Carrello c = carrelloService.aggiungiAlCarrelloByEmail(email, dto.prodottId(), dto.quantita());
+        Carrello c = carrelloService.aggiungiAlCarrelloByEmail(email, dto.prodottoId(), dto.quantita());
         return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 
@@ -66,7 +66,7 @@ public class CarrelloController {
     public ResponseEntity<CarrelloRispostaDTO> diminuisci(Authentication authentication,
                                                           @Valid @RequestBody CarrelloRichiestaDTO dto) {
         String email = authentication.getName();
-        Carrello c = carrelloService.diminuisciDalCarrelloByEmail(email, dto.prodottId(), dto.quantita());
+        Carrello c = carrelloService.diminuisciDalCarrelloByEmail(email, dto.prodottoId(), dto.quantita());
         return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 

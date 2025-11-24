@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record CarrelloRichiestaDTO(
         @NotNull(message = "L'id del prodotto è obbligatorio")
-        Long prodottId,
+        Long prodottoId,
         @Min(value = 1, message = "La quantità deve essere almeno 1")
         int quantita
 ) {

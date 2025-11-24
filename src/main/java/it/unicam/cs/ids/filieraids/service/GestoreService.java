@@ -3,6 +3,7 @@ package it.unicam.cs.ids.filieraids.service;
 import it.unicam.cs.ids.filieraids.model.Attore;
 import it.unicam.cs.ids.filieraids.model.Conferma;
 import it.unicam.cs.ids.filieraids.model.RichiestaRuolo;
+import it.unicam.cs.ids.filieraids.model.Ruolo;
 import it.unicam.cs.ids.filieraids.repository.AttoreRepository;
 import it.unicam.cs.ids.filieraids.repository.RichiestaRuoloRepository;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,12 @@ public class GestoreService {
         this.attoreRepository = attoreRepository;
     }
 
-    //Recupera tutte le RichiesteRuolo che si trovano in ATTESA
+    //Recupera tutte le RichiesteRuolo che si trovano in ATTESA per i VENDITORI
     public List<RichiestaRuolo> getRichiesteInAttesa() {
         return richiestaRuoloRepository.findByStato(Conferma.ATTESA);
     }
 
+    //rifiuta per VENDITORI
     @Transactional
     public void rifiutaRichiesta(Long id) {
         RichiestaRuolo richiesta = richiestaRuoloRepository.findById(id)
@@ -39,7 +41,7 @@ public class GestoreService {
         richiesta.setStato(Conferma.RIFIUTATO);
         richiestaRuoloRepository.save(richiesta);
     }
-
+    //approva richieste dei VENDITORI
     @Transactional
     public void approvaRichiesta(Long id) {
         RichiestaRuolo richiesta = richiestaRuoloRepository.findById(id)
@@ -59,6 +61,4 @@ public class GestoreService {
         richiesta.setStato(Conferma.APPROVATO);
         richiestaRuoloRepository.save(richiesta);
     }
-
-
 }

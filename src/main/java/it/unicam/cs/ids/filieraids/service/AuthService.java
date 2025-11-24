@@ -36,7 +36,6 @@ public class AuthService {
         return attoreRepository.save(utente);
     }
 
-
     @Transactional
     public Attore registraVenditore(Venditore venditore) {
         if (attoreRepository.findByEmail(venditore.getEmail()).isPresent()) {
@@ -44,7 +43,7 @@ public class AuthService {
         }
         Set<Ruolo> ruoliRichiesti = new HashSet<>(venditore.getRuoli());
         venditore.setPassword(passwordEncoder.encode(venditore.getPassword()));
-        venditore.setRuoli(Set.of());
+        venditore.setRuoli(Set.of()); //nessun ruolo attivo finché non approvato
 
         Attore attoreSalvato = attoreRepository.save(venditore);
 
@@ -53,7 +52,37 @@ public class AuthService {
                 ruoliRichiesti,
                 Conferma.ATTESA
         );
+        richiestaRuoloRepository.save(richiesta);
 
+        return attoreSalvato;
+    }
+
+    @Transactional
+    public Attore autoRegistraStaff(Utente nuovoUtente, String ruoloRichiestoStr) {
+        if (attoreRepository.findByEmail(nuovoUtente.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Errore: Email già in uso.");
+        }
+
+        nuovoUtente.setPassword(passwordEncoder.encode(nuovoUtente.getPassword()));
+
+        Ruolo ruoloDaAssegnare;
+        try {
+            ruoloDaAssegnare = Ruolo.valueOf(ruoloRichiestoStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Ruolo non valido: " + ruoloRichiestoStr);
+        }
+
+        nuovoUtente.setRuoli(Set.of());
+        nuovoUtente.setEnabled(true);
+
+        Attore attoreSalvato = attoreRepository.save(nuovoUtente);
+
+        //richiesta per lo staff
+        RichiestaRuolo richiesta = new RichiestaRuolo(
+                attoreSalvato,
+                Set.of(ruoloDaAssegnare),
+                Conferma.ATTESA
+        );
         richiestaRuoloRepository.save(richiesta);
 
         return attoreSalvato;

@@ -1,9 +1,6 @@
 package it.unicam.cs.ids.filieraids.mapper;
 
-import it.unicam.cs.ids.filieraids.dto.request.RegistrazioneUtenteDTO;
-import it.unicam.cs.ids.filieraids.dto.request.RegistrazioneVenditoreDTO;
-import it.unicam.cs.ids.filieraids.dto.request.ProdottoRichiestaDTO;
-import it.unicam.cs.ids.filieraids.dto.request.EventoRichiestaDTO;
+import it.unicam.cs.ids.filieraids.dto.request.*;
 import it.unicam.cs.ids.filieraids.dto.response.*;
 import it.unicam.cs.ids.filieraids.model.*;
 import org.springframework.stereotype.Component;
@@ -181,6 +178,27 @@ public class DTOMapper {
                 ordine.getTotale(),
                 ordine.getIndirizzoDiFatturazione(),
                 elementiDTO
+        );
+    }
+
+    //mapper per registrazione di curatore e animatore
+    public Utente fromRegistrazioneStaffDTO(RegistrazioneStaffDTO dto) {
+        return new Utente(
+                dto.email(),
+                dto.password(),
+                dto.nome(),
+                dto.cognome()
+        );
+    }
+
+    public RichiestaRuoloRispostaDTO toRichiestaRuoloDTO(RichiestaRuolo r) {
+        return new RichiestaRuoloRispostaDTO(
+                r.getId(),
+                r.getAttoreRichiedente().getId(),
+                r.getAttoreRichiedente().getNomeCompleto(),
+                r.getAttoreRichiedente().getEmail(),
+                r.getRuoliRichiesti().stream().map(Enum::name).collect(Collectors.toSet()),
+                r.getStato().name()
         );
     }
 

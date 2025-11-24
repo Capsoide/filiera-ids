@@ -19,7 +19,7 @@ public record ProdottoRichiestaDTO(
         @DecimalMin(value = "0.01", message = "Il prezzo deve essere maggiore di zero")
         double prezzo,
 
-        @Min(value = 1, message = "La quantità iniziale deve essere almeno 1")
+        @Min(value = 0, message = "La quantità non puo' essere negativa")
         int quantita,
 
 

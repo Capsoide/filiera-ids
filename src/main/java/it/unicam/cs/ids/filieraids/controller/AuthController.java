@@ -1,5 +1,6 @@
 package it.unicam.cs.ids.filieraids.controller;
 
+import it.unicam.cs.ids.filieraids.dto.request.RegistrazioneStaffDTO;
 import it.unicam.cs.ids.filieraids.model.Attore;
 import it.unicam.cs.ids.filieraids.model.Utente;
 import it.unicam.cs.ids.filieraids.model.Venditore;
@@ -57,6 +58,18 @@ public class AuthController {
         AttoreRispostaDTO risposta = mapper.toAttoreDTO(venditoreRegistrato);
 
         //ritorna:accepted 202 perché il venditore deve essere ancora approvato dal gestore
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(risposta);
+    }
+
+    @PostMapping("/registra/staff")
+    public ResponseEntity<AttoreRispostaDTO> registraStaff(@Valid @RequestBody RegistrazioneStaffDTO dto) {
+        Utente utenteBase = mapper.fromRegistrazioneStaffDTO(dto);
+
+        Attore staffRegistrato = authService.autoRegistraStaff(utenteBase, dto.ruoloRichiesto());
+
+        AttoreRispostaDTO risposta = mapper.toAttoreDTO(staffRegistrato);
+
+        //ritorna:accepted 202 perché  deve essere ancora approvato dal gestore
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(risposta);
     }
 }

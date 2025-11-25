@@ -202,4 +202,26 @@ public class DTOMapper {
         );
     }
 
+    public PacchettoItemRispostaDTO toPacchettoItemDTO(PacchettoItem item) {
+        return new PacchettoItemRispostaDTO(
+                item.getProdotto().getId(),
+                item.getProdotto().getNome(),
+                item.getQuantita()
+        );
+    }
+
+    public PacchettoRispostaDTO toPacchettoDTO(Pacchetto pacchetto) {
+        return new PacchettoRispostaDTO(
+                pacchetto.getId(),
+                pacchetto.getNome(),
+                pacchetto.getDescrizione(),
+                pacchetto.getPrezzo(),
+                pacchetto.getVenditore().getEmail(),
+                pacchetto.getStatoConferma().name(),
+                pacchetto.getItems().stream()
+                        .map(this::toPacchettoItemDTO)
+                        .toList()
+        );
+    }
+
 }

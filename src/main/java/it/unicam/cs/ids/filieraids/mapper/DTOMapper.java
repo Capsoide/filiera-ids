@@ -21,7 +21,7 @@ public class DTOMapper {
     }
 
     public Venditore fromRegistrazioneVenditoreDTO(RegistrazioneVenditoreDTO dto) {
-        return new Venditore(
+        Venditore v = new Venditore(
                 dto.email(),
                 dto.password(),
                 dto.nome(),
@@ -30,6 +30,10 @@ public class DTOMapper {
                 dto.descrizione(),
                 dto.ruoli().stream().map(Ruolo::valueOf).collect(Collectors.toSet())
         );
+        if (dto.indirizzo() != null) {
+            v.addIndirizzo(dto.indirizzo());
+        }
+        return v;
     }
 
     //da entità a dto (response)

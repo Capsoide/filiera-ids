@@ -73,6 +73,7 @@ public class SecurityConfig {
                         //ANIMATORE
                         .requestMatchers(HttpMethod.POST, "/api/eventi").hasRole("ANIMATORE")
                         .requestMatchers(HttpMethod.DELETE, "/api/eventi/**").hasRole("ANIMATORE")
+                        .requestMatchers(HttpMethod.PUT, "/api/eventi/**").hasRole("ANIMATORE")
                         .requestMatchers(HttpMethod.GET, "/api/eventi/miei").hasRole("ANIMATORE")
                         .requestMatchers(HttpMethod.GET, "/api/eventi/{id}/prenotazioni").hasRole("ANIMATORE")
                         .requestMatchers(HttpMethod.POST, "/api/eventi/{eventoId}/invita/{venditoreId}").hasRole("ANIMATORE")

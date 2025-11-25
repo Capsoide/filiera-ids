@@ -203,4 +203,19 @@ public class EventoController {
 
         return ResponseEntity.ok(dtoResponse);
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ANIMATORE')")
+    public ResponseEntity<EventoRispostaDTO> modificaEvento(@PathVariable Long id,
+                                                            @Valid @RequestBody EventoRichiestaDTO dto,
+                                                            Authentication authentication) {
+        //da DTO a entità
+        Evento datiAggiornati = mapper.fromEventoDTO(dto);
+        String animatoreEmail = authentication.getName();
+
+        //chiamo il servizio
+        Evento eventoModificato = eventoService.modificaEvento(id, datiAggiornati, animatoreEmail);
+
+        return ResponseEntity.ok(mapper.toEventoDTO(eventoModificato));
+    }
 }

@@ -1,10 +1,9 @@
 package it.unicam.cs.ids.filieraids.dto.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import it.unicam.cs.ids.filieraids.model.Indirizzo;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+
 import java.util.Set;
 
 public record RegistrazioneVenditoreDTO(
@@ -30,5 +29,9 @@ public record RegistrazioneVenditoreDTO(
         String descrizione,
 
         @NotEmpty(message = "È necessario specificare almeno un ruolo (es. PRODUTTORE)")
-        Set<String> ruoli
+        Set<String> ruoli,
+
+        @NotNull(message = "L'indirizzo della sede è obbligatorio")
+        @Valid
+        Indirizzo indirizzo
 ) {}

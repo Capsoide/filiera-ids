@@ -187,4 +187,31 @@ public class EventoService {
         Evento evento = getEventoIfOwner(eventoId, animatoreEmail);
         return prenotazioneRepository.findByEvento(evento);
     }
+
+    @Transactional
+    public Evento modificaEvento(Long id, Evento datiAggiornati, String animatoreEmail) {
+
+        Evento eventoEsistente = getEventoIfOwner(id, animatoreEmail);
+
+        //aggiorno solo i campi modificabili
+        eventoEsistente.setNome(datiAggiornati.getNome());
+        eventoEsistente.setDescrizione(datiAggiornati.getDescrizione());
+        eventoEsistente.setIndirizzo(datiAggiornati.getIndirizzo());
+        eventoEsistente.setDataEvento(datiAggiornati.getDataEvento());
+
+        List<Prenotazione> listaPrenotazioni = prenotazioneRepository.findByEvento(eventoEsistente);
+        int postiGiaPrenotati = 0;
+        for(Prenotazione p : listaPrenotazioni){
+            postiGiaPrenotati = postiGiaPrenotati + p.getNumeroPostiPrenotati();
+        }
+
+        if (datiAggiornati.getPostiDisponibili() < postiGiaPrenotati ) {
+            throw new IllegalArgumentException("Impossibile ridurre i posti prenotati a " +
+                    datiAggiornati.getPostiDisponibili() + ": ci sono già " + postiGiaPrenotati + " prenotazioni." );
+        }
+
+        eventoEsistente.setPostiDisponibili(datiAggiornati.getPostiDisponibili());
+
+        return eventoRepository.save(eventoEsistente);
+    }
 }

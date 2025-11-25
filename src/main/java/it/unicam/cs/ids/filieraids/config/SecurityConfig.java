@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/prodotti/visibili/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/eventi/visibili/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/mappa").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
                         //ENDPOINT PROTETTI (Curatore/Gestore)

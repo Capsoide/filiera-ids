@@ -83,9 +83,14 @@ public class CarrelloService {
             riga.setQuantita(riga.getQuantita() + quantita);
             rigaCarrelloRepository.save(riga);
         } else {
-            RigaCarrello nuovaRiga = new RigaCarrello(pacchetto, quantita, pacchetto.getPrezzo());
-            carrello.addRiga(nuovaRiga);
+            RigaCarrello nuovaRiga = new RigaCarrello();
+            nuovaRiga.setPacchetto(pacchetto);
+            nuovaRiga.setProdotto(null);
+            nuovaRiga.setQuantita(quantita);
+            nuovaRiga.setPrezzoUnitarioSnapshot(pacchetto.getPrezzo());
+            nuovaRiga.setCarrello(carrello);
             rigaCarrelloRepository.save(nuovaRiga);
+            carrello.addRiga(nuovaRiga);
         }
         carrello.ricalcolaTotale();
         carrelloRepository.save(carrello);

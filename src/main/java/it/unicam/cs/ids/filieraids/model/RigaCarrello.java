@@ -32,7 +32,6 @@ public class RigaCarrello {
     //Costruttore per PRODOTTI
     public RigaCarrello(Prodotto prodotto, int quantita, double prezzoUnitarioSnapshot) {
         this.prodotto = prodotto;
-        this.pacchetto = null;
         this.quantita = quantita;
         this.prezzoUnitarioSnapshot = prezzoUnitarioSnapshot;
     }
@@ -40,7 +39,6 @@ public class RigaCarrello {
     //Costruttore per PACCHETTI
     public RigaCarrello(Pacchetto pacchetto, int quantita, double prezzoUnitarioSnapshot) {
         this.pacchetto = pacchetto;
-        this.prodotto = null;
         this.quantita = quantita;
         this.prezzoUnitarioSnapshot = prezzoUnitarioSnapshot;
     }

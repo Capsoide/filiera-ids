@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/prodotti/visibili/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/eventi/visibili/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/mappa").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/pacchetti/visibili/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
                         //ENDPOINT PROTETTI (Curatore/Gestore)

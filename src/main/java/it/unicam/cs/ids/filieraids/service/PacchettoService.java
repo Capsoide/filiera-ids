@@ -65,6 +65,11 @@ public class PacchettoService {
         return pacchettoRepository.findByStatoConferma(Conferma.APPROVATO);
     }
 
+    @Transactional(readOnly = true)
+    public List<Pacchetto> getPacchettiInAttesa() {
+        return pacchettoRepository.findByStatoConferma(Conferma.ATTESA);
+    }
+
     public List<Pacchetto> getMieiPacchetti(String email) {
         Venditore v = getVenditore(email);
         return pacchettoRepository.findByVenditore(v);

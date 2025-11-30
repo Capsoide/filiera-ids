@@ -2,6 +2,7 @@ package it.unicam.cs.ids.filieraids.controller;
 
 import it.unicam.cs.ids.filieraids.dto.request.ValutazioneRichiestaDTO;
 import it.unicam.cs.ids.filieraids.service.EventoService;
+import it.unicam.cs.ids.filieraids.service.PacchettoService;
 import it.unicam.cs.ids.filieraids.service.ProdottoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +25,16 @@ public class CuratoreController {
 
     private final ProdottoService prodottoService;
     private final EventoService eventoService;
+    private final PacchettoService pacchettoService;
 
     /**
      * Costruttore del CuratoreController.
      * Inietta i service specifici per prodotti ed eventi.
      */
-    public CuratoreController(ProdottoService prodottoService, EventoService eventoService) {
+    public CuratoreController(ProdottoService prodottoService, EventoService eventoService, PacchettoService pacchettoService) {
         this.prodottoService = prodottoService;
         this.eventoService = eventoService;
+        this.pacchettoService = pacchettoService;
     }
 
     /**
@@ -45,6 +48,7 @@ public class CuratoreController {
         List<Object> contenuti = new ArrayList<>();
         contenuti.addAll(prodottoService.getProdottiInAttesa());
         contenuti.addAll(eventoService.getEventiInAttesa());
+        contenuti.addAll(pacchettoService.getPacchettiInAttesa());
         return contenuti;
     }
 

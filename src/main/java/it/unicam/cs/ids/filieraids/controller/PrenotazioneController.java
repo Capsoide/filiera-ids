@@ -1,5 +1,7 @@
 package it.unicam.cs.ids.filieraids.controller;
 
+import it.unicam.cs.ids.filieraids.dto.response.PrenotazioneRispostaDTO;
+import it.unicam.cs.ids.filieraids.mapper.DTOMapper;
 import it.unicam.cs.ids.filieraids.model.Prenotazione;
 import it.unicam.cs.ids.filieraids.service.PrenotazioneService;
 import org.springframework.http.HttpStatus;
@@ -16,9 +18,11 @@ import java.util.*;
 public class PrenotazioneController {
 
     private final PrenotazioneService prenotazioneService;
+    private final DTOMapper mapper;
 
-    public PrenotazioneController(PrenotazioneService prenotazioneService) {
+    public PrenotazioneController(PrenotazioneService prenotazioneService, DTOMapper mapper) {
         this.prenotazioneService = prenotazioneService;
+        this.mapper = mapper;
     }
 
     /**
@@ -31,14 +35,14 @@ public class PrenotazioneController {
      * @return                  la prenotazione effettuata
      */
     @PostMapping("/eventi/{eventoId}")
-    public ResponseEntity<Prenotazione> creaPrenotazione(
+    public ResponseEntity<PrenotazioneRispostaDTO> creaPrenotazione(
             @PathVariable Long eventoId,
             @RequestParam int numeroPosti,
             Authentication authentication) {
 
         String utenteEmail = authentication.getName();
         Prenotazione prenotazione = prenotazioneService.creaPrenotazione(eventoId, numeroPosti, utenteEmail);
-        return ResponseEntity.status(HttpStatus.CREATED).body(prenotazione);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toPrenotazioneDTO(prenotazione));
     }
 
     /**

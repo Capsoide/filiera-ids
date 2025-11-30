@@ -25,13 +25,24 @@ public class Carrello {
     public Carrello(Carrello carrelloDaCopiare) {
         this.prezzoTotale = carrelloDaCopiare.getPrezzoTotale();
         this.contenuti = new ArrayList<>();
-        //è necessario copiare le righe e non solo la lista
+
         for (RigaCarrello rigaDaCopiare : carrelloDaCopiare.getContenuti()) {
-            RigaCarrello nuovaRiga = new RigaCarrello(
-                    rigaDaCopiare.getProdotto(),
-                    rigaDaCopiare.getQuantita(),
-                    rigaDaCopiare.getPrezzoUnitarioSnapshot()
-            );
+            RigaCarrello nuovaRiga;
+            
+            if (rigaDaCopiare.getPacchetto() != null) {
+                nuovaRiga = new RigaCarrello(
+                        rigaDaCopiare.getPacchetto(),
+                        rigaDaCopiare.getQuantita(),
+                        rigaDaCopiare.getPrezzoUnitarioSnapshot()
+                );
+            } else {
+                nuovaRiga = new RigaCarrello(
+                        rigaDaCopiare.getProdotto(),
+                        rigaDaCopiare.getQuantita(),
+                        rigaDaCopiare.getPrezzoUnitarioSnapshot()
+                );
+            }
+
             this.addRiga(nuovaRiga);
         }
     }

@@ -4,6 +4,7 @@ import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.service.*;
 import it.unicam.cs.ids.filieraids.dto.request.ProdottoRichiestaDTO;
 import it.unicam.cs.ids.filieraids.dto.response.ProdottoRispostaDTO;
+import it.unicam.cs.ids.filieraids.dto.response.PacchettoRispostaDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +18,34 @@ import java.util.stream.*;
 @RestController
 @RequestMapping("/api/prodotti")
 public class ProdottoController {
+    private final PacchettoService pacchettoService;
     private final ProdottoService prodottoService;
     private final DTOMapper mapper;
 
-    public ProdottoController(ProdottoService prodottoService, DTOMapper mapper) {
+    public ProdottoController(ProdottoService prodottoService, DTOMapper mapper, PacchettoService pacchettoService) {
         this.prodottoService = prodottoService;
+        this.pacchettoService = pacchettoService;
         this.mapper = mapper;
+    }
+    @GetMapping("/catalogo")
+    public ResponseEntity<Map<String, Object>> getCatalogoCompleto() {
+
+        // Recupera prodotti
+        List<ProdottoRispostaDTO> prodotti = prodottoService.getProdottiVisibili().stream()
+                .map(mapper::toProdottoDTO)
+                .collect(Collectors.toList());
+
+        // Recupera pacchetti
+        List<PacchettoRispostaDTO> pacchetti = pacchettoService.getPacchettiVisibili().stream()
+                .map(mapper::toPacchettoDTO)
+                .toList();
+
+        // Metti tutto in una mappa
+        Map<String, Object> risposta = new HashMap<>();
+        risposta.put("prodotti", prodotti);
+        risposta.put("pacchetti", pacchetti);
+
+        return ResponseEntity.ok(risposta);
     }
 
     /**

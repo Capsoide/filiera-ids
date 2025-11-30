@@ -45,6 +45,10 @@ public class PacchettoController {
         List<PacchettoItem> items = new ArrayList<>();
         for (PacchettoItemRichiestaDTO r : dto.items()) {
             Prodotto prod = prodottoService.getProdottoById(r.prodottoId());
+            if (prod.getStatoConferma() != Conferma.APPROVATO) {
+                throw new IllegalStateException("Impossibile creare il pacchetto: il prodotto '"
+                        + prod.getNome() + "' (ID: " + prod.getId() + ") non è approvato.");
+            }
             items.add(new PacchettoItem(prod, r.quantita()));
         }
 

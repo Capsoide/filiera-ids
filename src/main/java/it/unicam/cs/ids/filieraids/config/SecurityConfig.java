@@ -49,9 +49,11 @@ public class SecurityConfig {
                         //ENDPOINT PUBBLICI
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/prodotti/visibili/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/prodotti/catalogo").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/eventi/visibili/**").permitAll()
+                        //.requestMatchers(HttpMethod.GET, "/api/pacchetti/visibili/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/mappa").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/pacchetti/visibili/**").permitAll()
+
                         .requestMatchers("/h2-console/**").permitAll()
 
                         //ENDPOINT PROTETTI (Curatore/Gestore)

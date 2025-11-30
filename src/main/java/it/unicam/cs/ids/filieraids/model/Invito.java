@@ -15,13 +15,11 @@ public class Invito {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "evento_id", nullable = false)
-    // Questa annotazione dice a Jackson di ignorare i campi interni del proxy Hibernate
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Evento evento;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venditore_id", nullable = false)
-    // Anche qui, per evitare errori se il venditore viene caricato lazy
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Venditore venditore;
 

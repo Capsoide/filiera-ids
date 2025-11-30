@@ -1,15 +1,10 @@
 package it.unicam.cs.ids.filieraids.service;
 
 import it.unicam.cs.ids.filieraids.model.*;
-import it.unicam.cs.ids.filieraids.repository.CarrelloRepository;
-import it.unicam.cs.ids.filieraids.repository.OrdineRepository;
-import it.unicam.cs.ids.filieraids.repository.ProdottoRepository;
-import it.unicam.cs.ids.filieraids.repository.UtenteRepository;
-import it.unicam.cs.ids.filieraids.repository.VenditoreRepository;
+import it.unicam.cs.ids.filieraids.repository.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
 
 @Service
@@ -21,7 +16,6 @@ public class OrdineService {
     private final UtenteRepository utenteRepository;
     private final CarrelloService carrelloService;
     private final VenditoreRepository venditoreRepository;
-
 
     public OrdineService(OrdineRepository ordineRepository,
                          ProdottoRepository prodottoRepository,
@@ -39,71 +33,63 @@ public class OrdineService {
 
     private Utente getUtenteByEmail(String email) {
         return utenteRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato con email: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato: " + email));
     }
 
-    /**
-     * crea un nuovo ordine per l'utente loggato, identificato dalla sua email.
-     */
     @Transactional
     public Ordine creaOrdinePerEmail(String utenteEmail) {
         Utente utente = getUtenteByEmail(utenteEmail);
-
         if (utente.getIndirizzi().isEmpty()) {
-            throw new IllegalStateException("Impossibile creare ordine: l'utente non ha indirizzi salvati.");
+            throw new IllegalStateException("L'utente non ha indirizzi salvati.");
         }
         Indirizzo indirizzo = utente.getIndirizzi().get(0);
         Pagamento pagamento = new Pagamento("Visa", "1234-Simulato", utente.getNomeCompleto());
-
-        // 3. Chiama la tua logica di creazione ordine esistente
         return creaOrdine(utente, utente.getCarrello(), pagamento, indirizzo);
     }
 
-    /**
-     * Recupera lo storico ordini per l'utente loggato, identificato dalla sua email.
-     */
     @Transactional(readOnly = true)
     public List<Ordine> getOrdiniPerEmail(String utenteEmail) {
-        // 1. Trova l'utente QUI, nel service
-        Utente utente = getUtenteByEmail(utenteEmail);
-
-        // 2. Chiama il tuo metodo esistente
-        return getOrdiniByUtente(utente);
+        return ordineRepository.findByUtente(getUtenteByEmail(utenteEmail));
     }
 
-        @Transactional
-        public Ordine creaOrdine (Utente utente, Carrello carrello, Pagamento pagamento, Indirizzo indirizzo){
+    @Transactional
+    public Ordine creaOrdine(Utente utente, Carrello carrello, Pagamento pagamento, Indirizzo indirizzo) {
+        if (!utente.getRuoli().contains(Ruolo.ACQUIRENTE)) {
+            throw new IllegalArgumentException("Utente non abilitato agli acquisti.");
+        }
+        if (carrello.getContenuti().isEmpty()) {
+            throw new IllegalStateException("Carrello vuoto.");
+        }
 
-            if (!utente.getRuoli().contains(Ruolo.ACQUIRENTE)) {
-                throw new IllegalArgumentException("L'utente non ha il ruolo di ACQUIRENTE e non può acquistare");
-            }
-            if (carrello.getContenuti().isEmpty()) {
-                throw new IllegalStateException("Impossibile creare un ordine con un carrello vuoto.");
-            }
+        for (RigaCarrello riga : carrello.getContenuti()) {
 
-            for (RigaCarrello riga : carrello.getContenuti()) {
-                Prodotto prodottoDB = prodottoRepository.findById(riga.getProdotto().getId())
-                        .orElseThrow(() -> new IllegalStateException("Prodotto non trovato: " + riga.getProdotto().getNome()));
-
-                if (prodottoDB.getQuantita() < riga.getQuantita()) {
-                    throw new IllegalStateException("Stock non sufficiente per: " +
-                            prodottoDB.getNome() + ". Richiesti: " +
-                            riga.getQuantita() + ", Disponibili: " +
-                            prodottoDB.getQuantita());
+            if (riga.getProdotto() != null) {
+                Prodotto p = riga.getProdotto();
+                if (p.getQuantita() < riga.getQuantita()) {
+                    throw new IllegalStateException("Stock insufficiente per prodotto: " + p.getNome());
+                }
+                prodottoService.scalaQuantita(p, riga.getQuantita());
+            }else if (riga.getPacchetto() != null) {
+                Pacchetto pack = riga.getPacchetto();
+                for (PacchettoItem item : pack.getItems()) {
+                    int quantitaTotaleDaScalare = item.getQuantita() * riga.getQuantita();
+                    if (item.getProdotto().getQuantita() < quantitaTotaleDaScalare) {
+                        throw new IllegalStateException("Stock insufficiente per prodotto '" + item.getProdotto().getNome() +
+                                "' contenuto nel pacchetto '" + pack.getNome() + "'");
+                    }
+                    prodottoService.scalaQuantita(item.getProdotto(), quantitaTotaleDaScalare);
                 }
             }
-            for (RigaCarrello riga : carrello.getContenuti()) {
-                prodottoService.scalaQuantita(riga.getProdotto(), riga.getQuantita());
-            }
-
-            Ordine ordine = new Ordine(null, carrello, pagamento, indirizzo, utente);
-            utente.addOrdine(ordine);
-            Ordine ordineSalvato = ordineRepository.save(ordine);
-            carrelloService.svuotaCarrello(utente.getCarrello());
-
-            System.out.println("Ordine creato : " + ordineSalvato.getId());
-            return ordineSalvato;
         }
+
+        Ordine ordine = new Ordine(null, carrello, pagamento, indirizzo, utente);
+        utente.addOrdine(ordine);
+        Ordine ordineSalvato = ordineRepository.save(ordine);
+
+        carrelloService.svuotaCarrello(utente.getCarrello());
+        System.out.println("Ordine creato con ID: " + ordineSalvato.getId());
+        return ordineSalvato;
+    }
 
         @Transactional
         public boolean annullaOrdine (Ordine ordine){
@@ -133,7 +119,7 @@ public class OrdineService {
             utenteDellOrdine.removeOrdine(ordineDB);
             utenteRepository.save(utenteDellOrdine);
 
-            ordineRepository.delete(ordineDB); //ora posso eliminare l'ordine
+            ordineRepository.delete(ordineDB);
 
             System.out.println("Ordine annullato e rimosso correttamente con ID: " + ordineDB.getId());
             return true;
@@ -150,6 +136,7 @@ public class OrdineService {
         public List<Ordine> getOrdiniByStato (StatoOrdine stato){
             return ordineRepository.findByStatoOrdine(stato);
         }
+
         @Transactional
         public void aggiornaStatoOrdine (Ordine ordine, StatoOrdine nuovoStato){
             Ordine ordineDB = ordineRepository.findById(ordine.getId()).orElse(null);
@@ -172,11 +159,10 @@ public class OrdineService {
 
         @Transactional(readOnly = true)
         public List<Ordine> getOrdiniPerVenditore(String venditoreEmail) {
-            //cerca il venditore dall'email
+
             Venditore venditore = venditoreRepository.findByEmail(venditoreEmail)
                     .orElseThrow(() -> new UsernameNotFoundException("Venditore non trovato: " + venditoreEmail));
 
-            //chiama la query del repository
             return ordineRepository.findByProdottoVenditore(venditore);
         }
     }

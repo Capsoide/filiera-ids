@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
-import java.util.*;
 
 @RestController
 @RequestMapping("/api/carrello")
@@ -53,6 +52,15 @@ public class CarrelloController {
         return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 
+    @PostMapping("/aggiungi-pacchetto")
+    public ResponseEntity<CarrelloRispostaDTO> aggiungiPacchetto(Authentication authentication,
+                                                                 @Valid @RequestBody CarrelloRichiestaDTO dto) {
+        String email = authentication.getName();
+        // Nota: dto.prodottoId() viene usato per trasportare l'ID del pacchetto
+        Carrello c = carrelloService.aggiungiPacchettoAlCarrelloByEmail(email, dto.prodottoId(), dto.quantita());
+        return ResponseEntity.ok(mapper.toCarrelloDTO(c));
+    }
+
     /**
      * Endpoint protetto che permette all'utente loggatto di diminuire la quantità
      * di un prodotto nel proprio carrello.
@@ -69,12 +77,6 @@ public class CarrelloController {
         return ResponseEntity.ok(mapper.toCarrelloDTO(c));
     }
 
-    /**
-     * Endpoint protetto che permette all'utente loggato di svuotare il carrello.
-     *
-     * @param authentication    rappresenta l'utente attualmente loggato
-     * @return                  carrello svuotato dell'utente loggato, in formato DTO
-     */
     @DeleteMapping("/svuota")
     public ResponseEntity<CarrelloRispostaDTO> svuota(Authentication authentication) {
         String email = authentication.getName();

@@ -8,10 +8,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component //fa in modo che la classe possa essere iniettata nei controller
+@Component
 public class DTOMapper {
 
-    //daa dto a entità (request)
     public Utente fromRegistrazioneUtenteDTO(RegistrazioneUtenteDTO dto) {
         Utente utente = new Utente(dto.email(), dto.password(), dto.nome(), dto.cognome());
         if (dto.indirizzo() != null) {
@@ -36,22 +35,26 @@ public class DTOMapper {
         return v;
     }
 
-    //da entità a dto (response)
+    public Utente fromRegistrazioneStaffDTO(RegistrazioneStaffDTO dto) {
+        return new Utente(
+                dto.email(),
+                dto.password(),
+                dto.nome(),
+                dto.cognome()
+        );
+    }
+
     public AttoreRispostaDTO toAttoreDTO(Attore attore) {
         return new AttoreRispostaDTO(
                 attore.getId(),
                 attore.getEmail(),
                 attore.getNomeCompleto(),
-
-                //converte il Set<Ruolo> (enum) in Set<String> per il dto
                 attore.getRuoli().stream().map(Enum::name).collect(Collectors.toSet()),
                 attore.isEnabled()
         );
     }
 
-    //da request dto a entità per creazione/modifica del prodotto
     public Prodotto fromProdottoDTO(ProdottoRichiestaDTO dto) {
-
         Prodotto p = new Prodotto();
         p.setNome(dto.nome());
         p.setDescrizione(dto.descrizione());
@@ -60,11 +63,9 @@ public class DTOMapper {
         p.setQuantita(dto.quantita());
         p.setCertificazioni(dto.certificazioni());
         p.setDataProduzione(dto.dataProduzione());
-
         return p;
     }
 
-    //da entità a response DTO
     public ProdottoRispostaDTO toProdottoDTO(Prodotto p) {
         return new ProdottoRispostaDTO(
                 p.getId(),
@@ -74,14 +75,12 @@ public class DTOMapper {
                 p.getQuantita(),
                 p.getMetodoDiColtivazione(),
                 p.getCertificazioni(),
-
                 p.getStatoConferma().name(),
                 p.getVenditore().getId(),
                 p.getVenditore().getNomeCompleto()
         );
     }
 
-    // Dentro DTOMapper
 
     public Evento fromEventoDTO(EventoRichiestaDTO dto) {
         Evento e = new Evento();
@@ -120,7 +119,6 @@ public class DTOMapper {
         );
     }
 
-    //mapper per prenotazione
     public PrenotazioneRispostaDTO toPrenotazioneDTO(Prenotazione p) {
         return new PrenotazioneRispostaDTO(
                 p.getId(),
@@ -131,78 +129,6 @@ public class DTOMapper {
                 p.getUtente().getNomeCompleto(),
                 p.getNumeroPostiPrenotati(),
                 p.getDataPrenotazione()
-        );
-    }
-
-
-    //mapper per carrello
-    public RigaCarrelloRispostaDTO toRigaCarrelloRispostaDTO(RigaCarrello r) {
-        return new RigaCarrelloRispostaDTO(
-                r.getId(),
-                r.getProdotto().getId(),
-                r.getProdotto().getNome(),
-                r.getQuantita(),
-                r.getPrezzoUnitarioSnapshot(),
-                r.getPrezzoTotaleRiga()
-        );
-    }
-
-    public CarrelloRispostaDTO toCarrelloDTO(Carrello c) {
-        List<RigaCarrelloRispostaDTO> righe = c.getContenuti()
-                .stream()
-                .map(this::toRigaCarrelloRispostaDTO)
-                .toList();
-
-        return new CarrelloRispostaDTO(
-                c.getId(),
-                c.getPrezzoTotale(),
-                righe
-        );
-    }
-
-    private RigaOrdineRispostaDTO toRigaOrdineDTO(RigaCarrello riga) {
-        return new RigaOrdineRispostaDTO(
-                riga.getProdotto().getId(),
-                riga.getProdotto().getNome(),
-                riga.getPrezzoUnitarioSnapshot(),
-                riga.getQuantita(),
-                riga.getPrezzoTotaleRiga()
-        );
-    }
-
-    public OrdineRispostaDTO toOrdineDTO(Ordine ordine) {
-        List<RigaOrdineRispostaDTO> elementiDTO = ordine.getCarrello().getContenuti().stream()
-                .map(this::toRigaOrdineDTO)
-                .collect(Collectors.toList());
-
-        return new OrdineRispostaDTO(
-                ordine.getId(),
-                ordine.getDataOrdine(),
-                ordine.getStatoOrdine().name(),
-                ordine.getTotale(),
-                ordine.getIndirizzoDiFatturazione(),
-                elementiDTO
-        );
-    }
-
-    //mapper per registrazione di curatore e animatore
-    public Utente fromRegistrazioneStaffDTO(RegistrazioneStaffDTO dto) {
-        return new Utente(
-                dto.email(),
-                dto.password(),
-                dto.nome(),
-                dto.cognome()
-        );
-    }
-
-    public RichiestaRuoloRispostaDTO toRichiestaRuoloDTO(RichiestaRuolo r) {
-        return new RichiestaRuoloRispostaDTO(
-                r.getId(),
-                r.getAttoreRichiedente().getId(),
-                r.getAttoreRichiedente().getNomeCompleto(),
-                r.getAttoreRichiedente().getEmail(),
-                r.getRuoliRichiesti().stream().map(Enum::name).collect(Collectors.toSet()),
-                r.getStato().name()
         );
     }
 
@@ -228,4 +154,92 @@ public class DTOMapper {
         );
     }
 
+    public RigaCarrelloRispostaDTO toRigaCarrelloRispostaDTO(RigaCarrello r) {
+        Long idOggetto;
+        String nomeOggetto;
+
+        if (r.getProdotto() != null) {
+            idOggetto = r.getProdotto().getId();
+            nomeOggetto = r.getProdotto().getNome();
+        } else if (r.getPacchetto() != null) {
+            idOggetto = r.getPacchetto().getId();
+            nomeOggetto = "[PACCHETTO] " + r.getPacchetto().getNome();
+        } else {
+            idOggetto = 0L;
+            nomeOggetto = "Oggetto non identificato";
+        }
+
+        return new RigaCarrelloRispostaDTO(
+                r.getId(),
+                idOggetto,
+                nomeOggetto,
+                r.getQuantita(),
+                r.getPrezzoUnitarioSnapshot(),
+                r.getPrezzoTotaleRiga()
+        );
+    }
+
+    public CarrelloRispostaDTO toCarrelloDTO(Carrello c) {
+        List<RigaCarrelloRispostaDTO> righe = c.getContenuti()
+                .stream()
+                .map(this::toRigaCarrelloRispostaDTO)
+                .toList();
+
+        return new CarrelloRispostaDTO(
+                c.getId(),
+                c.getPrezzoTotale(),
+                righe
+        );
+    }
+
+
+    private RigaOrdineRispostaDTO toRigaOrdineDTO(RigaCarrello riga) {
+        Long idOggetto;
+        String nomeOggetto;
+
+        if (riga.getProdotto() != null) {
+            idOggetto = riga.getProdotto().getId();
+            nomeOggetto = riga.getProdotto().getNome();
+        } else if (riga.getPacchetto() != null) {
+            idOggetto = riga.getPacchetto().getId();
+            nomeOggetto = "[PACCHETTO] " + riga.getPacchetto().getNome();
+        } else {
+            idOggetto = 0L;
+            nomeOggetto = "Oggetto non identificato";
+        }
+
+        return new RigaOrdineRispostaDTO(
+                idOggetto,
+                nomeOggetto,
+                riga.getPrezzoUnitarioSnapshot(),
+                riga.getQuantita(),
+                riga.getPrezzoTotaleRiga()
+        );
+    }
+
+    public OrdineRispostaDTO toOrdineDTO(Ordine ordine) {
+        List<RigaOrdineRispostaDTO> elementiDTO = ordine.getCarrello().getContenuti().stream()
+                .map(this::toRigaOrdineDTO)
+                .collect(Collectors.toList());
+
+        return new OrdineRispostaDTO(
+                ordine.getId(),
+                ordine.getDataOrdine(),
+                ordine.getStatoOrdine().name(),
+                ordine.getTotale(),
+                ordine.getIndirizzoDiFatturazione(),
+                elementiDTO
+        );
+    }
+
+    public RichiestaRuoloRispostaDTO toRichiestaRuoloDTO(RichiestaRuolo r) {
+        return new RichiestaRuoloRispostaDTO(
+                r.getId(),
+                r.getAttoreRichiedente().getId(),
+                r.getAttoreRichiedente().getNomeCompleto(),
+                r.getAttoreRichiedente().getEmail(),
+                r.getRuoliRichiesti().stream().map(Enum::name).collect(Collectors.toSet()),
+                r.getStato().name()
+        );
+    }
 }

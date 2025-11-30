@@ -1,10 +1,7 @@
 package it.unicam.cs.ids.filieraids.service;
 
 import it.unicam.cs.ids.filieraids.model.*;
-import it.unicam.cs.ids.filieraids.repository.CarrelloRepository;
-import it.unicam.cs.ids.filieraids.repository.ProdottoRepository;
-import it.unicam.cs.ids.filieraids.repository.RigaCarrelloRepository;
-import it.unicam.cs.ids.filieraids.repository.UtenteRepository;
+import it.unicam.cs.ids.filieraids.repository.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,34 +13,35 @@ public class CarrelloService {
     private final CarrelloRepository carrelloRepository;
     private final RigaCarrelloRepository rigaCarrelloRepository;
     private final UtenteRepository utenteRepository;
+    private final PacchettoRepository pacchettoRepository;
 
     public CarrelloService(ProdottoRepository prodottoRepository,
                            CarrelloRepository carrelloRepository,
                            RigaCarrelloRepository rigaCarrelloRepository,
-                           UtenteRepository utenteRepository) {
+                           UtenteRepository utenteRepository,
+                           PacchettoRepository pacchettoRepository) {
         this.prodottoRepository = prodottoRepository;
         this.carrelloRepository = carrelloRepository;
         this.rigaCarrelloRepository = rigaCarrelloRepository;
         this.utenteRepository = utenteRepository;
+        this.pacchettoRepository = pacchettoRepository;
     }
-    //metodo privato per trovare l'utente
+
     private Utente getUtenteByEmail(String email) {
         return utenteRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato con email: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato: " + email));
     }
-    //metodo privato per trovare il prodotto
+
     private Prodotto getProdottoById(Long prodottoId) {
         return prodottoRepository.findById(prodottoId)
                 .orElseThrow(() -> new RuntimeException("Prodotto non trovato"));
     }
-    //recupero carrello per l'utente loggato
+
     @Transactional(readOnly = true)
     public Carrello getCarrelloByEmail(String email) {
-        Utente utente = getUtenteByEmail(email);
-        return utente.getCarrello();
+        return getUtenteByEmail(email).getCarrello();
     }
 
-    //aggiungo un prodotto al carrello per l'utente loggato
     @Transactional
     public Carrello aggiungiAlCarrelloByEmail(String email, Long prodottoId, int quantita) {
         Utente utente = getUtenteByEmail(email);
@@ -52,118 +50,120 @@ public class CarrelloService {
         return utente.getCarrello();
     }
 
-    //diminuisce la quantità di un prodotto per l'utente loggato
     @Transactional
-    public Carrello diminuisciDalCarrelloByEmail(String email, Long prodottoId, int quantita) {
+    public Carrello aggiungiPacchettoAlCarrelloByEmail(String email, Long pacchettoId, int quantita) {
         Utente utente = getUtenteByEmail(email);
-        Prodotto prodotto = getProdottoById(prodottoId);
+        Pacchetto pacchetto = pacchettoRepository.findById(pacchettoId)
+                .orElseThrow(() -> new RuntimeException("Pacchetto non trovato"));
 
-        diminuisciQuantita(utente.getCarrello(), prodotto, quantita);
-        return utente.getCarrello();
-    }
-
-    //svuoto il carrello per l'utente loggato
-    @Transactional
-    public Carrello svuotaCarrelloByEmail(String email) {
-        Utente utente = getUtenteByEmail(email);
-
-        svuotaCarrello(utente.getCarrello());
-        return utente.getCarrello();
-    }
-
-
-    @Transactional
-    public void aggiungiAlCarrello(Carrello carrello, Prodotto prodotto, int quantita) {
-
-        if (prodotto == null || quantita <= 0) {
-            System.out.println("Errore: Dati prodotto non validi.");
-            return;
-        }
-        Prodotto prodottoDB = prodottoRepository.findById(prodotto.getId()).orElse(null);
-        if (prodottoDB == null || prodottoDB.getStatoConferma() != Conferma.APPROVATO) {
-            throw new IllegalStateException("Impossibile aggiungere: Prodotto \"" + (prodottoDB != null ? prodottoDB.getNome() : "N/D") + "\" non approvato o non trovato.");
+        if (pacchetto.getStatoConferma() != Conferma.APPROVATO) {
+            throw new IllegalStateException("Pacchetto non disponibile (Non approvato).");
         }
 
-        Optional<RigaCarrello> rigaEsistenteOpt = rigaCarrelloRepository.findByCarrelloAndProdotto(carrello, prodotto);
-
-        if (rigaEsistenteOpt.isPresent()) {
-            RigaCarrello rigaDaAggiornare = rigaEsistenteOpt.get();
-            int quantitaTotaleRichiesta = rigaDaAggiornare.getQuantita() + quantita;
-
-            if (prodottoDB.getQuantita() < quantitaTotaleRichiesta) {
-                throw new IllegalStateException("Impossibile aggiornare " + quantita + " unità: Stock non sufficiente per " + prodotto.getNome() + " (Disponibili: " + prodottoDB.getQuantita() + ")");
+        for (PacchettoItem item : pacchetto.getItems()) {
+            int totaleRichiesto = item.getQuantita() * quantita;
+            if (item.getProdotto().getQuantita() < totaleRichiesto) {
+                throw new IllegalStateException("Stock insufficiente per il prodotto '" + item.getProdotto().getNome() +
+                        "' contenuto nel pacchetto. Disponibili: " + item.getProdotto().getQuantita());
             }
+        }
 
-            rigaDaAggiornare.setQuantita(quantitaTotaleRichiesta);
-            rigaCarrelloRepository.save(rigaDaAggiornare);
-            System.out.println("Aggiornata quantità per " + prodotto.getNome() + ". Nuova qta: " + quantitaTotaleRichiesta);
+        aggiungiPacchettoLogica(utente.getCarrello(), pacchetto, quantita);
+        return utente.getCarrello();
+    }
+
+    private void aggiungiPacchettoLogica(Carrello carrello, Pacchetto pacchetto, int quantita) {
+
+        Optional<RigaCarrello> rigaEsistente = carrello.getContenuti().stream()
+                .filter(r -> r.getPacchetto() != null && r.getPacchetto().getId().equals(pacchetto.getId()))
+                .findFirst();
+
+        if (rigaEsistente.isPresent()) {
+            RigaCarrello riga = rigaEsistente.get();
+            riga.setQuantita(riga.getQuantita() + quantita);
+            rigaCarrelloRepository.save(riga);
         } else {
-            if (prodottoDB.getQuantita() < quantita) {
-                System.out.println("Impossibile aggiungere " + quantita + " unità: Stock non sufficiente per " + prodotto.getNome() + " (Disponibili: " + prodottoDB.getQuantita() + ")");
-                return;
-            }
-            RigaCarrello rigaDaSalvare = new RigaCarrello(prodotto, quantita, prodotto.getPrezzo());
-            carrello.addRiga(rigaDaSalvare);
-            rigaCarrelloRepository.save(rigaDaSalvare);
-            System.out.println("Aggiunto al carrello: " + prodotto.getNome() + " (Qta: " + quantita + ")");
+            RigaCarrello nuovaRiga = new RigaCarrello(pacchetto, quantita, pacchetto.getPrezzo());
+            carrello.addRiga(nuovaRiga);
+            rigaCarrelloRepository.save(nuovaRiga);
         }
         carrello.ricalcolaTotale();
         carrelloRepository.save(carrello);
     }
 
     @Transactional
-    public void diminuisciQuantita(Carrello carrello, Prodotto prodotto, int quantitaDaRimuovere) {
-        if (carrello == null || prodotto == null || quantitaDaRimuovere <= 0) return;
-        Optional<RigaCarrello> rigaOpt = rigaCarrelloRepository.findByCarrelloAndProdotto(carrello, prodotto);
-
-        if (rigaOpt.isPresent()) {
-            RigaCarrello rigaDaModificare = rigaOpt.get();
-            int nuovaQuantita = rigaDaModificare.getQuantita() - quantitaDaRimuovere;
-
-            if (nuovaQuantita <= 0) {
-                carrello.removeRiga(rigaDaModificare);
-                rigaCarrelloRepository.delete(rigaDaModificare);
-                System.out.println("Rimosso prodotto dal carrello: " + prodotto.getNome());
-            } else {
-                rigaDaModificare.setQuantita(nuovaQuantita);
-                rigaCarrelloRepository.save(rigaDaModificare);
-                System.out.println("Diminuita quantità per " + prodotto.getNome() + ". Nuova qta: " + nuovaQuantita);
-            }
-            carrello.ricalcolaTotale();
-            carrelloRepository.save(carrello);
-        } else {
-            throw new RuntimeException("Prodotto " + prodotto.getNome() + " non trovato nel carrello.");
-        }
+    public Carrello diminuisciDalCarrelloByEmail(String email, Long prodottoId, int quantita) {
+        Utente utente = getUtenteByEmail(email);
+        Prodotto prodotto = getProdottoById(prodottoId);
+        diminuisciQuantita(utente.getCarrello(), prodotto, quantita);
+        return utente.getCarrello();
     }
 
     @Transactional
-    public void rimuoviRigaDalCarrello(Carrello carrello, Prodotto prodotto) {
-        if (carrello == null || prodotto == null) return;
-        Optional<RigaCarrello> rigaOpt = rigaCarrelloRepository.findByCarrelloAndProdotto(carrello, prodotto);
+    public Carrello svuotaCarrelloByEmail(String email) {
+        Utente utente = getUtenteByEmail(email);
+        svuotaCarrello(utente.getCarrello());
+        return utente.getCarrello();
+    }
 
+    @Transactional
+    public void aggiungiAlCarrello(Carrello carrello, Prodotto prodotto, int quantita) {
+        if (prodotto == null || quantita <= 0) return;
+
+        Prodotto prodottoDB = prodottoRepository.findById(prodotto.getId()).orElse(null);
+        if (prodottoDB == null || prodottoDB.getStatoConferma() != Conferma.APPROVATO) {
+            throw new IllegalStateException("Prodotto non approvato o non trovato.");
+        }
+
+        Optional<RigaCarrello> rigaEsistenteOpt = rigaCarrelloRepository.findByCarrelloAndProdotto(carrello, prodotto);
+
+        if (rigaEsistenteOpt.isPresent()) {
+            RigaCarrello riga = rigaEsistenteOpt.get();
+            if (prodottoDB.getQuantita() < (riga.getQuantita() + quantita)) {
+                throw new IllegalStateException("Stock insufficiente.");
+            }
+            riga.setQuantita(riga.getQuantita() + quantita);
+            rigaCarrelloRepository.save(riga);
+        } else {
+            if (prodottoDB.getQuantita() < quantita) {
+                throw new IllegalStateException("Stock insufficiente.");
+            }
+            RigaCarrello riga = new RigaCarrello(prodotto, quantita, prodotto.getPrezzo());
+            carrello.addRiga(riga);
+            rigaCarrelloRepository.save(riga);
+        }
+        carrello.ricalcolaTotale();
+        carrelloRepository.save(carrello);
+    }
+
+    @Transactional
+    public void diminuisciQuantita(Carrello carrello, Prodotto prodotto, int quantita) {
+
+        Optional<RigaCarrello> rigaOpt = rigaCarrelloRepository.findByCarrelloAndProdotto(carrello, prodotto);
         if (rigaOpt.isPresent()) {
-            RigaCarrello rigaDaRimuovere = rigaOpt.get();
-            carrello.removeRiga(rigaDaRimuovere);
-            rigaCarrelloRepository.delete(rigaDaRimuovere);
+            RigaCarrello riga = rigaOpt.get();
+            int nuovaQta = riga.getQuantita() - quantita;
+            if (nuovaQta <= 0) {
+                carrello.removeRiga(riga);
+                rigaCarrelloRepository.delete(riga);
+            } else {
+                riga.setQuantita(nuovaQta);
+                rigaCarrelloRepository.save(riga);
+            }
             carrello.ricalcolaTotale();
             carrelloRepository.save(carrello);
-            System.out.println("Rimosso prodotto (tutta la riga) dal carrello: " + prodotto.getNome());
-        } else {
-            throw new RuntimeException("Prodotto " + prodotto.getNome() + " non trovato nel carrello.");
         }
     }
 
     @Transactional
     public void svuotaCarrello(Carrello carrello) {
         if (carrello == null) return;
-
-        List<RigaCarrello> righeDaRimuovere = new ArrayList<>(carrello.getContenuti());
-        for(RigaCarrello riga : righeDaRimuovere) {
-            carrello.removeRiga(riga);
-            rigaCarrelloRepository.delete(riga);
+        List<RigaCarrello> righe = new ArrayList<>(carrello.getContenuti());
+        for(RigaCarrello r : righe) {
+            carrello.removeRiga(r);
+            rigaCarrelloRepository.delete(r);
         }
-        carrello.svuota(); //svuoto lista e azzero totale
+        carrello.svuota();
         carrelloRepository.save(carrello);
-        System.out.println("Carrello svuotato.");
     }
 }

@@ -32,7 +32,7 @@ public class PrenotazioneController {
      * @param eventoId          l'id dell'evento per cui si vuole effettuare la prenotazione
      * @param numeroPosti       numero di posti richiesti pnella prenotazione
      * @param authentication    rappresenta l'acquirente loggato
-     * @return                  la prenotazione effettuata
+     * @return                  la prenotazione effettuata, in formato DTO
      */
     @PostMapping("/eventi/{eventoId}")
     public ResponseEntity<PrenotazioneRispostaDTO> creaPrenotazione(

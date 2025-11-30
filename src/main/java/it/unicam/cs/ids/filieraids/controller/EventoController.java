@@ -131,39 +131,6 @@ public class EventoController {
         return ResponseEntity.ok(eventoService.getPrenotazioniPerEvento(id, animatoreEmail));
     }
 
-    /*AGGIUNTA PER IL DTO
-    @GetMapping("/{id}/prenotazioni")
-    public ResponseEntity<List<PrenotazioneRispostaDTO>> getPrenotazioniPerEvento(
-            @PathVariable Long id,
-            Authentication authentication
-    ) {
-        String animatoreEmail = authentication.getName();
-        List<Prenotazione> lista = eventoService.getPrenotazioniPerEvento(id, animatoreEmail);
-
-        List<PrenotazioneRispostaDTO> dto = lista.stream()
-                .map(mapper::toPrenotazioneDTO)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(dto);
-    }
-    */
-
-    /*AGGIUNTA PER IL DTO
-    @PostMapping("/{eventoId}/prenota")
-    @PreAuthorize("hasRole('ACQUIRENTE')")
-    public ResponseEntity<PrenotazioneRispostaDTO> prenota(
-            @PathVariable Long eventoId,
-            @Valid @RequestBody PrenotazioneRichiestaDTO dto,
-            Authentication authentication
-    ) {
-        String email = authentication.getName();
-
-        Prenotazione p = eventoService.creaPrenotazione(eventoId, dto.numeroPosti(), email);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(mapper.toPrenotazioneDTO(p));
-    }*/
-
     /**
      * Endpoint protetto che permette all'animatore loggato di invitare un venditore ad uno dei propri eventi.
      *

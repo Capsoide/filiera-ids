@@ -1,5 +1,7 @@
 package it.unicam.cs.ids.filieraids.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -12,9 +14,11 @@ public class Pacchetto extends Contenuto {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venditore_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Venditore venditore;
 
     @OneToMany(mappedBy = "pacchetto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<PacchettoItem> items = new ArrayList<>();
 
     public Pacchetto() {

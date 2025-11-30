@@ -1,5 +1,7 @@
 package it.unicam.cs.ids.filieraids.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,10 +14,12 @@ public class PacchettoItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pacchetto_id")
+    @JsonBackReference
     private Pacchetto pacchetto;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prodotto_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Prodotto prodotto;
 
     private int quantita;

@@ -62,6 +62,6 @@ public class VenditoreController {
 
         venditoreService.gestisciInvito(invitoId, accetta, authentication.getName());
 
-        return ResponseEntity.ok("Invito " + dto.azione().toLowerCase() + "to con successo.");
+        return ResponseEntity.ok("Invito " + dto.azione().toLowerCase() + " con successo.");
     }
 }

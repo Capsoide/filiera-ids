@@ -1,6 +1,7 @@
 package it.unicam.cs.ids.filieraids.controller;
 
 import it.unicam.cs.ids.filieraids.dto.request.ValutazioneRichiestaDTO;
+import it.unicam.cs.ids.filieraids.mapper.DTOMapper;
 import it.unicam.cs.ids.filieraids.service.EventoService;
 import it.unicam.cs.ids.filieraids.service.PacchettoService;
 import it.unicam.cs.ids.filieraids.service.ProdottoService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Il CuratoreController gestisce le richieste relative alle operazioni del curatore,
@@ -26,15 +28,16 @@ public class CuratoreController {
     private final ProdottoService prodottoService;
     private final EventoService eventoService;
     private final PacchettoService pacchettoService;
+    private final DTOMapper mapper;
 
-    /**
-     * Costruttore del CuratoreController.
-     * Inietta i service specifici per prodotti ed eventi.
-     */
-    public CuratoreController(ProdottoService prodottoService, EventoService eventoService, PacchettoService pacchettoService) {
+    public CuratoreController(ProdottoService prodottoService,
+                              EventoService eventoService,
+                              PacchettoService pacchettoService,
+                              DTOMapper mapper) {
         this.prodottoService = prodottoService;
         this.eventoService = eventoService;
         this.pacchettoService = pacchettoService;
+        this.mapper = mapper;
     }
 
     /**
@@ -46,9 +49,22 @@ public class CuratoreController {
     @GetMapping("/da-approvare")
     public List<Object> getContenutiInAttesa() {
         List<Object> contenuti = new ArrayList<>();
-        contenuti.addAll(prodottoService.getProdottiInAttesa());
-        contenuti.addAll(eventoService.getEventiInAttesa());
-        contenuti.addAll(pacchettoService.getPacchettiInAttesa());
+
+        //PRODOTTI
+        contenuti.addAll(prodottoService.getProdottiInAttesa().stream()
+                .map(mapper::toProdottoDTO)
+                .collect(Collectors.toList()));
+
+        //EVENTI
+        contenuti.addAll(eventoService.getEventiInAttesa().stream()
+                .map(mapper::toEventoDTO)
+                .collect(Collectors.toList()));
+
+        //PACCHETTI
+        contenuti.addAll(pacchettoService.getPacchettiInAttesa().stream()
+                .map(mapper::toPacchettoDTO)
+                .collect(Collectors.toList()));
+
         return contenuti;
     }
 
@@ -66,19 +82,26 @@ public class CuratoreController {
                                                    Authentication authentication,
                                                    @RequestBody(required = false) ValutazioneRichiestaDTO dto) {
 
-        String curatoreEmail = authentication.getName();
         String note = (dto != null && dto.motivazione() != null) ? dto.motivazione() : "Approvato via API";
 
         try {
-            //questo metodo nel service ha il controllo che blocca se non è in ATTESA
+            //PRODOTTO
             prodottoService.approvaProdotto(contenutoId, note);
             return ResponseEntity.ok("Prodotto " + contenutoId + " approvato.");
 
         } catch (IllegalStateException eStato) {
             throw eStato;
         } catch (RuntimeException eProdottoNotFound) {
-            eventoService.approvaEvento(contenutoId, note);
-            return ResponseEntity.ok("Evento " + contenutoId + " approvato.");
+            try {
+                //EVENTO
+                eventoService.approvaEvento(contenutoId, note);
+                return ResponseEntity.ok("Evento " + contenutoId + " approvato.");
+
+            } catch (RuntimeException eEventoNotFound) {
+                //PACCHETTO
+                pacchettoService.approvaPacchetto(contenutoId, note);
+                return ResponseEntity.ok("Pacchetto " + contenutoId + " approvato.");
+            }
         }
     }
 
@@ -96,7 +119,6 @@ public class CuratoreController {
                                                    Authentication authentication,
                                                    @Valid @RequestBody ValutazioneRichiestaDTO dto) {
 
-        String curatoreEmail = authentication.getName();
         if (!"RIFIUTA".equalsIgnoreCase(dto.azione())) {
             return ResponseEntity.badRequest().body("L'azione deve essere RIFIUTA per questo endpoint");
         }
@@ -104,14 +126,23 @@ public class CuratoreController {
         String motivo = dto.motivazione();
 
         try {
+            //PRODOTTO
             prodottoService.rifiutaProdotto(contenutoId, motivo);
             return ResponseEntity.ok("Prodotto " + contenutoId + " rifiutato.");
 
         } catch (IllegalStateException eStato) {
             throw eStato;
         } catch (RuntimeException eProdottoNotFound) {
-            eventoService.rifiutaEvento(contenutoId, motivo);
-            return ResponseEntity.ok("Evento " + contenutoId + " rifiutato.");
+            try {
+                //EVENTO
+                eventoService.rifiutaEvento(contenutoId, motivo);
+                return ResponseEntity.ok("Evento " + contenutoId + " rifiutato.");
+
+            } catch (RuntimeException eEventoNotFound) {
+                //PACCHETTO
+                pacchettoService.rifiutaPacchetto(contenutoId, motivo);
+                return ResponseEntity.ok("Pacchetto " + contenutoId + " rifiutato.");
+            }
         }
     }
 }

@@ -96,14 +96,15 @@ public class EventoService {
             throw new SecurityException("L'utente non ha il ruolo di ANIMATORE");
         }
 
-        Evento evento = new Evento(
-                eventoInput.getNome(),
-                eventoInput.getDescrizione(),
-                animatore,
-                eventoInput.getDataEvento(),
-                eventoInput.getIndirizzo(),
-                eventoInput.getPostiDisponibili()
-        );
+        Evento evento = new EventoBuilder()
+                .nome(eventoInput.getNome())
+                .descrizione(eventoInput.getDescrizione())
+                .animatore(animatore)
+                .data(eventoInput.getDataEvento())
+                .luogo(eventoInput.getIndirizzo())
+                .posti(eventoInput.getPostiDisponibili())
+                .condividiSuSocial(true)
+                .build();
 
         return eventoRepository.save(evento);
     }

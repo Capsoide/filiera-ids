@@ -38,6 +38,7 @@ public class PacchettoService {
         Venditore venditore = getVenditore(venditoreEmail);
 
         pacchettoInput.setVenditore(venditore);
+        pacchettoInput.setCondivisioneSocial(true);
         pacchettoInput.setStatoConferma(Conferma.ATTESA);
 
         return pacchettoRepository.save(pacchettoInput);

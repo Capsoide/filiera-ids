@@ -79,6 +79,9 @@ public class ProdottoService {
         if (prodottoInput.getDataProduzione() == null) {
             prodottoInput.setDataProduzione(new Date());
         }
+
+        prodottoInput.setCondivisioneSocial(true);
+
         prodottoInput.setVenditore(venditore);
 
         venditore.addProdotto(prodottoInput);

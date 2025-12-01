@@ -35,12 +35,12 @@ public class Prodotto extends Contenuto {
                     String nome,
                     String metodoDiColtivazione,
                     double prezzo,
-                    Venditore produttore, //NOTA per mat e marty, quando fate il costruttore, come in sto caso siate precisi, il prodotto è di un venditore non di utente
+                    Venditore produttore,
                     List<String> certificazioni,
                     Date dataProduzione,
                     int quantita) {
 
-        super(Conferma.ATTESA, dataCaricamento, descrizione);
+        super(Conferma.ATTESA, dataCaricamento, descrizione, false);
         this.nome = nome;
         this.metodoDiColtivazione = metodoDiColtivazione;
         this.certificazioni = (certificazioni != null) ? certificazioni : new ArrayList<>();

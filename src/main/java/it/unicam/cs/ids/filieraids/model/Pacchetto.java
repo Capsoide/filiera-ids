@@ -26,7 +26,7 @@ public class Pacchetto extends Contenuto {
     }
 
     public Pacchetto(String nome, String descrizione, double prezzo, Venditore venditore) {
-        super(Conferma.ATTESA, new Date(), descrizione);
+        super(Conferma.ATTESA, new Date(), descrizione, false);
         this.nome = nome;
         this.prezzo = prezzo;
         this.venditore = venditore;

@@ -5,6 +5,7 @@ import it.unicam.cs.ids.filieraids.mapper.DTOMapper;
 import it.unicam.cs.ids.filieraids.service.EventoService;
 import it.unicam.cs.ids.filieraids.service.PacchettoService;
 import it.unicam.cs.ids.filieraids.service.ProdottoService;
+import it.unicam.cs.ids.filieraids.service.CuratoreService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @PreAuthorize("hasRole('CURATORE')")
 public class CuratoreController {
 
+    private final CuratoreService curatoreService;
     private final ProdottoService prodottoService;
     private final EventoService eventoService;
     private final PacchettoService pacchettoService;
@@ -33,11 +35,12 @@ public class CuratoreController {
     public CuratoreController(ProdottoService prodottoService,
                               EventoService eventoService,
                               PacchettoService pacchettoService,
-                              DTOMapper mapper) {
+                              DTOMapper mapper, CuratoreService curatoreService) {
         this.prodottoService = prodottoService;
         this.eventoService = eventoService;
         this.pacchettoService = pacchettoService;
         this.mapper = mapper;
+        this.curatoreService = curatoreService;
     }
 
     /**
@@ -84,24 +87,14 @@ public class CuratoreController {
 
         String note = (dto != null && dto.motivazione() != null) ? dto.motivazione() : "Approvato via API";
 
+        String curatoreEmail = authentication.getName();
+
+        // USIAMO IL SERVICE GENERALE CHE LANCIA L'EVENTO
         try {
-            //PRODOTTO
-            prodottoService.approvaProdotto(contenutoId, note);
-            return ResponseEntity.ok("Prodotto " + contenutoId + " approvato.");
-
-        } catch (IllegalStateException eStato) {
-            throw eStato;
-        } catch (RuntimeException eProdottoNotFound) {
-            try {
-                //EVENTO
-                eventoService.approvaEvento(contenutoId, note);
-                return ResponseEntity.ok("Evento " + contenutoId + " approvato.");
-
-            } catch (RuntimeException eEventoNotFound) {
-                //PACCHETTO
-                pacchettoService.approvaPacchetto(contenutoId, note);
-                return ResponseEntity.ok("Pacchetto " + contenutoId + " approvato.");
-            }
+            curatoreService.approvaContenuto(contenutoId, curatoreEmail, note);
+            return ResponseEntity.ok("Contenuto " + contenutoId + " approvato correttamente (Observer notificato).");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Errore nell'approvazione: " + e.getMessage());
         }
     }
 
@@ -125,24 +118,13 @@ public class CuratoreController {
 
         String motivo = dto.motivazione();
 
+        String curatoreEmail = authentication.getName();
+
         try {
-            //PRODOTTO
-            prodottoService.rifiutaProdotto(contenutoId, motivo);
-            return ResponseEntity.ok("Prodotto " + contenutoId + " rifiutato.");
-
-        } catch (IllegalStateException eStato) {
-            throw eStato;
-        } catch (RuntimeException eProdottoNotFound) {
-            try {
-                //EVENTO
-                eventoService.rifiutaEvento(contenutoId, motivo);
-                return ResponseEntity.ok("Evento " + contenutoId + " rifiutato.");
-
-            } catch (RuntimeException eEventoNotFound) {
-                //PACCHETTO
-                pacchettoService.rifiutaPacchetto(contenutoId, motivo);
-                return ResponseEntity.ok("Pacchetto " + contenutoId + " rifiutato.");
-            }
+            curatoreService.rifiutaContenuto(contenutoId, curatoreEmail, motivo);
+            return ResponseEntity.ok("Contenuto " + contenutoId + " rifiutato.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Errore nel rifiuto: " + e.getMessage());
         }
     }
 }

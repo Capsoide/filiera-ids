@@ -29,7 +29,7 @@ public class Evento extends Contenuto {
     }
 
     public Evento(String nome, String descrizione, Attore animatore, Date dataEvento, Indirizzo indirizzo, int postiDisponibili){
-        super(Conferma.ATTESA, new Date(), descrizione);
+        super(Conferma.ATTESA, new Date(), descrizione, false);
         this.nome = nome;
         this.animatore = animatore;
         this.dataEvento = dataEvento;

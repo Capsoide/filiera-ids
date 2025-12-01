@@ -2,9 +2,11 @@ package it.unicam.cs.ids.filieraids.service;
 import it.unicam.cs.ids.filieraids.repository.*;
 import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.repository.AutorizzazioneRepository;
+import it.unicam.cs.ids.filieraids.event.ContenutoApprovatoEvent;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 
@@ -14,13 +16,15 @@ public class CuratoreService {
     private final AutorizzazioneRepository autorizzazioneRepository;
     private final ContenutoRepository contenutoRepository;
     private final AttoreRepository attoreRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public CuratoreService(AutorizzazioneRepository autorizzazioneRepository,
                            ContenutoRepository contenutoRepository,
-                           AttoreRepository attoreRepository) {
+                           AttoreRepository attoreRepository, ApplicationEventPublisher eventPublisher) {
         this.autorizzazioneRepository = autorizzazioneRepository;
         this.contenutoRepository = contenutoRepository;
         this.attoreRepository = attoreRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public List<Contenuto> getContenutiInAttesa() {
@@ -49,6 +53,8 @@ public class CuratoreService {
 
         contenutoDB.setStatoConferma(Conferma.APPROVATO);
         contenutoRepository.save(contenutoDB);
+
+        eventPublisher.publishEvent(new ContenutoApprovatoEvent(contenutoDB));
 
         Autorizzazione log = new Autorizzazione(curatore, contenutoDB, motivo, true);
         autorizzazioneRepository.save(log);

@@ -2,6 +2,7 @@ package it.unicam.cs.ids.filieraids.service;
 
 import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.repository.*;
+import it.unicam.cs.ids.filieraids.builder.*;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,15 +97,17 @@ public class EventoService {
             throw new SecurityException("L'utente non ha il ruolo di ANIMATORE");
         }
 
-        Evento evento = new EventoBuilder()
-                .nome(eventoInput.getNome())
-                .descrizione(eventoInput.getDescrizione())
-                .animatore(animatore)
-                .data(eventoInput.getDataEvento())
-                .luogo(eventoInput.getIndirizzo())
-                .posti(eventoInput.getPostiDisponibili())
-                .condividiSuSocial(true)
-                .build();
+        //istanza del concrete builder
+        IEventoBuilder builder = new EventoConcreteBuilder();
+
+        //istanza del director
+        EventoDirector director = new EventoDirector();
+
+        //ordina al director di costruire l'evento usando quel builder e quei dati
+        director.costruisciEventoCompleto(builder, eventoInput, animatore);
+
+        //recupera il prodotto finito dal builder
+        Evento evento = builder.getResult();
 
         return eventoRepository.save(evento);
     }

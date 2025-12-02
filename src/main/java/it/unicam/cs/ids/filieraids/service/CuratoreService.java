@@ -2,29 +2,50 @@ package it.unicam.cs.ids.filieraids.service;
 import it.unicam.cs.ids.filieraids.repository.*;
 import it.unicam.cs.ids.filieraids.model.*;
 import it.unicam.cs.ids.filieraids.repository.AutorizzazioneRepository;
-import it.unicam.cs.ids.filieraids.event.ContenutoApprovatoEvent;
+
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.context.ApplicationEventPublisher;
 
-import java.util.List;
+import java.util.*;
 
 @Service
-public class CuratoreService {
+public class CuratoreService implements ContenutoSubject {
 
     private final AutorizzazioneRepository autorizzazioneRepository;
     private final ContenutoRepository contenutoRepository;
     private final AttoreRepository attoreRepository;
-    private final ApplicationEventPublisher eventPublisher;
+
+    private final List<ContenutoObserver> observers = new ArrayList<>();
 
     public CuratoreService(AutorizzazioneRepository autorizzazioneRepository,
                            ContenutoRepository contenutoRepository,
-                           AttoreRepository attoreRepository, ApplicationEventPublisher eventPublisher) {
+                           AttoreRepository attoreRepository,
+                           List<ContenutoObserver> existingObservers) { //springboot trova automaticamente SocialService e lo mette nella lista
         this.autorizzazioneRepository = autorizzazioneRepository;
         this.contenutoRepository = contenutoRepository;
         this.attoreRepository = attoreRepository;
-        this.eventPublisher = eventPublisher;
+
+        //riempio la lista con gli observer trovati
+        this.observers.addAll(existingObservers);
+    }
+
+    //metodi interfaccia subject
+    @Override
+    public void addObserver(ContenutoObserver observer) {
+        this.observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(ContenutoObserver observer) {
+        this.observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(Contenuto contenuto) {
+        for (ContenutoObserver observer : observers) {
+            observer.update(contenuto);
+        }
     }
 
     public List<Contenuto> getContenutiInAttesa() {
@@ -43,7 +64,6 @@ public class CuratoreService {
 
     @Transactional
     public Autorizzazione approvaContenuto(Long contenutoId, String curatoreEmail, String motivo) {
-        // Cerca l'attore e il contenuto qui nel service
         Attore curatore = getCuratoreByEmail(curatoreEmail);
         Contenuto contenutoDB = getContenutoById(contenutoId);
 
@@ -54,12 +74,14 @@ public class CuratoreService {
         contenutoDB.setStatoConferma(Conferma.APPROVATO);
         contenutoRepository.save(contenutoDB);
 
-        eventPublisher.publishEvent(new ContenutoApprovatoEvent(contenutoDB));
+        //chiamata notifica manuale
+        System.out.println("DEBUG CURATORE: Notifico " + observers.size() + " osservatori...");
+        notifyObservers(contenutoDB);
 
         Autorizzazione log = new Autorizzazione(curatore, contenutoDB, motivo, true);
         autorizzazioneRepository.save(log);
 
-        System.out.println("Contenuto ID " + contenutoDB.getId() + " APPROVATO dal curatore: " + curatore.getEmail());
+        System.out.println("Contenuto ID " + contenutoDB.getId() + " APPROVATO dal curatore.");
         return log;
     }
 

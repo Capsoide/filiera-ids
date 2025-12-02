@@ -21,7 +21,7 @@ public class EventoDirector {
         builder.buildLuogo(datiInput.getIndirizzo());
         builder.buildPosti(datiInput.getPostiDisponibili());
 
-        //gli eventi creati in questo modo vanno condivisi sui social
+        // Logica del Director: Gli eventi creati in questo modo vanno condivisi sui social
         builder.buildCondivisioneSocial(true);
     }
 }

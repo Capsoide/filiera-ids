@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/prodotti/catalogo").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/eventi/visibili/**").permitAll()
                         //.requestMatchers(HttpMethod.GET, "/api/pacchetti/visibili/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/prodotti/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/mappa").permitAll()
 
                         .requestMatchers("/h2-console/**").permitAll()

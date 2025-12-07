@@ -32,7 +32,7 @@ Il progetto segue un'architettura a livelli (Controller, Service, Repository, Mo
 
 1.  **Clonare il repository:**
     ```bash
-    git clone [https://github.com/Capsoide/filiera-ids.git]
+    git clone https://github.com/Capsoide/filiera-ids.git
     cd filiera-ids
     ```
 
@@ -53,7 +53,6 @@ L'applicazione sarà disponibile all'indirizzo: `http://localhost:8080`
 
 L'interazione avviene tramite API REST. Di seguito alcuni degli endpoint principali:
 
-* **Auth:** `POST /api/auth/login` (Autenticazione)
 * **Eventi:** `POST /api/eventi` (Creazione evento - Richiede ruolo Animatore)
 * **Prodotti:** `GET /api/prodotti/catalogo` (Visualizzazione catalogo)
 * **Curatore:** `POST /api/curatore/approva/{id}` (Approvazione contenuti)

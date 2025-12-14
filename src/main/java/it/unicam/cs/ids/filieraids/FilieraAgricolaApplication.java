@@ -56,12 +56,20 @@ public class FilieraAgricolaApplication {
                     "paolo.verdi@email.com", passwordEncoder.encode("passV1"), "Paolo", "Verdi",
                     "111222333", "Azienda Agricola Verdi", Set.of(Ruolo.PRODUTTORE)
             );
+            v1.addIndirizzo(new Indirizzo(
+                    "Via dei Velini", "15", "Macerata", "62100", "Marche",
+                    43.2980, 13.4500
+            ));
             v1.setEnabled(true);
 
             Venditore v2 = new Venditore(
                     "maria.bianchi@email.com", passwordEncoder.encode("passV2"), "Maria", "Bianchi",
                     "444555666", "Oleificio Bianchi", Set.of(Ruolo.TRASFORMATORE, Ruolo.DISTRIBUTORE)
             );
+            v2.addIndirizzo(new Indirizzo(
+                    "Piazza Arringo", "2", "Ascoli Piceno", "63100", "Marche",
+                    42.8530, 13.5750
+            ));
             v2.setEnabled(true);
 
             Utente curatore = new Utente("curatore@email.com", passwordEncoder.encode("passCuratore"), "Giulia", "Neri");

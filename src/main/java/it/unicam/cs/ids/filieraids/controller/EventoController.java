@@ -126,9 +126,13 @@ public class EventoController {
      */
     @GetMapping("/{id}/prenotazioni")
     @PreAuthorize("hasRole('ANIMATORE')")
-    public ResponseEntity<List<Prenotazione>> getPrenotazioniPerEvento(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<List<PrenotazioneRispostaDTO>> getPrenotazioniPerEvento(@PathVariable Long id, Authentication authentication) {
         String animatoreEmail = authentication.getName();
-        return ResponseEntity.ok(eventoService.getPrenotazioniPerEvento(id, animatoreEmail));
+        List<Prenotazione> prenotazioni = eventoService.getPrenotazioniPerEvento(id, animatoreEmail);
+        List<PrenotazioneRispostaDTO> dtoResponse = prenotazioni.stream()
+                .map(mapper::toPrenotazioneDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoResponse);
     }
 
     /**

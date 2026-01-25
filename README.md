@@ -56,7 +56,7 @@ L'interazione avviene tramite API REST. Di seguito alcuni degli endpoint princip
 * **Eventi:** `POST /api/eventi` (Creazione evento - Richiede ruolo Animatore)
 * **Prodotti:** `GET /api/prodotti/catalogo` (Visualizzazione catalogo)
 * **Curatore:** `POST /api/curatore/approva/{id}` (Approvazione contenuti)
-* **Ordini:** `POST /api/ordini` (Checkout carrello)
+* **Ordini:** `POST /api/ordini` (Checkout carrello)     
 
 
 ## Testing

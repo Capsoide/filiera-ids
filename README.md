@@ -62,4 +62,4 @@ L'interazione avviene tramite API REST. Di seguito alcuni degli endpoint princip
 ## Testing
 
 Per testare le funzionalità è possibile utilizzare **Postman**.
-Assicurarsi di includere l'header di autenticazione (Basic Auth o Bearer Token) per gli endpoint protetti.
+Assicurarsi di includere l'header di autenticazione (Basic Auth) per gli endpoint protetti.

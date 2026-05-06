@@ -465,12 +465,18 @@ Rifiuta richiesta
 
 ---
 
-# Note
+## Note
 
-* Autenticazione: Basic Auth dove richiesto
-* Content-Type: `application/json` per POST e PUT
-* Date: formato ISO 8601
-* Tutti gli ID sono numerici
-* Le query parameters sono utilizzate per operazioni dinamiche
+> [!IMPORTANT]
+> Regole generali delle API
+
+> [!NOTE]
+> - Autenticazione: Basic Auth dove richiesto  
+> - Content-Type: `application/json` per POST e PUT  
+
+> [!TIP]
+> - Date: formato ISO 8601  
+> - Tutti gli ID sono numerici  
+> - Uso di query parameters per operazioni dinamiche  
 
 ---

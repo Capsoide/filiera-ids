@@ -51,46 +51,417 @@ L'applicazione sarà disponibile all'indirizzo: `http://localhost:8080`
 
 ## API Endpoints
 
-L'interazione avviene tramite API REST. Di seguito sono riportati gli endpoint:
+L'interazione avviene tramite API REST.
 
-### API Pubbliche (No Auth)
-* **Vedere Catalogo Prodotti:** `GET /api/prodotti/catalogo`
-* **Vedere Prodotto Specifico:** `GET /api/prodotti/2 ` (2: n. prodotto)
-* **Vedere Tutti Eventi (Visibili):** `GET /api/eventi/visibili `
-* **Vedere Punti OSM Azienda Agricola:** `GET /api/mappa `
+## Base URL
 
-### Login Acquirente 
-* **Registrazione Nuovo Acquirente:** `POST /api/auth/registra/acquirente`
-  
-    **Request Body:**
-    ```json
+```
+http://localhost:8080/api
+```
+
+---
+
+# API PUBBLICHE (NO AUTH)
+
+## Catalogo Prodotti
+
+### GET `/prodotti/catalogo`
+
+* Descrizione: Recupero catalogo completo prodotti
+* Auth: NO
+
+---
+
+## Prodotto specifico
+
+### GET `/prodotti/{id}`
+
+* Esempio: `/prodotti/2`
+* Auth: NO
+
+---
+
+## Eventi visibili
+
+### GET `/eventi/visibili`
+
+* Auth: NO
+
+---
+
+## Mappa aziende agricole
+
+### GET `/mappa`
+
+* Auth: NO
+
+---
+
+# ACQUIRENTE
+
+## Registrazione
+
+### POST `/auth/registra/acquirente`
+
+```json
+{
+  "email": "string",
+  "password": "string",
+  "nome": "string",
+  "cognome": "string",
+  "indirizzo": {
+    "via": "string",
+    "numCivico": "string",
+    "comune": "string",
+    "cap": "string",
+    "regione": "string"
+  }
+}
+```
+
+---
+
+## Catalogo (autenticato)
+
+### GET `/prodotti/catalogo`
+
+* Auth: Basic
+
+---
+
+## Visualizza carrello
+
+### GET `/carrello`
+
+* Auth: Basic
+
+---
+
+## Aggiungi prodotto al carrello
+
+### POST `/carrello/aggiungi`
+
+```json
+{
+  "prodottoId": number,
+  "quantita": number
+}
+```
+
+---
+
+## Aggiungi pacchetto
+
+### POST `/carrello/aggiungi-pacchetto`
+
+```json
+{
+  "prodottoId": number,
+  "quantita": number
+}
+```
+
+---
+
+## Diminuisci prodotto
+
+### POST `/carrello/diminuisci`
+
+```json
+{
+  "prodottoId": number,
+  "quantita": number
+}
+```
+
+---
+
+## Crea ordine
+
+### POST `/ordini`
+
+---
+
+## Storico ordini
+
+### GET `/ordini`
+
+---
+
+## Prenotazione evento
+
+### POST `/prenotazioni/eventi/{id}?numeroPosti=X`
+
+* Esempio: `/prenotazioni/eventi/6?numeroPosti=20`
+
+---
+
+# VENDITORE
+
+## Registrazione
+
+### POST `/auth/registra/venditore`
+
+```json
+{
+  "email": "string",
+  "password": "string",
+  "nome": "string",
+  "cognome": "string",
+  "piva": "string",
+  "descrizione": "string",
+  "ruoli": ["PRODUTTORE"],
+  "indirizzo": {
+    "via": "string",
+    "numCivico": "string",
+    "cap": "string",
+    "comune": "string",
+    "regione": "string",
+    "latitudine": number,
+    "longitudine": number
+  }
+}
+```
+
+---
+
+## Crea prodotto
+
+### POST `/prodotti`
+
+```json
+{
+  "nome": "string",
+  "descrizione": "string",
+  "metodoDiColtivazione": "string",
+  "prezzo": number,
+  "quantita": number,
+  "certificazioni": ["string"],
+  "dataProduzione": "ISO_DATE"
+}
+```
+
+---
+
+## Elimina prodotto
+
+### DELETE `/prodotti/{id}`
+
+* Nota: quantità deve essere 0
+
+---
+
+## Modifica prodotto
+
+### PUT `/prodotti/{id}`
+
+---
+
+## Crea pacchetto
+
+### POST `/pacchetti`
+
+```json
+{
+  "nome": "string",
+  "descrizione": "string",
+  "prezzo": number,
+  "items": [
     {
-      "email": "capsoide.123@email.com",
-      "password": "capsoideloco!",
-      "nome": "Nic",
-      "cognome": "Caps",
-      "indirizzo": {
-        "via": "Via a Caso",
-        "numCivico": "99",
-        "comune": "fermo",
-        "cap": "63900",
-        "regione": "Marche"
-      }
+      "prodottoId": number,
+      "quantita": number
     }
-    ```
+  ]
+}
+```
 
-* **Vedere Carrello Nuovo Acquirente (Basic Auth):** `GET /api/carrello`
-* **Aggiungi Prodotto al Carrello (Basic Auth):** 
+---
 
+## Vedi inviti
 
+### GET `/venditori/inviti`
 
-* **Eventi:** `POST /api/eventi` (Creazione evento - Richiede ruolo Animatore)
-* **Prodotti:** `GET /api/prodotti/catalogo` (Visualizzazione catalogo)
-* **Curatore:** `POST /api/curatore/approva/{id}` (Approvazione contenuti)
-* **Ordini:** `POST /api/ordini` (Checkout carrello)     
+---
 
+## Prodotti del venditore
 
-## Testing
+### GET `/prodotti/miei`
 
-Per testare le funzionalità è possibile utilizzare **Postman**.
-Assicurarsi di includere l'header di autenticazione (Basic Auth) per gli endpoint protetti.
+---
+
+## Ordini ricevuti
+
+### GET `/ordini/venditore`
+
+---
+
+## Rispondi invito
+
+### PUT `/venditori/inviti/{id}/rispondi`
+
+```json
+{
+  "azione": "ACCETTA | RIFIUTA"
+}
+```
+
+---
+
+# TEST CARRELLO
+
+## Aggiunta parziale
+
+### POST `/carrello/aggiungi`
+
+---
+
+## Rimozione parziale
+
+### POST `/carrello/diminuisci?prodottoId=X&quantita=Y`
+
+---
+
+## Rimozione completa
+
+### POST `/carrello/diminuisci?prodottoId=X&quantita=99`
+
+---
+
+## Svuota carrello
+
+### DELETE `/carrello/svuota`
+
+---
+
+# ANIMATORE
+
+## Registrazione
+
+### POST `/auth/registra/staff`
+
+```json
+{
+  "email": "string",
+  "password": "string",
+  "nome": "string",
+  "cognome": "string",
+  "ruoloRichiesto": "ANIMATORE"
+}
+```
+
+---
+
+## Crea evento
+
+### POST `/eventi`
+
+---
+
+## Elimina evento
+
+### DELETE `/eventi/{id}`
+
+---
+
+## Modifica evento
+
+### PUT `/eventi/{id}`
+
+---
+
+## Invita venditore
+
+### POST `/eventi/{idEvento}/invita/{idVenditore}`
+
+---
+
+## Eventi miei
+
+### GET `/eventi/miei`
+
+---
+
+## Invitati evento
+
+### GET `/eventi/{id}/invitati`
+
+---
+
+## Prenotazioni evento
+
+### GET `/eventi/{id}/prenotazioni`
+
+---
+
+# CURATORE
+
+## Registrazione
+
+### POST `/auth/registra/staff`
+
+```json
+{
+  "email": "string",
+  "password": "string",
+  "nome": "string",
+  "cognome": "string",
+  "ruoloRichiesto": "CURATORE"
+}
+```
+
+---
+
+## Approva evento/contenuto
+
+### POST `/curatore/approva/{id}`
+
+---
+
+## Rifiuta evento/contenuto
+
+### POST `/curatore/rifiuta/{id}`
+
+```json
+{
+  "azione": "RIFIUTA",
+  "motivazione": "string"
+}
+```
+
+---
+
+## Contenuti da approvare
+
+### GET `/curatore/da-approvare`
+
+---
+
+# GESTORE
+
+## Richieste ruolo
+
+### GET `/gestore/richieste-in-attesa`
+
+---
+
+## Approva richiesta
+
+### POST `/gestore/approva/{id}`
+
+---
+
+## Rifiuta richiesta
+
+### POST `/gestore/rifiuta/{id}`
+
+---
+
+# NOTE IMPORTANTI
+
+* Autenticazione: **Basic Auth** dove richiesto
+* Content-Type: `application/json` per tutte le POST/PUT con body
+* Date: formato ISO 8601
+* Tutti gli ID sono numerici
+* Le query parameters sono usate per operazioni dinamiche (es. carrello, prenotazioni)
+
+---

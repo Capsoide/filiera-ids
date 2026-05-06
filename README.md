@@ -465,8 +465,6 @@ Rifiuta richiesta
 
 ---
 
-## Note
-
 > [!IMPORTANT]
 > Regole generali delle API
 

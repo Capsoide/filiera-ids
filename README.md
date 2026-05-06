@@ -80,6 +80,17 @@ http://localhost:8080/api
 ---
 
 # API PUBBLICHE
+> [!IMPORTANT]
+> Regole generali delle API
+
+> [!NOTE]
+> - Autenticazione: Basic Auth dove richiesto  
+> - Content-Type: `application/json` per POST e PUT  
+
+> [!TIP]
+> - Date: formato ISO 8601  
+> - Tutti gli ID sono numerici  
+> - Uso di query parameters per operazioni dinamiche  
 
 ## GET /prodotti/catalogo
 
@@ -465,16 +476,6 @@ Rifiuta richiesta
 
 ---
 
-> [!IMPORTANT]
-> Regole generali delle API
 
-> [!NOTE]
-> - Autenticazione: Basic Auth dove richiesto  
-> - Content-Type: `application/json` per POST e PUT  
-
-> [!TIP]
-> - Date: formato ISO 8601  
-> - Tutti gli ID sono numerici  
-> - Uso di query parameters per operazioni dinamiche  
 
 ---

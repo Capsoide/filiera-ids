@@ -61,6 +61,7 @@ L'interazione avviene tramite API REST. Di seguito sono riportati gli endpoint:
 
 ### Login Acquirente
 * **Registrazione Nuovo Acquirente:** `POST /api/auth/registra/acquirente`
+  
 Request Body:
 {
     "email": "mattia.iobbi@email.com",

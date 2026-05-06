@@ -479,9 +479,9 @@ Rifiuta richiesta
 
 ## Autori
 
-- Capsoide — [GitHub](https://github.com/Capsoide)
-- iobbins — [GitHub](https://github.com/iobbins)
-- tinafrolls23 — [GitHub](https://github.com/tinafrolls23)
+- [Capsoide](https://github.com/Capsoide)
+- [iobbins](https://github.com/iobbins)
+- [tinafrolls23](https://github.com/tinafrolls23)
 
 
 ---

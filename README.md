@@ -49,9 +49,33 @@ Il progetto segue un'architettura a livelli (Controller, Service, Repository, Mo
 L'applicazione sarà disponibile all'indirizzo: `http://localhost:8080`
 
 
-## API Endpoints Principali
+## API Endpoints
 
-L'interazione avviene tramite API REST. Di seguito alcuni degli endpoint principali:
+L'interazione avviene tramite API REST. Di seguito sono riportati gli endpoint:
+
+### API Pubbliche (No Auth)
+* **Vedere Catalogo Prodotti:** `GET /api/prodotti/catalogo`
+* **Vedere Prodotto Specifico:** `GET /api/prodotti/2 ` (2: n. prodotto)
+* **Vedere Tutti Eventi (Visibili):** `GET /api/eventi/visibili `
+* **Vedere Punti OSM Azienda Agricola:** `GET /api/mappa `
+
+### Login Acquirente
+* **Registrazione Nuovo Acquirente:** `POST /api/auth/registra/acquirente`
+Request Body:
+{
+    "email": "mattia.iobbi@email.com",
+    "password": "matiobbi123!",
+    "nome": "Mattia",
+    "cognome": "Iobbi",
+    "indirizzo": {
+        "via": "Via a Caso",
+        "numCivico": "99",
+        "comune": "fermo",
+        "cap": "63900",
+        "regione": "Marche"
+    }
+}
+
 
 * **Eventi:** `POST /api/eventi` (Creazione evento - Richiede ruolo Animatore)
 * **Prodotti:** `GET /api/prodotti/catalogo` (Visualizzazione catalogo)

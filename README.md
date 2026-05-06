@@ -70,16 +70,6 @@ http://localhost:8080
 ---
 
 ## API REST
-
-### Base URL
-
-```
-http://localhost:8080/api
-```
-
----
-
-# API PUBBLICHE
 > [!IMPORTANT]
 > Regole generali delle API
 
@@ -91,6 +81,16 @@ http://localhost:8080/api
 > - Date: formato ISO 8601  
 > - Tutti gli ID sono numerici  
 > - Uso di query parameters per operazioni dinamiche  
+
+### Base URL
+
+```
+http://localhost:8080/api
+```
+
+---
+
+# API PUBBLICHE
 
 ## GET /prodotti/catalogo
 

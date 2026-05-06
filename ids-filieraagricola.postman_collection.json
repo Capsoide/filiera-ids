@@ -1,0 +1,1743 @@
+{
+	"info": {
+		"_postman_id": "5d2e4d1f-5206-45f7-bf7b-608250d94899",
+		"name": "ids-filieraagricola",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49865344",
+		"_collection_link": "https://nicola-capancioni-3716610.postman.co/workspace/NICOLA-CAPANCIONI's-Workspace~6b9190f8-102b-43aa-8552-14fb20ce2709/collection/49865344-5d2e4d1f-5206-45f7-bf7b-608250d94899?action=share&source=collection_link&creator=49865344"
+	},
+	"item": [
+		{
+			"name": "API PUBBLICHE (NO AUTH)",
+			"item": [
+				{
+					"name": "Vedi Catologo Prodotti",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/prodotti/catalogo",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"prodotti",
+								"catalogo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Vedere prodotto Specifico",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/prodotti/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"prodotti",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Vedi tutti eventi (visibili)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/eventi/visibili",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"eventi",
+								"visibili"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Vedi punti osm azienda agricola",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/mappa",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"mappa"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login con Acquirente",
+			"item": [
+				{
+					"name": "Registrazione nuovo acquirente",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"mattia.iobbi@email.com\",\r\n    \"password\": \"matiobbi123!\",\r\n    \"nome\": \"Mattia\",\r\n    \"cognome\": \"Iobbi\",\r\n    \"indirizzo\": {\r\n        \"via\": \"Via a Caso\",\r\n        \"numCivico\": \"99\",\r\n        \"comune\": \"fermo\",\r\n        \"cap\": \"63900\",\r\n        \"regione\": \"Marche\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/registra/acquirente",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"registra",
+								"acquirente"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Vedere Catalogo",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "nicola.capancioni@studenti.unicam.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/prodotti/catalogo",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"prodotti",
+								"catalogo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vedere carrello (vuoto all'inizio)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "nicola.capancioni@studenti.unicam.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/carrello",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"carrello"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "aggiungi prodotto al carrello",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "matiobbi123!",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "mattia.iobbi@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prodottoId\": 9,\r\n    \"quantita\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/carrello/aggiungi",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"carrello",
+								"aggiungi"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aggiungi pacchetto al carrello",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "matiobbi123!",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "mattia.iobbi@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prodottoId\": 9,\r\n    \"quantita\": 1\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/carrello/aggiungi-pacchetto",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"carrello",
+								"aggiungi-pacchetto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Diminusci prodotto nel carrello",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "nicola.capancioni@studenti.unicam.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prodottoId\": 2,\r\n    \"quantita\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/carrello/diminuisci",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"carrello",
+								"diminuisci"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "crea ordine",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "mattia.iobbi@email.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "matiobbi123!",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/ordini",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"ordini"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vedere storico ordini",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "matiobbi123!",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "mattia.iobbi@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/ordini",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"ordini"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Prenotazione Evento",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "nicola.capancioni@studenti.unicam.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/prenotazioni/eventi/6?numeroPosti=20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"prenotazioni",
+								"eventi",
+								"6"
+							],
+							"query": [
+								{
+									"key": "numeroPosti",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login come Venditore",
+			"item": [
+				{
+					"name": "Registra venditore",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"email\": \"pal@test.com\",\r\n    \"password\": \"passPaolo\",\r\n    \"nome\": \"Paolo\",\r\n    \"cognome\": \"Venditore\", \r\n    \"piva\": \"12345678901\",\r\n    \"descrizione\": \"Fattoria Bio\",\r\n    \"ruoli\": [\"PRODUTTORE\"], \r\n    \"indirizzo\": { \r\n        \"via\": \"Milano\",\r\n        \"numCivico\": \"2\",\r\n        \"cap\": \"20100\",\r\n        \"comune\": \"Milano\", \r\n        \"regione\": \"Lombardia\",\r\n        \"latitudine\": 45.4642,  \r\n        \"longitudine\": 9.1900   \r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/registra/venditore",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"registra",
+								"venditore"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "crea nuovo prodotto",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "pal@test.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "passPaolo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Formaggio \",\r\n    \"descrizione\": \"Formaggio Pecorino Stagionato 12 mesi\",\r\n    \"metodoDiColtivazione\": \"Allevamento a terra\",\r\n    \"prezzo\": 18.50,\r\n    \"quantita\": 100,\r\n    \"certificazioni\": [\"DOP\"],\r\n    \"dataProduzione\": \"2023-11-01T10:00:00.000+00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/prodotti",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"prodotti"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Elimina prodotto (quantità deve essere 0)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/prodotti/{id_prodotto_da_eliminare}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"prodotti",
+								"{id_prodotto_da_eliminare}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modifica prodotto",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "passV1",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "paolo.verdi@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"Miele Bio\",\r\n  \"descrizione\": \"Best Miele in zona\",\r\n  \"metodoDiColtivazione\": \"Biologico\",\r\n  \"prezzo\": 10.00, \r\n  \"quantita\": 50,\r\n  \"certificazioni\": [\"BIO-IT-001\"],\r\n  \"dataProduzione\": \"2023-11-01T10:00:00.000+00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/prodotti/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"prodotti",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crea Pacchetto",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "paoloDistributore@test.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "passPaolo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Pacchetto di Prova\",\r\n    \"descrizione\": \"Pacchetto di prova per testare la chiamata\",\r\n    \"prezzo\": 100,\r\n    \"items\": [\r\n        {\r\n            \"prodottoId\": 5,\r\n            \"quantita\": 1\r\n        },\r\n        {\r\n            \"prodottoId\": 6,\r\n            \"quantita\": 10\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/pacchetti",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"pacchetti"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Vedi inviti",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "passPaolo",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "paoloDistributore@test.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/venditori/inviti",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"venditori",
+								"inviti"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Visualizza lista prodotti di uno spec. venditore",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "passV1",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "paolo.verdi@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/prodotti/miei",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"prodotti",
+								"miei"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ordini Ricevuti",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "passV1",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "paolo.verdi@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/ordini/venditore",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"ordini",
+								"venditore"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Risponde invito (ACCETTA | RIFIUTA)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "passPaolo",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "paoloDistributore@test.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"azione\": \"ACCETTA\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/venditori/inviti/1/rispondi",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"venditori",
+								"inviti",
+								"1",
+								"rispondi"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test Carrello",
+			"item": [
+				{
+					"name": "aggiungere parzialmente",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "nicola.capancioni@studenti.unicam.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prodottoId\": 1,\r\n    \"quantita\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/carrello/aggiungi",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"carrello",
+								"aggiungi"
+							],
+							"query": [
+								{
+									"key": "prodottoId",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "quantita",
+									"value": "5",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rimuovere parzialmente",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "nicola.capancioni@studenti.unicam.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/carrello/diminuisci?prodottoId=2&quantita=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"carrello",
+								"diminuisci"
+							],
+							"query": [
+								{
+									"key": "prodottoId",
+									"value": "2"
+								},
+								{
+									"key": "quantita",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "rimuovi completamente un prodotto (con dimuisci)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "pass123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "nicola.capancioni@studenti.unicam.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/carrello/diminuisci?prodottoId=2&quantita=99",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"carrello",
+								"diminuisci"
+							],
+							"query": [
+								{
+									"key": "prodottoId",
+									"value": "2"
+								},
+								{
+									"key": "quantita",
+									"value": "99"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "svuota carrello",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "matiobbi123!",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "mattia.iobbi@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/carrello/svuota",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"carrello",
+								"svuota"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "checkout con carrello vuoto",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login come Animatore",
+			"item": [
+				{
+					"name": "Registrazione nuovo Animatore",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"mattia.iobbi@test.com\",\r\n    \"password\": \"Iobbins123!\",\r\n    \"nome\": \"mattia\",\r\n    \"cognome\": \"iobbi\",\r\n    \"ruoloRichiesto\": \"ANIMATORE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/registra/staff",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"registra",
+								"staff"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "creazione evento",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "animatore123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "animatore@filiera.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"Fiera Locale\",\r\n  \"descrizione\": \"Evento dedicato agli artigiani della regione Marche.\",\r\n  \"dataEvento\": \"2025-12-20T09:00:00.000+00:00\",\r\n  \"indirizzo\": {\r\n    \"via\": \"Piazza del Popolo\", \"numCivico\": \"1\", \"comune\": \"Fermo\", \"cap\": \"63900\", \"regione\": \"Marche\", \"latitudine\": 43.1610,\r\n        \"longitudine\": 13.7190\r\n  },\r\n  \"postiDisponibili\": 200\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/eventi",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"eventi"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Elimina evento",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "animatore123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "animatore@filiera.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/eventi/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"eventi",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modifica Evento",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "PasswordAnna123!",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "anna.animatore@test.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Fiera dell'Artigianato\",\r\n    \"descrizione\": \"...\",\r\n    \"dataEvento\": \"2025-12-20T09:00:00.000+00:00\",\r\n    \"indirizzo\": {\r\n        \"via\": \"Piazza del Popolo\",\r\n        \"numCivico\": \"1\",\r\n        \"comune\": \"Fermo\",\r\n        \"regione\": \"Marche\",\r\n        \"cap\": \"63900\",\r\n        \"latitudine\": 43.1610, \r\n        \"longitudine\": 13.7190  \r\n    },\r\n    \"postiDisponibili\": 100\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/eventi/8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"eventi",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invia invito a Venditore",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "animatore@filiera.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "animatore123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/eventi/6/invita/9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"eventi",
+								"6",
+								"invita",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lista Eventi Miei",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "animatore123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "animatore@filiera.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/eventi/miei",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"eventi",
+								"miei"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lista Invitati Evento",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "animatore123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "animatore@filiera.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/eventi/6/invitati",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"eventi",
+								"6",
+								"invitati"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Visualizza prenotazioni per evento",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "animatore123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "animatore@filiera.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/eventi/5/prenotazioni",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"eventi",
+								"5",
+								"prenotazioni"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login come Curatore",
+			"item": [
+				{
+					"name": "Registrazione nuovo curatore",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"luigi.curatore@test.com\",\r\n    \"password\": \"PasswordSicura123!\",\r\n    \"nome\": \"Luigi\",\r\n    \"cognome\": \"Verdi\",\r\n    \"ruoloRichiesto\": \"CURATORE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/registra/staff",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"registra",
+								"staff"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approva Evento",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "passCuratore",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "curatore@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/curatore/approva/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"curatore",
+								"approva",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rifiuta Evento (reminder: inserire motivazione nel body)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "passCuratore",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "curatore@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"azione\": \"RIFIUTA\",//non è case sensitive\r\n  \"motivazione\": \"L'evento viola le linee guida della piattaforma\" //non obbligatorio \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/curatore/rifiuta/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"curatore",
+								"rifiuta",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approva contenuto",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "passCuratore",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "curatore@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/curatore/approva/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"curatore",
+								"approva",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rifiuta contenuto",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "passCuratore",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "curatore@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"azione\": \"RIFIUTA\", //non è case sensitive\r\n  \"motivazione\": \"Manca la certificazione BIO in allegato.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/curatore/rifiuta/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"curatore",
+								"rifiuta",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vedi contenuti da approvare",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "passCuratore",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "curatore@email.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/curatore/da-approvare",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"curatore",
+								"da-approvare"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login come Gestore",
+			"item": [
+				{
+					"name": "Vedi richieste ruolo",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "gestore123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "gestore@filiera.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/gestore/richieste-in-attesa",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"gestore",
+								"richieste-in-attesa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approva Richiesta ruolo",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "gestore123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "gestore@filiera.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/gestore/approva/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"gestore",
+								"approva",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rifiuta richiesta ruolo",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "gestore123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "gestore@filiera.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/gestore/rifiuta/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"gestore",
+								"rifiuta",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

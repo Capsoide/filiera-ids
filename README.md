@@ -16,25 +16,48 @@ L'applicazione permette la gestione di:
 
 ---
 
+## Ruoli del Sistema
+
+* **Acquirente:** acquista prodotti e prenota eventi
+* **Venditore:** gestisce prodotti e pacchetti
+* **Animatore:** crea e gestisce eventi
+* **Curatore:** approva o rifiuta contenuti
+* **Gestore:** approva richieste di ruolo
+
+---
+
 ## Architettura e Design Pattern
 
-Il progetto segue un'architettura a livelli:
+Architettura a livelli:
 
 * Controller
 * Service
 * Repository
 * Model
 
-Design pattern utilizzati:
+Design pattern:
 
-* **Builder Pattern (GoF):** utilizzato per la costruzione delle entità `Evento`, separando la logica di creazione dalla rappresentazione
-* **Observer Pattern (GoF):** utilizzato per il sistema di notifiche; il `CuratoreService` notifica il `SocialService` alla validazione dei contenuti
+* **Builder Pattern (GoF):** costruzione controllata dell'entità `Evento`
+* **Observer Pattern (GoF):** notifiche tra `CuratoreService` e `SocialService`
+
+---
+
+## Struttura del Progetto
+
+```
+src/main/java/
+├── controller
+├── service
+├── repository
+├── model
+├── config
+```
 
 ---
 
 ## Requisiti di Sistema
 
-* Java 17 o superiore
+* Java 17+
 * Maven 3.6+
 * Database H2 (default) oppure MySQL
 
@@ -42,22 +65,10 @@ Design pattern utilizzati:
 
 ## Installazione e Avvio
 
-### Clonazione repository
-
 ```bash
 git clone https://github.com/Capsoide/filiera-ids.git
 cd filiera-ids
-```
-
-### Build
-
-```bash
 mvn clean install
-```
-
-### Avvio
-
-```bash
 mvn spring-boot:run
 ```
 
@@ -79,6 +90,31 @@ http://localhost:8080/api
 
 ---
 
+## Panoramica API
+
+* Formato: JSON
+* Autenticazione: Basic Auth
+* Codici HTTP utilizzati:
+
+  * 200 OK
+  * 201 Created
+  * 400 Bad Request
+  * 401 Unauthorized
+  * 404 Not Found
+  * 500 Internal Server Error
+
+---
+
+## Autenticazione
+
+Le API protette utilizzano Basic Auth:
+
+```
+Authorization: Basic base64(username:password)
+```
+
+---
+
 # API PUBBLICHE
 
 ## GET /prodotti/catalogo
@@ -86,35 +122,42 @@ http://localhost:8080/api
 Recupera il catalogo completo dei prodotti
 Auth: NO
 
+### Response Example
+
+```json
+[
+  {
+    "id": 1,
+    "nome": "Miele Bio",
+    "prezzo": 10.0,
+    "quantita": 50
+  }
+]
+```
+
 ---
 
 ## GET /prodotti/{id}
 
 Recupera un prodotto specifico
-Esempio: `/prodotti/2`
-Auth: NO
 
 ---
 
 ## GET /eventi/visibili
 
 Recupera gli eventi pubblici
-Auth: NO
 
 ---
 
 ## GET /mappa
 
 Recupera i punti geografici delle aziende
-Auth: NO
 
 ---
 
 # ACQUIRENTE
 
 ## POST /auth/registra/acquirente
-
-Registrazione nuovo acquirente
 
 ```json
 {
@@ -134,301 +177,114 @@ Registrazione nuovo acquirente
 
 ---
 
-## GET /prodotti/catalogo
-
-Catalogo prodotti (autenticato)
-Auth: Basic
-
----
-
 ## GET /carrello
 
-Visualizza carrello
-Auth: Basic
+### Response Example
+
+```json
+{
+  "items": [],
+  "totale": 0
+}
+```
 
 ---
 
 ## POST /carrello/aggiungi
 
-Aggiunge un prodotto al carrello
-
 ```json
 {
-  "prodottoId": number,
-  "quantita": number
+  "prodottoId": 1,
+  "quantita": 2
 }
 ```
 
----
+### Response
 
-## POST /carrello/aggiungi-pacchetto
-
-Aggiunge un pacchetto al carrello
-
-```json
-{
-  "prodottoId": number,
-  "quantita": number
-}
-```
-
----
-
-## POST /carrello/diminuisci
-
-Riduce la quantità di un prodotto
-
-```json
-{
-  "prodottoId": number,
-  "quantita": number
-}
-```
+* 200 OK
+* 400 Bad Request
 
 ---
 
 ## POST /ordini
 
-Crea un ordine
+### Response Example
 
----
-
-## GET /ordini
-
-Storico ordini
-
----
-
-## POST /prenotazioni/eventi/{id}?numeroPosti=X
-
-Prenotazione evento
-Esempio: `/prenotazioni/eventi/6?numeroPosti=20`
+```json
+{
+  "id": 10,
+  "stato": "CREATO",
+  "totale": 50.0
+}
+```
 
 ---
 
 # VENDITORE
 
-## POST /auth/registra/venditore
-
-Registrazione venditore
-
-```json
-{
-  "email": "string",
-  "password": "string",
-  "nome": "string",
-  "cognome": "string",
-  "piva": "string",
-  "descrizione": "string",
-  "ruoli": ["PRODUTTORE"],
-  "indirizzo": {
-    "via": "string",
-    "numCivico": "string",
-    "cap": "string",
-    "comune": "string",
-    "regione": "string",
-    "latitudine": number,
-    "longitudine": number
-  }
-}
-```
-
----
-
 ## POST /prodotti
 
-Crea un nuovo prodotto
-
 ```json
 {
   "nome": "string",
-  "descrizione": "string",
-  "metodoDiColtivazione": "string",
-  "prezzo": number,
-  "quantita": number,
-  "certificazioni": ["string"],
-  "dataProduzione": "ISO_DATE"
+  "prezzo": 10.0,
+  "quantita": 100
 }
 ```
+
+### Response
+
+* 201 Created
 
 ---
 
 ## DELETE /prodotti/{id}
 
-Elimina prodotto
-Nota: la quantità deve essere 0
-
----
-
-## PUT /prodotti/{id}
-
-Modifica prodotto
-
----
-
-## POST /pacchetti
-
-Crea un pacchetto
-
-```json
-{
-  "nome": "string",
-  "descrizione": "string",
-  "prezzo": number,
-  "items": [
-    {
-      "prodottoId": number,
-      "quantita": number
-    }
-  ]
-}
-```
-
----
-
-## GET /venditori/inviti
-
-Lista inviti
+* 200 OK
+* 400 se quantità > 0
 
 ---
 
 ## GET /prodotti/miei
 
-Prodotti del venditore
-
----
-
-## GET /ordini/venditore
-
-Ordini ricevuti
-
----
-
-## PUT /venditori/inviti/{id}/rispondi
-
-Risponde a un invito
+### Response Example
 
 ```json
-{
-  "azione": "ACCETTA | RIFIUTA"
-}
+[
+  {
+    "id": 1,
+    "nome": "Formaggio",
+    "quantita": 50
+  }
+]
 ```
-
----
-
-# TEST CARRELLO
-
-## POST /carrello/aggiungi
-
-Aggiunta parziale
-
----
-
-## POST /carrello/diminuisci?prodottoId=X&quantita=Y
-
-Rimozione parziale
-
----
-
-## POST /carrello/diminuisci?prodottoId=X&quantita=99
-
-Rimozione completa
-
----
-
-## DELETE /carrello/svuota
-
-Svuota carrello
 
 ---
 
 # ANIMATORE
 
-## POST /auth/registra/staff
-
-Registrazione animatore
+## POST /eventi
 
 ```json
 {
-  "email": "string",
-  "password": "string",
-  "nome": "string",
-  "cognome": "string",
-  "ruoloRichiesto": "ANIMATORE"
+  "nome": "Evento",
+  "dataEvento": "2025-12-20T09:00:00"
 }
 ```
-
----
-
-## POST /eventi
-
-Crea evento
-
----
-
-## DELETE /eventi/{id}
-
-Elimina evento
-
----
-
-## PUT /eventi/{id}
-
-Modifica evento
-
----
-
-## POST /eventi/{idEvento}/invita/{idVenditore}
-
-Invita venditore
 
 ---
 
 ## GET /eventi/miei
 
-Eventi creati
-
----
-
-## GET /eventi/{id}/invitati
-
-Lista invitati
-
----
-
-## GET /eventi/{id}/prenotazioni
-
-Prenotazioni evento
-
 ---
 
 # CURATORE
 
-## POST /auth/registra/staff
-
-Registrazione curatore
-
-```json
-{
-  "email": "string",
-  "password": "string",
-  "nome": "string",
-  "cognome": "string",
-  "ruoloRichiesto": "CURATORE"
-}
-```
-
----
-
 ## POST /curatore/approva/{id}
-
-Approva contenuto o evento
 
 ---
 
 ## POST /curatore/rifiuta/{id}
-
-Rifiuta contenuto o evento
 
 ```json
 {
@@ -439,42 +295,34 @@ Rifiuta contenuto o evento
 
 ---
 
-## GET /curatore/da-approvare
-
-Contenuti in attesa
-
----
-
 # GESTORE
 
 ## GET /gestore/richieste-in-attesa
-
-Richieste ruolo in attesa
 
 ---
 
 ## POST /gestore/approva/{id}
 
-Approva richiesta
-
 ---
 
 ## POST /gestore/rifiuta/{id}
 
-Rifiuta richiesta
-
 ---
+
+## Note
 
 > [!IMPORTANT]
 > Regole generali delle API
 
 > [!NOTE]
-> - Autenticazione: Basic Auth dove richiesto  
-> - Content-Type: `application/json` per POST e PUT  
+>
+> * Autenticazione: Basic Auth dove richiesto
+> * Content-Type: `application/json` per POST e PUT
 
 > [!TIP]
-> - Date: formato ISO 8601  
-> - Tutti gli ID sono numerici  
-> - Uso di query parameters per operazioni dinamiche  
+>
+> * Date: formato ISO 8601
+> * Tutti gli ID sono numerici
+> * Uso di query parameters per operazioni dinamiche
 
----
+

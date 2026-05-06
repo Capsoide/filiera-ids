@@ -1,59 +1,77 @@
 # Filiera Agricola Project
 
-Piattaforma backend basata su Spring Boot per la gestione e valorizzazione della filiera agricola locale. 
+Piattaforma backend basata su Spring Boot per la gestione e valorizzazione della filiera agricola locale.
 Il sistema gestisce l'interazione tra produttori, trasformatori, distributori, acquirenti e animatori territoriali.
 
+---
 
 ## Descrizione del Progetto
 
 L'applicazione permette la gestione di:
-* **Catalogo Prodotti e Pacchetti:** Caricamento, validazione e vendita di prodotti locali.
-* **Eventi Territoriali:** Creazione e gestione di eventi promozionali con sistema di prenotazione.
-* **Workflow di Approvazione:** Ruolo di Curatore per validare contenuti prima della pubblicazione.
-* **Ordini e Carrello:** Gestione completa del processo di acquisto.
 
+* **Catalogo Prodotti e Pacchetti:** caricamento, validazione e vendita di prodotti locali
+* **Eventi Territoriali:** creazione e gestione di eventi promozionali con sistema di prenotazione
+* **Workflow di Approvazione:** ruolo di Curatore per validare contenuti prima della pubblicazione
+* **Ordini e Carrello:** gestione completa del processo di acquisto
+
+---
 
 ## Architettura e Design Pattern
 
-Il progetto segue un'architettura a livelli (Controller, Service, Repository, Model). Sono stati implementati specifici Design Pattern per risolvere problematiche architetturali:
+Il progetto segue un'architettura a livelli:
 
-* **Builder Pattern (GoF):** Utilizzato per la costruzione complessa e validata delle entità `Evento`, separando la logica di costruzione dalla rappresentazione dell'oggetto.
-* **Observer Pattern (GoF):** Implementato per il sistema di notifiche social. Il `CuratoreService` (Subject) notifica il `SocialService` (Observer) quando un contenuto viene approvato, disaccoppiando la logica di business da quella di notifica.
+* Controller
+* Service
+* Repository
+* Model
 
+Design pattern utilizzati:
+
+* **Builder Pattern (GoF):** utilizzato per la costruzione delle entità `Evento`, separando la logica di creazione dalla rappresentazione
+* **Observer Pattern (GoF):** utilizzato per il sistema di notifiche; il `CuratoreService` notifica il `SocialService` alla validazione dei contenuti
+
+---
 
 ## Requisiti di Sistema
 
 * Java 17 o superiore
 * Maven 3.6+
-* Database H2 (In-memory, default) o MySQL
+* Database H2 (default) oppure MySQL
 
+---
 
 ## Installazione e Avvio
 
-1.  **Clonare il repository:**
-    ```bash
-    git clone https://github.com/Capsoide/filiera-ids.git
-    cd filiera-ids
-    ```
+### Clonazione repository
 
-2.  **Compilare il progetto:**
-    ```bash
-    mvn clean install
-    ```
+```bash
+git clone https://github.com/Capsoide/filiera-ids.git
+cd filiera-ids
+```
 
-3.  **Avviare l'applicazione:**
-    ```bash
-    mvn spring-boot:run
-    ```
+### Build
 
-L'applicazione sarà disponibile all'indirizzo: `http://localhost:8080`
+```bash
+mvn clean install
+```
 
+### Avvio
 
-## API Endpoints
+```bash
+mvn spring-boot:run
+```
 
-L'interazione avviene tramite API REST.
+Applicazione disponibile su:
 
-## Base URL
+```
+http://localhost:8080
+```
+
+---
+
+## API REST
+
+### Base URL
 
 ```
 http://localhost:8080/api
@@ -61,47 +79,42 @@ http://localhost:8080/api
 
 ---
 
-# API PUBBLICHE (NO AUTH)
+# API PUBBLICHE
 
-## Catalogo Prodotti
+## GET /prodotti/catalogo
 
-### GET `/prodotti/catalogo`
-
-* Descrizione: Recupero catalogo completo prodotti
-* Auth: NO
+Recupera il catalogo completo dei prodotti
+Auth: NO
 
 ---
 
-## Prodotto specifico
+## GET /prodotti/{id}
 
-### GET `/prodotti/{id}`
-
-* Esempio: `/prodotti/2`
-* Auth: NO
-
----
-
-## Eventi visibili
-
-### GET `/eventi/visibili`
-
-* Auth: NO
+Recupera un prodotto specifico
+Esempio: `/prodotti/2`
+Auth: NO
 
 ---
 
-## Mappa aziende agricole
+## GET /eventi/visibili
 
-### GET `/mappa`
+Recupera gli eventi pubblici
+Auth: NO
 
-* Auth: NO
+---
+
+## GET /mappa
+
+Recupera i punti geografici delle aziende
+Auth: NO
 
 ---
 
 # ACQUIRENTE
 
-## Registrazione
+## POST /auth/registra/acquirente
 
-### POST `/auth/registra/acquirente`
+Registrazione nuovo acquirente
 
 ```json
 {
@@ -121,25 +134,23 @@ http://localhost:8080/api
 
 ---
 
-## Catalogo (autenticato)
+## GET /prodotti/catalogo
 
-### GET `/prodotti/catalogo`
-
-* Auth: Basic
-
----
-
-## Visualizza carrello
-
-### GET `/carrello`
-
-* Auth: Basic
+Catalogo prodotti (autenticato)
+Auth: Basic
 
 ---
 
-## Aggiungi prodotto al carrello
+## GET /carrello
 
-### POST `/carrello/aggiungi`
+Visualizza carrello
+Auth: Basic
+
+---
+
+## POST /carrello/aggiungi
+
+Aggiunge un prodotto al carrello
 
 ```json
 {
@@ -150,22 +161,9 @@ http://localhost:8080/api
 
 ---
 
-## Aggiungi pacchetto
+## POST /carrello/aggiungi-pacchetto
 
-### POST `/carrello/aggiungi-pacchetto`
-
-```json
-{
-  "prodottoId": number,
-  "quantita": number
-}
-```
-
----
-
-## Diminuisci prodotto
-
-### POST `/carrello/diminuisci`
+Aggiunge un pacchetto al carrello
 
 ```json
 {
@@ -176,31 +174,43 @@ http://localhost:8080/api
 
 ---
 
-## Crea ordine
+## POST /carrello/diminuisci
 
-### POST `/ordini`
+Riduce la quantità di un prodotto
+
+```json
+{
+  "prodottoId": number,
+  "quantita": number
+}
+```
 
 ---
 
-## Storico ordini
+## POST /ordini
 
-### GET `/ordini`
+Crea un ordine
 
 ---
 
-## Prenotazione evento
+## GET /ordini
 
-### POST `/prenotazioni/eventi/{id}?numeroPosti=X`
+Storico ordini
 
-* Esempio: `/prenotazioni/eventi/6?numeroPosti=20`
+---
+
+## POST /prenotazioni/eventi/{id}?numeroPosti=X
+
+Prenotazione evento
+Esempio: `/prenotazioni/eventi/6?numeroPosti=20`
 
 ---
 
 # VENDITORE
 
-## Registrazione
+## POST /auth/registra/venditore
 
-### POST `/auth/registra/venditore`
+Registrazione venditore
 
 ```json
 {
@@ -225,9 +235,9 @@ http://localhost:8080/api
 
 ---
 
-## Crea prodotto
+## POST /prodotti
 
-### POST `/prodotti`
+Crea un nuovo prodotto
 
 ```json
 {
@@ -243,23 +253,22 @@ http://localhost:8080/api
 
 ---
 
-## Elimina prodotto
+## DELETE /prodotti/{id}
 
-### DELETE `/prodotti/{id}`
-
-* Nota: quantità deve essere 0
-
----
-
-## Modifica prodotto
-
-### PUT `/prodotti/{id}`
+Elimina prodotto
+Nota: la quantità deve essere 0
 
 ---
 
-## Crea pacchetto
+## PUT /prodotti/{id}
 
-### POST `/pacchetti`
+Modifica prodotto
+
+---
+
+## POST /pacchetti
+
+Crea un pacchetto
 
 ```json
 {
@@ -277,27 +286,27 @@ http://localhost:8080/api
 
 ---
 
-## Vedi inviti
+## GET /venditori/inviti
 
-### GET `/venditori/inviti`
-
----
-
-## Prodotti del venditore
-
-### GET `/prodotti/miei`
+Lista inviti
 
 ---
 
-## Ordini ricevuti
+## GET /prodotti/miei
 
-### GET `/ordini/venditore`
+Prodotti del venditore
 
 ---
 
-## Rispondi invito
+## GET /ordini/venditore
 
-### PUT `/venditori/inviti/{id}/rispondi`
+Ordini ricevuti
+
+---
+
+## PUT /venditori/inviti/{id}/rispondi
+
+Risponde a un invito
 
 ```json
 {
@@ -309,35 +318,35 @@ http://localhost:8080/api
 
 # TEST CARRELLO
 
-## Aggiunta parziale
+## POST /carrello/aggiungi
 
-### POST `/carrello/aggiungi`
-
----
-
-## Rimozione parziale
-
-### POST `/carrello/diminuisci?prodottoId=X&quantita=Y`
+Aggiunta parziale
 
 ---
 
-## Rimozione completa
+## POST /carrello/diminuisci?prodottoId=X&quantita=Y
 
-### POST `/carrello/diminuisci?prodottoId=X&quantita=99`
+Rimozione parziale
 
 ---
 
-## Svuota carrello
+## POST /carrello/diminuisci?prodottoId=X&quantita=99
 
-### DELETE `/carrello/svuota`
+Rimozione completa
+
+---
+
+## DELETE /carrello/svuota
+
+Svuota carrello
 
 ---
 
 # ANIMATORE
 
-## Registrazione
+## POST /auth/registra/staff
 
-### POST `/auth/registra/staff`
+Registrazione animatore
 
 ```json
 {
@@ -351,53 +360,53 @@ http://localhost:8080/api
 
 ---
 
-## Crea evento
+## POST /eventi
 
-### POST `/eventi`
-
----
-
-## Elimina evento
-
-### DELETE `/eventi/{id}`
+Crea evento
 
 ---
 
-## Modifica evento
+## DELETE /eventi/{id}
 
-### PUT `/eventi/{id}`
-
----
-
-## Invita venditore
-
-### POST `/eventi/{idEvento}/invita/{idVenditore}`
+Elimina evento
 
 ---
 
-## Eventi miei
+## PUT /eventi/{id}
 
-### GET `/eventi/miei`
-
----
-
-## Invitati evento
-
-### GET `/eventi/{id}/invitati`
+Modifica evento
 
 ---
 
-## Prenotazioni evento
+## POST /eventi/{idEvento}/invita/{idVenditore}
 
-### GET `/eventi/{id}/prenotazioni`
+Invita venditore
+
+---
+
+## GET /eventi/miei
+
+Eventi creati
+
+---
+
+## GET /eventi/{id}/invitati
+
+Lista invitati
+
+---
+
+## GET /eventi/{id}/prenotazioni
+
+Prenotazioni evento
 
 ---
 
 # CURATORE
 
-## Registrazione
+## POST /auth/registra/staff
 
-### POST `/auth/registra/staff`
+Registrazione curatore
 
 ```json
 {
@@ -411,15 +420,15 @@ http://localhost:8080/api
 
 ---
 
-## Approva evento/contenuto
+## POST /curatore/approva/{id}
 
-### POST `/curatore/approva/{id}`
+Approva contenuto o evento
 
 ---
 
-## Rifiuta evento/contenuto
+## POST /curatore/rifiuta/{id}
 
-### POST `/curatore/rifiuta/{id}`
+Rifiuta contenuto o evento
 
 ```json
 {
@@ -430,38 +439,38 @@ http://localhost:8080/api
 
 ---
 
-## Contenuti da approvare
+## GET /curatore/da-approvare
 
-### GET `/curatore/da-approvare`
+Contenuti in attesa
 
 ---
 
 # GESTORE
 
-## Richieste ruolo
+## GET /gestore/richieste-in-attesa
 
-### GET `/gestore/richieste-in-attesa`
-
----
-
-## Approva richiesta
-
-### POST `/gestore/approva/{id}`
+Richieste ruolo in attesa
 
 ---
 
-## Rifiuta richiesta
+## POST /gestore/approva/{id}
 
-### POST `/gestore/rifiuta/{id}`
+Approva richiesta
 
 ---
 
-# NOTE IMPORTANTI
+## POST /gestore/rifiuta/{id}
 
-* Autenticazione: **Basic Auth** dove richiesto
-* Content-Type: `application/json` per tutte le POST/PUT con body
+Rifiuta richiesta
+
+---
+
+# Note
+
+* Autenticazione: Basic Auth dove richiesto
+* Content-Type: `application/json` per POST e PUT
 * Date: formato ISO 8601
 * Tutti gli ID sono numerici
-* Le query parameters sono usate per operazioni dinamiche (es. carrello, prenotazioni)
+* Le query parameters sono utilizzate per operazioni dinamiche
 
 ---

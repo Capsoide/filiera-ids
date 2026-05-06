@@ -94,7 +94,7 @@ http://localhost:8080/api
 
 ## GET /prodotti/catalogo
 
-Recupera il catalogo completo dei prodotti
+Recupera il catalogo completo dei prodotti\
 Auth: NO
 
 ---

@@ -484,9 +484,3 @@ Rifiuta richiesta
 - [tinafrolls23](https://github.com/tinafrolls23)
 
 
----
-
-## Licenza
-
-Progetto sviluppato a scopo didattico.
-

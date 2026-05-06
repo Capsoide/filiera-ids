@@ -1,4 +1,4 @@
-# Filiera Agricola
+# Ffiliera Agricola
 
 Piattaforma backend basata su Spring Boot per la gestione e valorizzazione della filiera agricola locale.
 Il sistema gestisce l'interazione tra produttori, trasformatori, distributori, acquirenti e animatori territoriali.

@@ -62,20 +62,22 @@ L'interazione avviene tramite API REST. Di seguito sono riportati gli endpoint:
 ### Login Acquirente
 * **Registrazione Nuovo Acquirente:** `POST /api/auth/registra/acquirente`
   
-Request Body:
+**Request Body:**
+```json
 {
-    "email": "mattia.iobbi@email.com",
-    "password": "matiobbi123!",
-    "nome": "Mattia",
-    "cognome": "Iobbi",
-    "indirizzo": {
-        "via": "Via a Caso",
-        "numCivico": "99",
-        "comune": "fermo",
-        "cap": "63900",
-        "regione": "Marche"
-    }
+  "email": "mattia.iobbi@email.com",
+  "password": "matiobbi123!",
+  "nome": "Mattia",
+  "cognome": "Iobbi",
+  "indirizzo": {
+    "via": "Via a Caso",
+    "numCivico": "99",
+    "comune": "fermo",
+    "cap": "63900",
+    "regione": "Marche"
+  }
 }
+```
 
 
 * **Eventi:** `POST /api/eventi` (Creazione evento - Richiede ruolo Animatore)

@@ -266,7 +266,7 @@ Crea un nuovo prodotto
 
 ## DELETE /prodotti/{id}
 
-Elimina prodotto\
+Elimina prodotto
 > [!NOTE]
 > La quantità deve essere 0
 

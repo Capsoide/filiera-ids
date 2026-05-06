@@ -59,16 +59,16 @@ L'interazione avviene tramite API REST. Di seguito sono riportati gli endpoint:
 * **Vedere Tutti Eventi (Visibili):** `GET /api/eventi/visibili `
 * **Vedere Punti OSM Azienda Agricola:** `GET /api/mappa `
 
-### Login Acquirente
+### Login Acquirente 
 * **Registrazione Nuovo Acquirente:** `POST /api/auth/registra/acquirente`
   
     **Request Body:**
     ```json
     {
-      "email": "mattia.iobbi@email.com",
-      "password": "matiobbi123!",
-      "nome": "Mattia",
-      "cognome": "Iobbi",
+      "email": "capsoide.123@email.com",
+      "password": "capsoideloco!",
+      "nome": "Nic",
+      "cognome": "Caps",
       "indirizzo": {
         "via": "Via a Caso",
         "numCivico": "99",
@@ -78,6 +78,10 @@ L'interazione avviene tramite API REST. Di seguito sono riportati gli endpoint:
       }
     }
     ```
+
+* **Vedere Carrello Nuovo Acquirente (Basic Auth):** `GET /api/carrello`
+* **Aggiungi Prodotto al Carrello (Basic Auth):** 
+
 
 
 * **Eventi:** `POST /api/eventi` (Creazione evento - Richiede ruolo Animatore)

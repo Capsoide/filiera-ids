@@ -95,29 +95,29 @@ http://localhost:8080/api
 ## GET /prodotti/catalogo
 
 Recupera il catalogo completo dei prodotti\
-Auth: NO
+Auth: **NO**
 
 ---
 
 ## GET /prodotti/{id}
 
-Recupera un prodotto specifico
-Esempio: `/prodotti/2`
-Auth: NO
+Recupera un prodotto specifico\
+Esempio: `/prodotti/2`\
+Auth: **NO**
 
 ---
 
 ## GET /eventi/visibili
 
-Recupera gli eventi pubblici
-Auth: NO
+Recupera gli eventi pubblici\
+Auth: **NO**
 
 ---
 
 ## GET /mappa
 
-Recupera i punti geografici delle aziende
-Auth: NO
+Recupera i punti geografici delle aziende\
+Auth: **NO**
 
 ---
 
@@ -147,15 +147,15 @@ Registrazione nuovo acquirente
 
 ## GET /prodotti/catalogo
 
-Catalogo prodotti (autenticato)
-Auth: Basic
+Catalogo prodotti (autenticato)\
+Auth: **Basic**
 
 ---
 
 ## GET /carrello
 
-Visualizza carrello
-Auth: Basic
+Visualizza carrello\
+Auth: **Basic**
 
 ---
 
@@ -212,7 +212,7 @@ Storico ordini
 
 ## POST /prenotazioni/eventi/{id}?numeroPosti=X
 
-Prenotazione evento
+Prenotazione evento\
 Esempio: `/prenotazioni/eventi/6?numeroPosti=20`
 
 ---
@@ -266,8 +266,9 @@ Crea un nuovo prodotto
 
 ## DELETE /prodotti/{id}
 
-Elimina prodotto
-Nota: la quantità deve essere 0
+Elimina prodotto\
+> [!NOTE]
+> La quantità deve essere 0
 
 ---
 
@@ -476,6 +477,3 @@ Rifiuta richiesta
 
 ---
 
-
-
----
